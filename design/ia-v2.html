@@ -1,0 +1,369 @@
+<title>LJTennis 赛事版信息架构</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --c-ground:#F4F5F7; --c-surface:#FFFFFF; --c-surface-2:#EBEDF2;
+  --c-ink:#141821; --c-ink-2:#4C5567; --c-ink-3:#7B8496; --c-line:#DFE2E9;
+  --c-brand:#2E4FD8; --c-brand-weak:#E7EBFC;
+  --c-win:#0E9F6E; --c-loss:#E0294B; --c-live:#F5A524;
+  --page-bg:#FAFAFB; --page-card:#FFFFFF; --page-line:#E3E6EC;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --c-ground:#0E1116; --c-surface:#161A21; --c-surface-2:#1F242D;
+  --c-ink:#E7EAF0; --c-ink-2:#A3ACBD; --c-ink-3:#6F7889; --c-line:#252B35;
+  --c-brand:#7A93F5; --c-brand-weak:#1A2140;
+  --c-win:#2FBF88; --c-loss:#FF5C77; --c-live:#FFB84D;
+  --page-bg:#0B0D11; --page-card:#13161C; --page-line:#222731;
+}}
+:root[data-theme="dark"]{
+  --c-ground:#0E1116; --c-surface:#161A21; --c-surface-2:#1F242D;
+  --c-ink:#E7EAF0; --c-ink-2:#A3ACBD; --c-ink-3:#6F7889; --c-line:#252B35;
+  --c-brand:#7A93F5; --c-brand-weak:#1A2140;
+  --c-win:#2FBF88; --c-loss:#FF5C77; --c-live:#FFB84D;
+  --page-bg:#0B0D11; --page-card:#13161C; --page-line:#222731;
+}
+*{box-sizing:border-box}
+body{background:var(--page-bg);color:var(--c-ink);margin:0;line-height:1.65;
+  font-family:-apple-system,"PingFang SC","Source Han Sans CN",system-ui,sans-serif}
+.wrap{max-width:1020px;margin:0 auto;padding:clamp(24px,4vw,56px) clamp(16px,4vw,40px) 96px}
+h1,h2,h3,h4{font-family:Archivo,-apple-system,"PingFang SC",sans-serif;margin:0;text-wrap:balance}
+code{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.88em;
+  background:var(--c-surface-2);padding:1px 5px;border-radius:3px;color:var(--c-ink)}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--c-ink-3)}
+header{border-bottom:2px solid var(--c-ink);padding-bottom:24px;display:flex;flex-direction:column;gap:12px}
+h1{font-size:clamp(27px,5vw,41px);font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.hrow{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.sub{color:var(--c-ink-2);max-width:62ch;margin:0;font-size:15px}
+.tgl{font-family:"IBM Plex Mono",monospace;font-size:12px;padding:8px 16px;border-radius:999px;
+  border:1px solid var(--page-line);background:var(--page-card);color:var(--c-ink-2);cursor:pointer}
+.tgl:hover{border-color:var(--c-brand);color:var(--c-ink)}
+.tgl:focus-visible{outline:2px solid var(--c-brand);outline-offset:2px}
+section{margin-top:clamp(44px,7vw,76px)}
+.shead{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--page-line);padding-bottom:10px;margin-bottom:20px}
+.shead h2{font-size:clamp(20px,3vw,26px);font-weight:600;letter-spacing:-.01em}
+.snote{color:var(--c-ink-2);font-size:14.5px;max-width:70ch;margin:0 0 24px}
+
+.tabbar{display:flex;background:var(--c-surface);border:1px solid var(--c-line);border-radius:12px;
+  overflow:hidden;max-width:420px;box-shadow:0 2px 8px rgba(20,24,33,.06)}
+.tb{flex:1;padding:12px 4px 10px;text-align:center;border-right:1px solid var(--c-line)}
+.tb:last-child{border-right:0}
+.tb.on{background:var(--c-brand-weak)}
+.tb .ic{font-size:19px;line-height:1.3}
+.tb .lb{font-size:11.5px;color:var(--c-ink-3);margin-top:2px}
+.tb.on .lb{color:var(--c-brand);font-weight:600}
+
+.why{display:grid;grid-template-columns:repeat(auto-fit,minmax(285px,1fr));gap:14px;margin-top:22px}
+.wcard{background:var(--page-card);border:1px solid var(--page-line);border-left:3px solid var(--c-brand);
+  border-radius:0 6px 6px 0;padding:15px 17px}
+.wcard.warn{border-left-color:var(--c-live)}
+.wcard h4{font-size:14px;font-weight:600;margin-bottom:5px}
+.wcard p{margin:0;font-size:13.5px;color:var(--c-ink-2)}
+
+figure{margin:0}
+figure svg{display:block;width:100%;max-width:100%;height:auto;color:var(--c-ink-2)}
+.figbox{background:var(--page-card);border:1px solid var(--page-line);border-radius:8px;padding:22px 20px 16px;overflow-x:auto}
+figcaption{font-size:13px;color:var(--c-ink-3);margin-top:14px;padding-top:12px;border-top:1px solid var(--page-line);max-width:76ch}
+.dg-box{fill:var(--c-surface);stroke:var(--c-line);stroke-width:1.5}
+.dg-key{fill:var(--c-brand-weak);stroke:var(--c-brand);stroke-width:1.5}
+.dg-dead{fill:var(--c-surface);stroke:var(--c-ink-3);stroke-width:1.5;stroke-dasharray:4 3}
+.dg-t{fill:var(--c-ink);font-size:12.5px;font-weight:600;font-family:-apple-system,"PingFang SC",sans-serif}
+.dg-s{fill:var(--c-ink-3);font-size:10px;font-family:-apple-system,"PingFang SC",sans-serif}
+.dg-l{fill:var(--c-ink-2);font-size:10.5px;font-family:-apple-system,"PingFang SC",sans-serif}
+.dg-line{stroke:currentColor;stroke-width:1.5;fill:none}
+
+.scroller{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px;min-width:640px}
+.tbl th{text-align:left;font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--c-ink-3);font-weight:400;padding:0 14px 8px 0;border-bottom:1px solid var(--page-line)}
+.tbl td{padding:9px 14px 9px 0;border-bottom:1px solid var(--page-line);color:var(--c-ink-2);vertical-align:top}
+.tbl td:first-child{color:var(--c-ink);font-weight:500;white-space:nowrap}
+.tbl tr.grp td{background:var(--c-surface-2);color:var(--c-ink);font-weight:600;font-size:12.5px;padding:7px 14px 7px 10px}
+.tbl .p{font-family:"IBM Plex Mono",monospace;font-size:11.5px;white-space:nowrap}
+.tag{display:inline-block;font-size:10px;padding:1px 7px;border-radius:999px;white-space:nowrap;
+  background:var(--c-surface-2);color:var(--c-ink-2)}
+.tag.main{background:var(--c-brand-weak);color:var(--c-brand)}
+.tag.tab{background:color-mix(in srgb,var(--c-win) 15%,transparent);color:var(--c-win)}
+.tag.share{background:color-mix(in srgb,var(--c-live) 18%,transparent);color:var(--c-live)}
+
+.rules{display:grid;gap:13px}
+.rule{background:var(--page-card);border:1px solid var(--page-line);border-radius:8px;padding:16px 18px}
+.rule h4{font-size:14.5px;font-weight:600;margin-bottom:6px}
+.rule p{margin:0;font-size:14px;color:var(--c-ink-2)}
+.rule p + p{margin-top:8px}
+footer{margin-top:68px;padding-top:20px;border-top:1px solid var(--page-line);
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--c-ink-3)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+<header>
+  <span class="eyebrow">阶段 1 · v2 赛事版</span>
+  <div class="hrow">
+    <h1>LJTennis 赛事版信息架构</h1>
+    <button class="tgl" id="tgl">切换主题</button>
+  </div>
+  <p class="sub">原始设计 4 个 tab、21 个页面；第一版收敛为 <b>3 tab / 20 页</b>。产品是「双打赛事报名 → 现场记分」，上一版按约球做的架构已作废。</p>
+</header>
+
+<div style="margin-top:22px;border:1px solid var(--c-live);border-left-width:3px;border-radius:0 6px 6px 0;
+     padding:15px 18px;background:var(--page-card);font-size:13.5px;color:var(--c-ink-2);line-height:1.7">
+  <b style="color:var(--c-ink)">⚠️ 范围已变更：第一版不做积分</b><br>
+  本文档记录阶段 1 的原始决策（4 tab / 21 页）。后续确定第一版不做积分，实际执行为
+  <b>3 个 tab（赛事 / 记分 / 我的）· 20 页</b> —— 「排行」tab 与水平详情取消，新增注册页。
+  <b>记分保留</b>，比分用于推进签表而非结算积分。表中标注「已取消」的行不在第一版范围内。
+</div>
+
+<section>
+  <div class="shead"><span class="eyebrow">01</span><h2>tabBar</h2></div>
+  <p class="snote">用 4 个，留一个位不用。命名刻意避开「赛事 / 比赛」这种在中文里容易混的一对 —— tab 名用<b>动作</b>（记分、排行），不用名词。</p>
+
+  <div class="tabbar">
+    <div class="tb on"><div class="ic">🏆</div><div class="lb">赛事</div></div>
+    <div class="tb"><div class="ic">📊</div><div class="lb">积分</div></div>
+    <div class="tb"><div class="ic">👤</div><div class="lb">我的</div></div>
+  </div>
+  <p class="snote" style="margin-top:14px">第一版实际为 <b>3 个 tab</b>。原设计的「排行」（积分榜）随积分一起延后。<br>
+  未注册时：<b>赛事</b>不拦、<b>记分</b>不拦（复用空态）、<b>我的</b>显示未注册态并提供注册入口。</p>
+
+  <div class="why">
+    <div class="wcard">
+      <h4>赛事 · 发现与报名</h4>
+      <p>列表、详情、项目、组队、支付、签表、赛程。整条报名链路都在这个 tab 下，是页面最多的一个（8 页）。</p>
+    </div>
+    <div class="wcard">
+      <h4>记分 · 状态驱动</h4>
+      <p>有进行中的比赛 → 直接是记分器；今天有赛程 → 显示下一场 + 进入记分；都没有 → 历史比赛列表。比赛日 <b>1 tap</b> 可达记分，这是这个 tab 存在的唯一理由。</p>
+    </div>
+    <div class="wcard warn">
+      <h4>排行 · 只排积分 <span style="font-size:10px;border:1px solid var(--c-live);color:var(--c-live);padding:1px 6px;border-radius:3px;font-weight:400">第一版已取消</span></h4>
+      <p>原设计：按项目、赛季、地区筛选积分榜，水平不上榜。第一版不做积分，这个 tab 整体延后。</p>
+    </div>
+    <div class="wcard warn">
+      <h4>为什么没有「消息」tab</h4>
+      <p>搭档邀请、支付提醒、候补转正、赛前提醒全部走微信订阅消息。站内再做信箱是重复建设，未读状态用赛事 tab 上的红点表示。</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="shead"><span class="eyebrow">02</span><h2>页面清单</h2></div>
+  <p class="snote">21 页：主包 16、分包 5。主包放全部 tab 页、报名链路、记分链路和两个分享落地页；只有「我的」下面的低频页进分包。</p>
+  <p class="snote"><b>签表刻意留在主包</b> —— 它在球场上要看，而球场信号普遍差。放分包意味着没提前打开过的人在现场下载不下来，这是不能接受的失败模式。</p>
+  <div class="scroller"><table class="tbl">
+    <thead><tr><th>页面</th><th>路径</th><th>归属</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr class="grp"><td colspan="4">Tab 1 · 赛事</td></tr>
+      <tr><td>赛事列表</td><td class="p">pages/tournament/index</td><td><span class="tag tab">tab</span></td><td>筛选：城市 / 时间 / 项目 / 水平段。顶部置顶我的进行中报名</td></tr>
+      <tr><td>赛事详情</td><td class="p">pages/tournament/detail</td><td><span class="tag main">主包</span> <span class="tag share">分享落地</span></td><td>简介、时间地点、项目列表、费用、规则。<b>未登录可看</b></td></tr>
+      <tr><td>项目详情</td><td class="p">pages/event/detail</td><td><span class="tag main">主包</span></td><td>男双/女双/混双其中之一。名额、已报组合、报名入口</td></tr>
+      <tr><td>发起报名</td><td class="p">pages/entry/create</td><td><span class="tag main">主包</span></td><td>选搭档或生成邀请。混双在这里做性别校验</td></tr>
+      <tr><td>组队邀请</td><td class="p">pages/entry/invite</td><td><span class="tag main">主包</span> <span class="tag share">分享落地</span></td><td>搭档点开看到「XX 邀请你组队」。<b>获客主路径</b></td></tr>
+      <tr><td>支付确认</td><td class="p">pages/entry/pay</td><td><span class="tag main">主包</span></td><td>订单 + 倒计时 + 微信支付。发起人付全款</td></tr>
+      <tr><td>签表</td><td class="p">pages/draw/index</td><td><span class="tag main">主包</span></td><td>树状图 / 小组积分表。<b>最难的一屏</b>，双打每格两个名字</td></tr>
+      <tr><td>赛程</td><td class="p">pages/schedule/index</td><td><span class="tag main">主包</span></td><td>按时间排的场次，可按项目 / 场地筛选</td></tr>
+
+      <tr class="grp"><td colspan="4">Tab 2 · 记分</td></tr>
+      <tr><td>记分</td><td class="p">pages/score/index</td><td><span class="tag tab">tab</span></td><td>三态：进行中 / 今日赛程 / 历史列表</td></tr>
+      <tr><td>开局设置</td><td class="p">pages/score/setup</td><td><span class="tag main">主包</span></td><td>赛制 + 发球顺序（A1→B1→A2→B2），2 tap</td></tr>
+      <tr><td>记分器</td><td class="p">pages/score/live</td><td><span class="tag main">主包</span></td><td>双打四人发球轮转。全程离线可用</td></tr>
+      <tr><td>赛后确认</td><td class="p">pages/score/confirm</td><td><span class="tag main">主包</span></td><td>对方组合任一人 1 tap 确认，或提出异议</td></tr>
+
+      <tr class="grp"><td colspan="4">Tab 3 · 排行 <span style="color:var(--c-live);font-weight:400">— 第一版已取消</span></td></tr>
+      <tr style="opacity:.5"><td>积分榜</td><td class="p">pages/rank/index</td><td><span class="tag">已取消</span></td><td>随积分一起延后</td></tr>
+      <tr><td>选手主页</td><td class="p">pages/player/detail</td><td><span class="tag main">主包</span></td><td>他人的参赛记录与同队记录（去掉积分）。改从组队流程进入</td></tr>
+
+      <tr class="grp"><td colspan="4">Tab 3 · 我的（原 Tab 4）</td></tr>
+      <tr><td>注册</td><td class="p">pages/auth/register</td><td><span class="tag main">主包</span></td><td><b>新增</b>。手机号 + 昵称 + 性别，两步</td></tr>
+      <tr><td>我的</td><td class="p">pages/me/index</td><td><span class="tag tab">tab</span></td><td>双打水平 + 积分 + 近期战绩摘要</td></tr>
+      <tr><td>我的报名</td><td class="p">pages/me/entries</td><td><span class="tag main">主包</span></td><td>待搭档确认 / 待支付 / 已确认 / 候补 / 退款中</td></tr>
+      <tr><td>我的战绩</td><td class="p">pages/me/records</td><td><span class="tag">分包</span></td><td>全部比赛，可按赛事 / 搭档筛选</td></tr>
+      <tr style="opacity:.5"><td>水平详情</td><td class="p">pages/me/rating</td><td><span class="tag">已取消</span></td><td>随水平一起延后</td></tr>
+      <tr><td>资料编辑</td><td class="p">pages/me/profile</td><td><span class="tag">分包</span></td><td>性别、持拍手、常打城市</td></tr>
+      <tr><td>设置</td><td class="p">pages/me/settings</td><td><span class="tag">分包</span></td><td>通知、隐私、缓存</td></tr>
+      <tr><td>规则说明</td><td class="p">pages/about/rules</td><td><span class="tag">分包</span></td><td>第一版为<b>报名 / 退款 / 比赛</b>三节，无积分规则</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <div class="shead"><span class="eyebrow">03</span><h2>报名状态机</h2></div>
+  <p class="snote">这是第一版最复杂的一条流程 —— 双打组队和微信支付叠在一起，产生了三个会「卡住」的等待态。每个等待态都必须有超时和自动出口，否则名额会烂在手里。</p>
+
+  <div class="figbox">
+  <figure>
+    <svg viewBox="0 0 900 420" role="img" aria-label="报名状态机：发起报名后等待搭档确认，搭档接受则组合成立；名额充足进入待支付由发起人付全款，支付成功即确认参赛。搭档拒绝或超时则报名作废；支付超时释放名额；名额已满进入候补，有人退赛后转正并有24小时支付倒计时，超时则顺延给下一位候补；已确认可申请退款。">
+      <defs>
+        <marker id="m1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker>
+        <marker id="m2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--c-live)"/></marker>
+      </defs>
+
+      <rect class="dg-box" x="60" y="26"  width="180" height="54" rx="8"/>
+      <text class="dg-t" x="150" y="52" text-anchor="middle">发起报名</text>
+      <text class="dg-s" x="150" y="68" text-anchor="middle">选项目 · 填信息</text>
+
+      <rect class="dg-box" x="60" y="106" width="180" height="54" rx="8"/>
+      <text class="dg-t" x="150" y="132" text-anchor="middle">待搭档确认</text>
+      <text class="dg-s" x="150" y="148" text-anchor="middle">等待态 ①</text>
+
+      <rect class="dg-box" x="60" y="186" width="180" height="54" rx="8"/>
+      <text class="dg-t" x="150" y="212" text-anchor="middle">组合成立</text>
+      <text class="dg-s" x="150" y="228" text-anchor="middle">Entry 生成</text>
+
+      <rect class="dg-box" x="60" y="266" width="180" height="54" rx="8"/>
+      <text class="dg-t" x="150" y="292" text-anchor="middle">待支付</text>
+      <text class="dg-s" x="150" y="308" text-anchor="middle">等待态 ② 发起人付全款</text>
+
+      <rect class="dg-key" x="60" y="346" width="180" height="54" rx="8"/>
+      <text class="dg-t" x="150" y="372" text-anchor="middle">已确认参赛</text>
+      <text class="dg-s" x="150" y="388" text-anchor="middle">进签表</text>
+
+      <path class="dg-line" d="M150,80  V102" marker-end="url(#m1)"/>
+      <path class="dg-line" d="M150,160 V182" marker-end="url(#m1)"/>
+      <path class="dg-line" d="M150,240 V262" marker-end="url(#m1)"/>
+      <path class="dg-line" d="M150,320 V342" marker-end="url(#m1)"/>
+      <text class="dg-l" x="158" y="96">转发邀请</text>
+      <text class="dg-l" x="158" y="176">搭档接受</text>
+      <text class="dg-l" x="158" y="256">名额充足</text>
+      <text class="dg-l" x="158" y="336">支付成功</text>
+
+      <rect class="dg-dead" x="380" y="106" width="150" height="54" rx="8"/>
+      <text class="dg-t" x="455" y="139" text-anchor="middle">报名作废</text>
+      <path class="dg-line" d="M240,133 H372" marker-end="url(#m1)"/>
+      <text class="dg-l" x="306" y="124" text-anchor="middle">拒绝 / 超时</text>
+
+      <rect class="dg-box" x="380" y="186" width="150" height="54" rx="8"/>
+      <text class="dg-t" x="455" y="212" text-anchor="middle">候补</text>
+      <text class="dg-s" x="455" y="228" text-anchor="middle">不预付</text>
+      <path class="dg-line" d="M240,213 H372" marker-end="url(#m1)"/>
+      <text class="dg-l" x="306" y="204" text-anchor="middle">名额已满</text>
+
+      <rect class="dg-box" x="590" y="186" width="180" height="54" rx="8"/>
+      <text class="dg-t" x="680" y="212" text-anchor="middle">转正</text>
+      <text class="dg-s" x="680" y="228" text-anchor="middle">等待态 ③ 24h 倒计时</text>
+      <path class="dg-line" d="M530,213 H582" marker-end="url(#m1)"/>
+      <text class="dg-l" x="556" y="256" text-anchor="middle">有人退赛</text>
+
+      <path class="dg-line" d="M675,240 V252 H200 V262" marker-end="url(#m1)"/>
+      <text class="dg-l" x="310" y="246" text-anchor="middle">24h 内支付</text>
+
+      <path d="M760,186 V158 H455 V182" fill="none" stroke="var(--c-live)" stroke-width="1.5"
+            stroke-dasharray="5 4" marker-end="url(#m2)"/>
+      <text x="607" y="150" text-anchor="middle" fill="var(--c-live)"
+            style="font-size:10.5px;font-family:-apple-system,'PingFang SC',sans-serif">超时 → 自动顺延下一位候补</text>
+
+      <rect class="dg-dead" x="380" y="266" width="150" height="54" rx="8"/>
+      <text class="dg-t" x="455" y="299" text-anchor="middle">释放名额</text>
+      <path class="dg-line" d="M240,293 H372" marker-end="url(#m1)"/>
+      <text class="dg-l" x="306" y="284" text-anchor="middle">超时</text>
+
+      <rect class="dg-box" x="380" y="346" width="150" height="54" rx="8"/>
+      <text class="dg-t" x="455" y="379" text-anchor="middle">退款中</text>
+      <path class="dg-line" d="M240,373 H372" marker-end="url(#m1)"/>
+      <text class="dg-l" x="306" y="364" text-anchor="middle">申请退款</text>
+
+      <rect class="dg-dead" x="590" y="346" width="150" height="54" rx="8"/>
+      <text class="dg-t" x="665" y="379" text-anchor="middle">已退款</text>
+      <path class="dg-line" d="M530,373 H582" marker-end="url(#m1)"/>
+    </svg>
+    <figcaption>三个等待态各自的超时出口是这张图的重点：① 搭档不接受 → 报名作废；② 发起人不付款 → 释放名额；③ 候补转正后 24h 不付 → 自动顺延下一位。第三条的自动顺延是后端定时任务，不做的话每个空位都会烂在一个不响应的人手里 —— 业余赛退赛率高，这个机制会频繁触发。</figcaption>
+  </figure>
+  </div>
+</section>
+
+<section>
+  <div class="shead"><span class="eyebrow">04</span><h2>比赛日路径</h2></div>
+  <p class="snote">最高频、条件最苛刻的一条。目标是从打开小程序到开始记分不超过 2 次点击。</p>
+
+  <div class="figbox">
+  <figure>
+    <svg viewBox="0 0 940 280" role="img" aria-label="比赛日路径：打开小程序后点记分 tab 一次即达，有进行中比赛直接进入记分器，否则显示今日赛程的下一场；记分结束后由对方确认，随即自动结算积分与水平。从赛事 tab 的签表页也能进入记分器，这是一次跨 tab 跳转。">
+      <defs>
+        <marker id="n1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker>
+        <marker id="n2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--c-live)"/></marker>
+      </defs>
+
+      <rect class="dg-box" x="20"  y="70" width="130" height="64" rx="8"/>
+      <text class="dg-t" x="85"  y="97"  text-anchor="middle">打开小程序</text>
+      <text class="dg-s" x="85"  y="115" text-anchor="middle">球场边</text>
+
+      <rect class="dg-key" x="190" y="70" width="160" height="64" rx="8"/>
+      <text class="dg-t" x="270" y="97"  text-anchor="middle">记分 tab</text>
+      <text class="dg-s" x="270" y="115" text-anchor="middle">状态驱动</text>
+
+      <rect class="dg-box" x="390" y="70" width="160" height="64" rx="8"/>
+      <text class="dg-t" x="470" y="97"  text-anchor="middle">记分器</text>
+      <text class="dg-s" x="470" y="115" text-anchor="middle">四人发球轮转 · 离线</text>
+
+      <rect class="dg-box" x="590" y="70" width="160" height="64" rx="8"/>
+      <text class="dg-t" x="670" y="97"  text-anchor="middle">赛后确认</text>
+      <text class="dg-s" x="670" y="115" text-anchor="middle">对方 1 tap</text>
+
+      <rect class="dg-box" x="790" y="70" width="130" height="64" rx="8"/>
+      <text class="dg-t" x="855" y="97"  text-anchor="middle">结算</text>
+      <text class="dg-s" x="855" y="115" text-anchor="middle">积分 + 水平</text>
+
+      <path class="dg-line" d="M150,102 H182" marker-end="url(#n1)"/>
+      <path class="dg-line" d="M350,102 H382" marker-end="url(#n1)"/>
+      <path class="dg-line" d="M550,102 H582" marker-end="url(#n1)"/>
+      <path class="dg-line" d="M750,102 H782" marker-end="url(#n1)"/>
+
+      <text class="dg-l" x="166" y="56"  text-anchor="middle">1 tap</text>
+      <text class="dg-l" x="366" y="56"  text-anchor="middle">有进行中 → 直接进入</text>
+      <text class="dg-l" x="366" y="158" text-anchor="middle">无 → 今日赛程 → 下一场（+1 tap）</text>
+      <text class="dg-l" x="566" y="56"  text-anchor="middle">结束</text>
+      <text class="dg-l" x="766" y="56"  text-anchor="middle">确认生效</text>
+
+      <rect class="dg-box" x="390" y="200" width="160" height="56" rx="8"/>
+      <text class="dg-t" x="470" y="224" text-anchor="middle">签表</text>
+      <text class="dg-s" x="470" y="242" text-anchor="middle">赛事 tab</text>
+      <path d="M470,200 V146" fill="none" stroke="var(--c-live)" stroke-width="1.5" marker-end="url(#n2)"/>
+      <text x="486" y="180" fill="var(--c-live)"
+            style="font-size:10.5px;font-family:-apple-system,'PingFang SC',sans-serif">跨 tab · 参数走 storage</text>
+    </svg>
+    <figcaption>主路径两次点击到记分器。从签表点自己的场次进入记分是跨 tab 跳转 —— <code>wx.switchTab</code> 不支持 query 参数，必须先把当前比赛写进本地存储，再由记分页在 <code>onShow</code> 里读取。同一套存储也是断网续记和杀进程恢复的基础。</figcaption>
+  </figure>
+  </div>
+</section>
+
+<section>
+  <div class="shead"><span class="eyebrow">05</span><h2>现在就要定的四个机制</h2></div>
+  <p class="snote">这四条都会反过来改页面结构，不能留到开发阶段再讨论。</p>
+  <div class="rules">
+    <div class="rule">
+      <h4>1 · 两个分享落地页必须免登录</h4>
+      <p><b>赛事详情</b>和<b>组队邀请</b>是转发卡片的落地页，也是唯一的获客路径。未登录用户要能完整浏览内容，登录墙放在「报名 / 接受邀请」这一步。</p>
+      <p>代价是后端要提供一套无鉴权的只读接口。</p>
+    </div>
+    <div class="rule">
+      <h4>2 · 三个等待态都要有超时和自动出口</h4>
+      <p>待搭档确认、待支付、候补转正。每一个都需要后端定时任务在超时后自动流转，前端要显示倒计时。<b>候补自动顺延</b>是其中最关键的 —— 业余赛退赛率高，这个机制会频繁触发。</p>
+    </div>
+    <div class="rule">
+      <h4>3 · 记分全程离线，签表进主包</h4>
+      <p>球场信号普遍差。记分每一分都同步写本地存储，联网后批量上传；未同步状态要可见。签表放主包而不是分包，避免现场下载不下来。</p>
+    </div>
+    <div class="rule">
+      <h4>4 · 通知全部走微信订阅消息</h4>
+      <p>搭档邀请、支付提醒、候补转正、赛前提醒、待确认比分。订阅授权在用户主动操作时申请（发起报名后、比赛结束后），不能一进小程序就弹。这是「没有消息 tab」成立的前提。</p>
+    </div>
+  </div>
+</section>
+
+<footer>LJTennis 赛事版信息架构 · 第一版 3 tab / 20 页 / 主包 16 · 分包 4 · 承接 设计流程.md 阶段 0</footer>
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement, btn = document.getElementById("tgl");
+  btn.addEventListener("click", function () {
+    var now = root.getAttribute("data-theme");
+    root.setAttribute("data-theme", now ? (now === "dark" ? "light" : "dark")
+      : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "light" : "dark"));
+  });
+})();
+</script>

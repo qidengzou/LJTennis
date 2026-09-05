@@ -1,0 +1,691 @@
+<title>LJTennis 报名链路高保真</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Barlow+Condensed:wght@500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --c-av-1:#2E4FD8; --c-av-2:#5B6EA8; --c-av-3:#7A5EA8; --c-av-4:#3F6E7F; --c-av-5:#5A6470;
+  --c-ground:#F4F5F7; --c-surface:#FFFFFF; --c-surface-2:#EBEDF2;
+  --c-ink:#141821; --c-ink-2:#4C5567; --c-ink-3:#7B8496; --c-line:#DFE2E9;
+  --c-brand:#2E4FD8; --c-brand-ink:#FFFFFF; --c-brand-weak:#E7EBFC;
+  --c-win:#0E9F6E; --c-loss:#E0294B; --c-live:#F5A524; --c-void:#7B8496; --c-wx:#07C160;
+  --e-1:0 1px 2px rgba(20,24,33,.04),0 2px 8px rgba(20,24,33,.06);
+  --page-bg:#FAFAFB; --page-card:#FFFFFF; --page-line:#E3E6EC; --dev-shadow:0 12px 40px -12px rgba(20,24,33,.28);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --c-ground:#0E1116; --c-surface:#161A21; --c-surface-2:#1F242D;
+  --c-ink:#E7EAF0; --c-ink-2:#A3ACBD; --c-ink-3:#6F7889; --c-line:#252B35;
+  --c-brand:#7A93F5; --c-brand-ink:#0E1116; --c-brand-weak:#1A2140;
+  --c-win:#2FBF88; --c-loss:#FF5C77; --c-live:#FFB84D; --c-void:#6F7889; --c-wx:#3ECF7B;
+  --e-1:0 1px 2px rgba(0,0,0,.5),0 2px 8px rgba(0,0,0,.35);
+  --page-bg:#0B0D11; --page-card:#13161C; --page-line:#222731; --dev-shadow:0 12px 40px -12px rgba(0,0,0,.8);
+}}
+:root[data-theme="dark"]{
+  --c-ground:#0E1116; --c-surface:#161A21; --c-surface-2:#1F242D;
+  --c-ink:#E7EAF0; --c-ink-2:#A3ACBD; --c-ink-3:#6F7889; --c-line:#252B35;
+  --c-brand:#7A93F5; --c-brand-ink:#0E1116; --c-brand-weak:#1A2140;
+  --c-win:#2FBF88; --c-loss:#FF5C77; --c-live:#FFB84D; --c-void:#6F7889; --c-wx:#3ECF7B;
+  --e-1:0 1px 2px rgba(0,0,0,.5),0 2px 8px rgba(0,0,0,.35);
+  --page-bg:#0B0D11; --page-card:#13161C; --page-line:#222731; --dev-shadow:0 12px 40px -12px rgba(0,0,0,.8);
+}
+*{box-sizing:border-box}
+body{background:var(--page-bg);color:var(--c-ink);margin:0;line-height:1.65;
+  font-family:-apple-system,"PingFang SC","Source Han Sans CN",system-ui,sans-serif}
+.wrap{max-width:1220px;margin:0 auto;padding:clamp(24px,4vw,56px) clamp(16px,4vw,40px) 96px}
+h1,h2,h3,h4{font-family:Archivo,-apple-system,"PingFang SC",sans-serif;margin:0;text-wrap:balance}
+code{font-family:"IBM Plex Mono",monospace;font-size:.88em;background:var(--c-surface-2);padding:1px 5px;border-radius:3px;color:var(--c-ink)}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--c-ink-3)}
+header{border-bottom:2px solid var(--c-ink);padding-bottom:22px;display:flex;flex-direction:column;gap:11px}
+h1{font-size:clamp(27px,5vw,42px);font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.hrow{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.sub{color:var(--c-ink-2);max-width:64ch;margin:0;font-size:15px}
+.tgl{font-family:"IBM Plex Mono",monospace;font-size:12px;padding:8px 16px;border-radius:999px;
+  border:1px solid var(--page-line);background:var(--page-card);color:var(--c-ink-2);cursor:pointer}
+.tgl:hover{border-color:var(--c-brand);color:var(--c-ink)}
+.tgl:focus-visible{outline:2px solid var(--c-brand);outline-offset:2px}
+.flow{margin-top:24px;display:flex;flex-wrap:wrap;gap:7px;align-items:center;font-size:13px}
+.flow span{background:var(--page-card);border:1px solid var(--page-line);border-radius:6px;padding:5px 11px;white-space:nowrap}
+.flow span.k{background:var(--c-brand-weak);border-color:var(--c-brand);color:var(--c-brand);font-weight:600}
+.flow em{font-style:normal;color:var(--c-ink-3)}
+section{margin-top:clamp(46px,7vw,78px)}
+.shead{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--page-line);padding-bottom:10px;margin-bottom:18px}
+.shead h2{font-size:clamp(20px,3vw,26px);font-weight:600;letter-spacing:-.01em}
+.snote{color:var(--c-ink-2);font-size:14.5px;max-width:72ch;margin:0 0 26px}
+.gridF{display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start}
+.unit{width:375px;flex:none}
+.ut{font-size:14px;font-weight:600;margin-bottom:2px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ut .tagx{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.08em;border:1px solid var(--c-brand);
+  color:var(--c-brand);padding:1px 6px;border-radius:3px;font-weight:400}
+.ut .tagx.w{border-color:var(--c-live);color:var(--c-live)}
+.us{font-size:12px;color:var(--c-ink-3);margin:0 0 12px;font-family:"IBM Plex Mono",monospace}
+.un{margin-top:12px;font-size:12.5px;color:var(--c-ink-2)}
+
+.dev{width:375px;border-radius:26px;overflow:hidden;background:var(--c-ground);box-shadow:var(--dev-shadow);
+  border:1px solid var(--c-line);display:flex;flex-direction:column}
+.stat{height:22px;display:flex;justify-content:space-between;align-items:center;padding:0 18px;font-size:11px;font-weight:600;letter-spacing:.02em}
+.stat .r{display:flex;gap:4px;font-size:9px;opacity:.75}
+.nav{height:44px;display:flex;align-items:center;justify-content:center;position:relative;padding:0 12px}
+.nav .ttl{font-size:16px;font-weight:600}
+.nav .bk{position:absolute;left:14px;font-size:17px;line-height:1}
+.cap{position:absolute;right:10px;width:87px;height:32px;border-radius:16px;border:1px solid var(--c-line);
+  background:var(--c-surface);display:flex;align-items:center;justify-content:space-around;color:var(--c-ink-3);font-size:12px}
+.cap b{width:1px;height:16px;background:var(--c-line);display:block}
+.body{padding:12px;display:flex;flex-direction:column;gap:12px;min-height:470px}
+.tabbar{display:flex;background:var(--c-surface);border-top:1px solid var(--c-line);padding-bottom:8px}
+.tabbar div{flex:1;text-align:center;padding:7px 0 2px}
+.tabbar .i{font-size:18px;line-height:1.25;opacity:.5}
+.tabbar .t{font-size:10px;color:var(--c-ink-3)}
+.tabbar .on .i{opacity:1}
+.tabbar .on .t{color:var(--c-brand);font-weight:600}
+.home{height:5px;width:120px;background:var(--c-ink);opacity:.25;border-radius:3px;margin:6px auto 7px}
+.dock{margin-top:auto;padding-top:12px;display:flex;flex-direction:column;gap:9px}
+
+.num{font-family:"Barlow Condensed",-apple-system,sans-serif;font-variant-numeric:tabular-nums;font-weight:600}
+.card{background:var(--c-surface);border-radius:12px;padding:14px;box-shadow:var(--e-1)}
+.card.hero{outline:2px solid var(--c-brand);outline-offset:-2px}
+.k{font-size:12px;color:var(--c-ink-3)}
+.rowb{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.pair{display:flex;gap:5px;align-items:baseline;min-width:0}
+.pair .n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pair .sep{color:var(--c-ink-3);flex:none}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 9px;border-radius:999px;
+  background:var(--c-surface-2);color:var(--c-ink-2);line-height:1.5;white-space:nowrap}
+.chip i{width:5px;height:5px;border-radius:999px;background:currentColor;display:block;flex:none}
+.chip.live{background:color-mix(in srgb,var(--c-live) 16%,transparent);color:var(--c-live)}
+.chip.win{background:color-mix(in srgb,var(--c-win) 16%,transparent);color:var(--c-win)}
+.chip.loss{background:color-mix(in srgb,var(--c-loss) 14%,transparent);color:var(--c-loss)}
+.chip.void{color:var(--c-void)}
+.chip.brand{background:var(--c-brand-weak);color:var(--c-brand)}
+.btn{display:block;width:100%;border:0;border-radius:8px;padding:12px;font-size:15px;font-weight:500;
+  cursor:pointer;font-family:inherit;text-align:center}
+.btn-p{background:var(--c-brand);color:var(--c-brand-ink)}
+.btn-s{background:var(--c-surface-2);color:var(--c-ink)}
+.btn-o{background:transparent;color:var(--c-ink-2);border:1px solid var(--c-line)}
+.btn-wx{background:var(--c-wx);color:#fff}
+.btn:disabled{opacity:.45;cursor:default}
+.btn:focus-visible{outline:2px solid var(--c-brand);outline-offset:2px}
+.seg{display:flex;background:var(--c-surface-2);border-radius:8px;padding:3px;gap:2px}
+.seg button{flex:1;border:0;background:transparent;font-family:inherit;font-size:13px;color:var(--c-ink-2);
+  padding:6px 2px;border-radius:6px;cursor:pointer;white-space:nowrap}
+.seg button.on{background:var(--c-surface);color:var(--c-ink);font-weight:600;box-shadow:var(--e-1)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.fchip{border:1px solid var(--c-line);background:transparent;font-family:inherit;font-size:12px;
+  padding:4px 11px;border-radius:999px;color:var(--c-ink-2);cursor:pointer}
+.fchip.on{background:var(--c-brand-weak);border-color:var(--c-brand);color:var(--c-brand);font-weight:600}
+.av{width:36px;height:36px;border-radius:999px;display:grid;place-items:center;color:#fff;font-size:14px;font-weight:600;flex:none}
+.prow{display:flex;align-items:center;gap:11px;padding:9px 0}
+.prow+.prow{border-top:1px solid var(--c-line)}
+.prow .nm{flex:1;min-width:0}
+.prow .nm b{display:block;font-size:14.5px;font-weight:500}
+.prow .nm span{font-size:11.5px;color:var(--c-ink-3)}
+.bar{height:5px;background:var(--c-surface-2);border-radius:999px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--c-brand);border-radius:999px}
+.bar.full i{background:var(--c-live)}
+.cd{display:flex;align-items:center;justify-content:space-between;border-radius:8px;padding:9px 12px;font-size:12.5px;
+  background:color-mix(in srgb,var(--c-live) 12%,transparent);color:var(--c-live)}
+.cd.urgent{background:color-mix(in srgb,var(--c-loss) 12%,transparent);color:var(--c-loss)}
+.cd b{font-family:"Barlow Condensed",sans-serif;font-size:17px;font-weight:600;font-variant-numeric:tabular-nums}
+.tcard{background:var(--c-surface);border-radius:12px;padding:14px;box-shadow:var(--e-1);display:flex;flex-direction:column;gap:9px}
+.tcard .tt{font-size:16px;font-weight:600;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.evr{display:flex;flex-direction:column;gap:6px}
+.sk{background:var(--c-surface-2);border-radius:4px;height:12px;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+@media (prefers-reduced-motion:reduce){.sk{animation:none}}
+.empty{text-align:center;padding:36px 18px}
+.empty .ic{width:56px;height:56px;border-radius:999px;background:var(--c-surface-2);margin:0 auto 14px;display:grid;place-items:center;font-size:24px}
+.empty b{display:block;font-size:16px;font-weight:600;margin-bottom:5px}
+.empty p{margin:0 0 20px;font-size:13px;color:var(--c-ink-3)}
+.srch{display:flex;align-items:center;gap:8px;background:var(--c-surface-2);border-radius:8px;padding:9px 12px;font-size:14px;color:var(--c-ink-3)}
+.banner{border-radius:8px;padding:11px 13px;font-size:13px;line-height:1.5}
+.banner.b{background:var(--c-brand-weak);color:var(--c-brand)}
+.banner.e{background:color-mix(in srgb,var(--c-loss) 12%,transparent);color:var(--c-loss)}
+.banner.v{background:var(--c-surface-2);color:var(--c-ink-2)}
+
+.note{background:var(--page-card);border:1px solid var(--page-line);border-left:3px solid var(--c-brand);
+  border-radius:0 6px 6px 0;padding:16px 18px;margin-top:26px}
+.note.warn{border-left-color:var(--c-live)}
+.note h3{font-size:15px;font-weight:600;margin-bottom:7px}
+.note p{margin:0 0 9px;font-size:14px;color:var(--c-ink-2);max-width:74ch}
+.note p:last-child{margin-bottom:0}
+.check{list-style:none;padding:0;margin:0;display:grid;gap:9px}
+.check li{display:flex;gap:10px;font-size:14px;color:var(--c-ink-2);align-items:flex-start}
+.check li::before{content:"✓";color:var(--c-win);font-family:monospace;flex:none;line-height:1.55}
+.check li b{color:var(--c-ink);font-weight:600}
+footer{margin-top:66px;padding-top:20px;border-top:1px solid var(--page-line);font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--c-ink-3)}
+</style>
+
+<div class="wrap">
+<header>
+  <span class="eyebrow">阶段 4 · 第二批</span>
+  <div class="hrow">
+    <h1>报名链路</h1>
+    <button class="tgl" id="tgl">切换主题</button>
+  </div>
+  <p class="sub">从看到赛事到确认参赛，12 屏。双打组队和微信支付叠在一起，是第一版最复杂的一条流程 —— 三个等待态各有各的超时出口。</p>
+  <div class="flow">
+    <span>赛事列表</span><em>→</em><span class="k">赛事详情</span><em>→</em><span>项目详情</span><em>→</em>
+    <span>发起报名</span><em>→</em><span class="k">组队邀请</span><em>→</em><span class="k">支付</span><em>→</em><span>确认参赛</span>
+  </div>
+</header>
+
+<!-- 01 发现 -->
+<section>
+  <div class="shead"><span class="eyebrow">01</span><h2>发现赛事</h2></div>
+  <p class="snote">赛事 tab 的首页。<b>筛选可以直接点。</b>顶部永远给「我的进行中报名」留位置 —— 待支付、待搭档确认这些是有时限的，不能让人自己去找。</p>
+
+  <div class="gridF">
+
+    <div class="unit">
+      <div class="ut">赛事列表 <span class="tagx">可交互</span></div>
+      <p class="us">tournament/index</p>
+      <div class="dev">
+        <div class="stat"><span>9:41</span><span class="r">▮▮▮ ᯤ ▉</span></div>
+        <div class="nav"><span class="ttl">赛事</span><span class="cap"><span>⋯</span><b></b><span>◉</span></span></div>
+        <div class="body">
+          <div class="card hero" style="display:flex;flex-direction:column;gap:8px;padding:12px 14px">
+            <div class="rowb"><span class="chip live"><i></i>待支付</span><span class="num" style="color:var(--c-live);font-size:15px">23:41:08</span></div>
+            <div style="font-size:14.5px">春季双打公开赛 · 男双</div>
+            <div class="k">李强已接受邀请，等你支付 ¥200</div>
+          </div>
+          <div class="seg" id="stSeg"><button class="on" data-s="open">报名中</button><button data-s="live">进行中</button><button data-s="done">已结束</button></div>
+          <div class="chips" id="cityChips">
+            <button class="fchip on" data-c="all">全部城市</button>
+            <button class="fchip" data-c="sh">上海</button>
+            <button class="fchip" data-c="hz">杭州</button>
+          </div>
+          <div id="tList" style="display:flex;flex-direction:column;gap:10px"></div>
+        </div>
+        <div class="tabbar">
+          <div class="on"><div class="i">🏆</div><div class="t">赛事</div></div>
+          <div><div class="i">📊</div><div class="t">积分</div></div>
+          <div><div class="i">👤</div><div class="t">我的</div></div>
+        </div>
+        <div class="home"></div>
+      </div>
+      <p class="un">待支付卡置顶且带倒计时。试试切「杭州」看筛选无结果的空态。</p>
+    </div>
+
+    <div class="unit">
+      <div class="ut">加载态</div>
+      <p class="us">tournament/index · loading</p>
+      <div class="dev">
+        <div class="stat"><span>9:41</span><span class="r">▮▯▯ ᯤ ▉</span></div>
+        <div class="nav"><span class="ttl">赛事</span><span class="cap"><span>⋯</span><b></b><span>◉</span></span></div>
+        <div class="body">
+          <div class="seg"><button class="on">报名中</button><button>进行中</button><button>已结束</button></div>
+          <div class="chips"><span class="sk" style="width:72px;height:26px;border-radius:999px"></span><span class="sk" style="width:52px;height:26px;border-radius:999px"></span></div>
+          <div class="card" style="display:flex;flex-direction:column;gap:10px">
+            <div class="rowb"><span class="sk" style="width:62px;height:20px;border-radius:999px"></span><span class="sk" style="width:56px;height:11px"></span></div>
+            <div class="sk" style="width:78%;height:16px"></div>
+            <div class="sk" style="width:52%;height:11px"></div>
+            <div class="chips"><span class="sk" style="width:44px;height:20px;border-radius:999px"></span><span class="sk" style="width:44px;height:20px;border-radius:999px"></span></div>
+          </div>
+          <div class="card" style="display:flex;flex-direction:column;gap:10px">
+            <div class="rowb"><span class="sk" style="width:62px;height:20px;border-radius:999px"></span><span class="sk" style="width:56px;height:11px"></span></div>
+            <div class="sk" style="width:66%;height:16px"></div>
+            <div class="sk" style="width:58%;height:11px"></div>
+          </div>
+          <div class="card" style="display:flex;flex-direction:column;gap:10px;opacity:.55">
+            <div class="sk" style="width:70%;height:16px"></div>
+            <div class="sk" style="width:48%;height:11px"></div>
+          </div>
+        </div>
+        <div class="tabbar">
+          <div class="on"><div class="i">🏆</div><div class="t">赛事</div></div>
+          <div><div class="i">📊</div><div class="t">积分</div></div>
+          <div><div class="i">👤</div><div class="t">我的</div></div>
+        </div>
+        <div class="home"></div>
+      </div>
+      <p class="un">骨架按真实卡片形状铺，不用转圈。筛选控件本身不做骨架 —— 它们不依赖网络，先渲染出来能让人立刻开始操作。</p>
+    </div>
+
+    <div class="unit">
+      <div class="ut">赛事详情 <span class="tagx w">免登录</span></div>
+      <p class="us">tournament/detail · 分享落地</p>
+      <div class="dev">
+        <div class="stat"><span>9:41</span><span class="r">▮▮▮ ᯤ ▉</span></div>
+        <div class="nav"><span class="bk">‹</span><span class="ttl">赛事详情</span><span class="cap"><span>⋯</span><b></b><span>◉</span></span></div>
+        <div class="body">
+          <div class="card" style="display:flex;flex-direction:column;gap:8px">
+            <div class="rowb"><span class="chip win">报名中</span><span class="k">截止 4月10日</span></div>
+            <div style="font-size:19px;font-weight:600;line-height:1.35">2026 春季双打公开赛</div>
+            <div class="k">4月18–19日 · 上海静安体育中心</div>
+          </div>
+          <div class="k">项目</div>
+          <div class="card evr">
+            <div class="rowb"><span style="font-size:15px">男双</span><span class="k"><span class="num">24</span>/<span class="num">32</span> 组</span></div>
+            <div class="bar"><i style="width:75%"></i></div>
+          </div>
+          <div class="card evr">
+            <div class="rowb"><span style="font-size:15px">女双</span><span class="k"><span class="num">11</span>/<span class="num">16</span> 组</span></div>
+            <div class="bar"><i style="width:69%"></i></div>
+          </div>
+          <div class="card evr">
+            <div class="rowb"><span style="font-size:15px">混双</span><span style="font-size:12px;color:var(--c-live)">已满 · 候补 <span class="num">3</span></span></div>
+            <div class="bar full"><i style="width:100%"></i></div>
+          </div>
+          <div class="k">¥200 / 组 · 单败淘汰 · 6局短盘</div>
+          <div class="dock">
+            <button class="btn btn-p">选择项目报名</button>
+            <div class="k" style="text-align:center">报名时需微信授权登录</div>
+          </div>
+        </div>
+        <div class="home"></div>
+      </div>
+      <p class="un">从群里点进来的人在这一屏<b>全程不需要登录</b>。登录墙放在「选择项目报名」之后 —— 提前弹授权会直接劝退一半人。没有 tabBar，因为这是独立页面栈。</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- 02 项目与组队 -->
+<section>
+  <div class="shead"><span class="eyebrow">02</span><h2>项目与组队</h2></div>
+  <p class="snote"><b>一个绕不过的约束：小程序拿不到微信好友列表。</b>所以「选搭档」不可能做成通讯录式选择，只能是「历史搭档 + 搜索 + 转发邀请」三条路。这决定了整个组队流程的形态。</p>
+
+  <div class="gridF">
+
+    <div class="unit">
+      <div class="ut">项目详情 · 未满</div>
+      <p class="us">event/detail</p>
+      <div class="dev">
+        <div class="stat"><span>9:41</span><span class="r">▮▮▮ ᯤ ▉</span></div>
+        <div class="nav"><span class="bk">‹</span><span class="ttl">男双</span><span class="cap"><span>⋯</span><b></b><span>◉</span></span></div>
+        <div class="body">
+          <div class="card evr">
+            <div class="rowb"><span style="font-size:18px;font-weight:600">男双</span><span class="k"><span class="num">24</span>/<span class="num">32</span> 组</span></div>
+            <div class="bar"><i style="width:75%"></i></div>
+            <div class="k">¥200 / 组 · 单败淘汰 · 6局短盘</div>
+          </div>
+          <div class="k">已报名组合 · 按报名先后</div>
+          <div class="card" style="padding:4px 14px">
+            <div class="prow"><span class="av" style="background:var(--c-av-1)">高</span><span class="nm"><b>高翔 / 邓琳</b><span>3月28日 报名</span></span></div>
+            <div class="prow"><span class="av" style="background:var(--c-av-2)">吴</span><span class="nm"><b>吴迪 / 郑凯</b><span>3月29日 报名</span></span></div>
+            <div class="prow"><span class="av" style="background:var(--c-av-3)">何</span><span class="nm"><b>何军 / 罗宇</b><span>4月1日 报名</span></span></div>
+          </div>
+          <div class="k" style="text-align:center">共 24 组</div>
+          <div class="dock"><button class="btn btn-p">发起报名</button></div>
+        </div>
+        <div class="home"></div>
+      </div>
+      <p class="un">已报名列表要露出来 —— 「看看有谁」是最强的报名动机。第一版不做积分，所以按报名先后排，不显示实力标签。</p>
+    </div>
+
+    <div class="unit">
+      <div class="ut">项目详情 · 已满</div>
+      <p class="us">event/detail · full</p>
+      <div class="dev">
+        <div class="stat"><span>9:41</span><span class="r">▮▮▮ ᯤ ▉</span></div>
+        <div class="nav"><span class="bk">‹</span><span class="ttl">混双</span><span class="cap"><span>⋯</span><b></b><span>◉</span></span></div>
+        <div class="body">
+          <div class="card evr">
+            <div class="rowb"><span style="font-size:18px;font-weight:600">混双</span><span style="font-size:12px;color:var(--c-live)">已满 · 候补 <span class="num">3</span></span></div>
+            <div class="bar full"><i style="width:100%"></i></div>
+            <div class="k">¥200 / 组 · 单败淘汰 · 6局短盘</div>
+          </div>
+          <div class="banner b">候补不需要先付款。有组合退赛时按顺序转正，转正后 24 小时内支付即可。</div>
+          <div class="k">已报名组合 · 按报名先后</div>
+          <div class="card" style="padding:4px 14px">
+            <div class="prow"><span class="av" style="background:var(--c-av-4)">张</span><span class="nm"><b>张伟 / 李娜</b><span>3月26日 报名</span></span></div>
+            <div class="prow"><span class="av" style="background:var(--c-av-5)">陈</span><span class="nm"><b>陈曦 / 王芳</b><span>3月27日 报名</span></span></div>
+          </div>
+          <div class="dock"><button class="btn btn-s">加入候补 · 第 4 位</button></div>
+        </div>
+        <div class="home"></div>
+      </div>
+      <p class="un"><b>满员不是错误状态</b> —— 用橙不用红，按钮不灰掉而是变「加入候补」，并把位次写在按钮上。候补规则在按钮之前先解释清楚。</p>
+    </div>
+
+    <div class="unit">
+      <div class="ut">发起报名 · 选搭档 <span class="tagx w">关键屏</span></div>
+      <p class="us">entry/create</p>
+      <div class="dev">
+        <div class="stat"><span>9:41</span><span class="r">▮▮▮ ᯤ ▉</span></div>
+        <div class="nav"><span class="bk">‹</span><span class="ttl">选择搭档</span><span class="cap"><span>⋯</span><b></b><span>◉</span></span></div>
+        <div class="body">
+          <div class="banner v">春季双打公开赛 · <b>混双</b> · ¥200 / 组<br>混双要求一男一女，已自动过滤同性选手</div>
+          <div class="k">常搭档</div>
+          <div class="card" style="padding:4px 14px">
+            <div class="prow"><span class="av" style="background:var(--c-av-3)">李</span><span class="nm"><b>李娜</b><span>同队 9 场 · 胜率 67%</span></span><button class="btn btn-s" style="width:auto;padding:7px 14px;font-size:13px">选择</button></div>
+            <div class="prow"><span class="av" style="background:var(--c-av-4)">王</span><span class="nm"><b>王芳</b><span>同队 3 场 · 胜率 33%</span></span><button class="btn btn-o" style="width:auto;padding:7px 14px;font-size:13px">选择</button></div>
+          </div>
+          <div class="k">或者搜索选手</div>
+          <div class="srch"><span>🔍</span><span>输入昵称或手机号</span></div>
+          <div class="dock">
+            <button class="btn btn-p">发微信邀请搭档</button>
+            <div class="k" style="text-align:center">搭档还没用过小程序？直接转发邀请即可</div>
+          </div>
+        </div>
+        <div class="home"></div>
+      </div>
+      <p class="un">三条路并存：<b>常搭档</b>（双打复购的核心）、搜索、直接转发。混双的性别校验在这一屏就做掉，不要等到提交才报错。</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- 03 邀请与支付 -->
+<section>
+  <div class="shead"><span class="eyebrow">03</span><h2>邀请与支付</h2></div>
+  <p class="snote">两个等待态在这里。<b>倒计时是真的在走</b> —— 用来验证数字跳动时布局不抖（靠 tabular-nums）。</p>
+
+  <div class="gridF">
+
+    <div class="unit">
+      <div class="ut">组队邀请 <span class="tagx w">免登录 · 获客主路径</span></div>
+      <p class="us">entry/invite · 分享落地</p>
+      <div class="dev">
+        <div class="stat"><span>10:18</span><span class="r">▮▮▮ ᯤ ▉</span></div>
+        <div class="nav"><span class="ttl">组队邀请</span><span class="cap"><span>⋯</span><b></b><span>◉</span></span></div>
+        <div class="body">
+          <div class="card" style="display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center;padding:20px 16px">
+            <span class="av" style="background:var(--c-av-1);width:52px;height:52px;font-size:20px">张</span>
+            <div><div style="font-size:18px;font-weight:600">张伟 邀请你组队</div>
+            <div class="k" style="margin-top:3px">2026 春季双打公开赛 · 混双</div></div>
+          </div>
+          <div class="card" style="display:flex;flex-direction:column;gap:9px">
+            <div class="rowb"><span class="k">报名费</span><span style="font-size:15px">¥200 / 组</span></div>
+            <div class="rowb"><span class="k">谁支付</span><span style="font-size:15px;color:var(--c-brand);font-weight:600">张伟（发起人）</span></div>
+            <div class="rowb"><span class="k">比赛时间</span><span style="font-size:15px">4月18–19日</span></div>
+          </div>
+          <div class="cd" id="inviteCd"><span>邀请剩余时间 · 超时自动作废</span><b>23:41:08</b></div>
+          <div class="dock">
+            <button class="btn btn-p">接受邀请</button>
+            <button class="btn btn-o">拒绝</button>
+            <div class="k" style="text-align:center">接受后需微信授权登录</div>
+          </div>
+        </div>
+        <div class="home"></div>
+      </div>
+      <p class="un"><b>「张伟付钱」必须写死在这一屏</b>，而且用主色强调 —— 被邀请方第一个念头就是「要不要我掏钱」。这句话决定接受率。</p>
+    </div>
+
+    <div class="unit">
+      <div class="ut">支付确认</div>
+      <p class="us">entry/pay</p>
+      <div class="dev">
+        <div class="stat"><span>10:20</span><span class="r">▮▮▮ ᯤ ▉</span></div>
+        <div class="nav"><span class="bk">‹</span><span class="ttl">支付报名费</span><span class="cap"><span>⋯</span><b></b><span>◉</span></span></div>
+        <div class="body">
+          <div class="cd" id="payCd"><span>超时释放名额</span><b>14:59</b></div>
+          <div class="card" style="display:flex;flex-direction:column;gap:11px">
+            <div class="rowb"><span class="k">赛事</span><span style="font-size:14.5px">春季双打公开赛</span></div>
+            <div class="rowb"><span class="k">项目</span><span style="font-size:14.5px">混双 · 单败淘汰</span></div>
+            <div class="rowb"><span class="k">组合</span><span class="pair" style="font-size:14.5px"><span class="n">张伟</span><span class="sep">/</span><span class="n">李娜</span></span></div>
+            <div style="height:1px;background:var(--c-line)"></div>
+            <div class="rowb"><span class="k">报名费</span><span class="num" style="font-size:26px">¥200</span></div>
+          </div>
+          <div class="banner v">赛前 7 天以上取消可全额退款，3–7 天退 50%，3 天内不退。</div>
+          <div class="dock"><button class="btn btn-wx">微信支付 ¥200</button></div>
+        </div>
+        <div class="home"></div>
+      </div>
+      <p class="un">退款规则放在支付按钮<b>之前</b>，不是之后。倒计时用 tabular-nums，秒数跳动时布局不抖。</p>
+    </div>
+
+    <div class="unit">
+      <div class="ut">支付失败 · 错误态</div>
+      <p class="us">entry/pay · failed</p>
+      <div class="dev">
+        <div class="stat"><span>10:22</span><span class="r">▮▮▮ ᯤ ▉</span></div>
+        <div class="nav"><span class="bk">‹</span><span class="ttl">支付报名费</span><span class="cap"><span>⋯</span><b></b><span>◉</span></span></div>
+        <div class="body">
+          <div class="banner e"><b>支付未完成</b><br>银行卡余额不足。名额已为你保留，请在倒计时结束前重新支付。</div>
+          <div class="cd urgent" id="failCd"><span>超时释放名额</span><b>04:12</b></div>
+          <div class="card" style="display:flex;flex-direction:column;gap:11px">
+            <div class="rowb"><span class="k">组合</span><span class="pair" style="font-size:14.5px"><span class="n">张伟</span><span class="sep">/</span><span class="n">李娜</span></span></div>
+            <div class="rowb"><span class="k">报名费</span><span class="num" style="font-size:26px">¥200</span></div>
+          </div>
+          <div class="dock">
+            <button class="btn btn-wx">重新支付</button>
+            <button class="btn btn-o">放弃报名</button>
+          </div>
+        </div>
+        <div class="home"></div>
+      </div>
+      <p class="un">错误文案要说清三件事：<b>为什么失败、名额还在不在、下一步做什么</b>。倒计时不足 5 分钟转红。</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- 04 我的报名 -->
+<section>
+  <div class="shead"><span class="eyebrow">04</span><h2>我的报名与候补</h2></div>
+  <p class="snote">五种状态在一个列表里。每一行的重点不是状态本身，而是<b>「现在轮到我做什么」</b>。</p>
+
+  <div class="gridF">
+
+    <div class="unit">
+      <div class="ut">我的报名 · 五状态</div>
+      <p class="us">me/entries</p>
+      <div class="dev">
+        <div class="stat"><span>9:41</span><span class="r">▮▮▮ ᯤ ▉</span></div>
+        <div class="nav"><span class="bk">‹</span><span class="ttl">我的报名</span><span class="cap"><span>⋯</span><b></b><span>◉</span></span></div>
+        <div class="body" style="gap:10px">
+          <div class="card hero" style="display:flex;flex-direction:column;gap:8px">
+            <div class="rowb"><span class="chip live"><i></i>待支付</span><span class="num" style="color:var(--c-live);font-size:14px">23:41:08</span></div>
+            <div style="font-size:15px">春季双打公开赛 · 混双</div>
+            <div class="k">张伟 / 李娜 · ¥200</div>
+            <button class="btn btn-wx" style="padding:9px;font-size:14px">去支付</button>
+          </div>
+          <div class="card" style="display:flex;flex-direction:column;gap:7px">
+            <div class="rowb"><span class="chip live"><i></i>待搭档确认</span><span class="k">剩 18 小时</span></div>
+            <div style="font-size:15px">夏季团体赛 · 男双</div>
+            <div class="k">已邀请 李强，等待接受</div>
+            <button class="btn btn-s" style="padding:8px;font-size:13px">重新发送邀请</button>
+          </div>
+          <div class="card" style="display:flex;flex-direction:column;gap:7px">
+            <div class="rowb"><span class="chip live">候补 · 第 4 位</span><span class="k">无需付款</span></div>
+            <div style="font-size:15px">春季双打公开赛 · 混双</div>
+            <div class="k">有组合退赛时按顺序通知你</div>
+          </div>
+          <div class="card" style="display:flex;flex-direction:column;gap:7px">
+            <div class="rowb"><span class="chip win">已确认</span><span class="k">4月18日</span></div>
+            <div style="font-size:15px">春季双打公开赛 · 男双</div>
+            <div class="k">张伟 / 李强 · 已付 ¥200</div>
+          </div>
+          <div class="card" style="display:flex;flex-direction:column;gap:7px;opacity:.6">
+            <div class="rowb"><span class="chip void">已退款</span><span class="k">3月2日</span></div>
+            <div style="font-size:15px">冬季邀请赛 · 男双</div>
+            <div class="k">退款 ¥200 已原路返回</div>
+          </div>
+        </div>
+        <div class="home"></div>
+      </div>
+      <p class="un">需要我行动的排在前面并带按钮；不需要行动的（候补、已确认）没有按钮；已结束的整卡降透明度。<b>五种状态的颜色是固定映射，不能临时改。</b></p>
+    </div>
+
+    <div class="unit">
+      <div class="ut">候补转正 <span class="tagx w">24h 硬窗口</span></div>
+      <p class="us">entry/pay · promoted</p>
+      <div class="dev">
+        <div class="stat"><span>20:03</span><span class="r">▮▮▮ ᯤ ▉</span></div>
+        <div class="nav"><span class="bk">‹</span><span class="ttl">候补转正</span><span class="cap"><span>⋯</span><b></b><span>◉</span></span></div>
+        <div class="body">
+          <div class="card" style="display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;padding:20px 16px">
+            <div style="font-size:34px">🎉</div>
+            <div style="font-size:18px;font-weight:600">你候补成功了</div>
+            <div class="k">春季双打公开赛 · 混双<br>张伟 / 李娜</div>
+          </div>
+          <div class="cd" id="promoCd"><span>24 小时内支付，超时顺延给下一位</span><b>23:58:41</b></div>
+          <div class="card">
+            <div class="rowb"><span class="k">报名费</span><span class="num" style="font-size:26px">¥200</span></div>
+          </div>
+          <div class="dock">
+            <button class="btn btn-wx">微信支付 ¥200</button>
+            <button class="btn btn-o">放弃名额</button>
+          </div>
+        </div>
+        <div class="home"></div>
+      </div>
+      <p class="un">「超时顺延给下一位」必须写出来 —— 这是制造紧迫感的唯一诚实方式，也让放弃的人知道名额不会浪费。</p>
+    </div>
+
+    <div class="unit">
+      <div class="ut">极端数据</div>
+      <p class="us">stress</p>
+      <div class="dev">
+        <div class="stat"><span>9:41</span><span class="r">▮▮▮ ᯤ ▉</span></div>
+        <div class="nav"><span class="bk">‹</span><span class="ttl">我的报名</span><span class="cap"><span>⋯</span><b></b><span>◉</span></span></div>
+        <div class="body" style="gap:10px">
+          <div class="k">① 超长赛事名 → 两行封顶，容量 40 字</div>
+          <div class="tcard">
+            <div class="rowb"><span class="chip win">已确认</span><span class="k">4月18日</span></div>
+            <div class="tt">2026 年上海市静安区业余网球公开赛暨长三角城市群双打邀请赛春季第三站分站赛</div>
+            <div class="k">混双 · 张伟 / 李娜</div>
+          </div>
+          <div class="k">② 免费赛事 → 跳过支付</div>
+          <div class="card" style="display:flex;flex-direction:column;gap:7px">
+            <div class="rowb"><span class="chip win">已确认</span><span class="k">免费</span></div>
+            <div style="font-size:15px">社区友谊赛 · 混双</div>
+            <div class="k">无需支付，组合成立即确认</div>
+          </div>
+          <div class="k">③ 候补第 12 位 + 倒计时不足一分钟</div>
+          <div class="card" style="display:flex;flex-direction:column;gap:8px">
+            <div class="rowb"><span class="chip live">候补 · 第 12 位</span><span class="k">希望渺茫</span></div>
+            <div class="cd urgent" id="edgeCd"><span>超时释放名额</span><b>00:47</b></div>
+          </div>
+          <div class="k">④ 超长双打名 → 一行超 244pt 自动堆叠</div>
+          <div class="card">
+            <div class="pair" style="flex-direction:column;gap:1px;align-items:flex-start;font-size:15px">
+              <span class="n">Christopher Andersen</span><span class="n">Aleksandr Volkov</span>
+            </div>
+          </div>
+        </div>
+        <div class="home"></div>
+      </div>
+      <p class="un">免费赛事要能<b>整段跳过支付</b>，组合成立即确认 —— 状态机里要留这条捷径，否则第一场社区赛就卡住。</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- 05 -->
+<section>
+  <div class="shead"><span class="eyebrow">05</span><h2>这一批的结论</h2></div>
+
+  <div class="note warn">
+    <h3>小程序拿不到好友列表，这改变了组队的形态</h3>
+    <p>微信不开放好友关系链，所以「选搭档」不可能做成通讯录式选择。只能三条路并存：<b>常搭档列表</b>（我们自己的数据）、<b>搜索昵称/手机号</b>、<b>直接转发邀请</b>。</p>
+    <p>好的一面是「常搭档」变成了必需品而不是锦上添花 —— 它是唯一一个不需要用户输入就能选到人的入口，而且天然驱动复购。<b>建议它在第一版就要有，且排在最上面。</b></p>
+  </div>
+
+  <div class="note">
+    <h3>赛事名的两行封顶，容量是 40 个中文字</h3>
+    <p>375pt 设备上卡片内可用宽 <b>321pt</b>，16px 中文一行 <b>20 字</b>，两行封顶就是 <b>40 字</b>。</p>
+    <p>实测下来，即使是「2026 年上海市静安区业余网球公开赛暨长三角城市群双打邀请赛春季第三站分站赛」这种 39 字的名字也<b>刚好不会被截断</b>。也就是说两行对真实赛事名基本够用，省略号极少触发。</p>
+    <p>但列表卡必须<b>固定按两行预留高度</b>，不能让短名字的卡变矮 —— 否则列表滚动时卡片高度参差，扫读会很累。</p>
+  </div>
+
+  <div class="note">
+    <h3>免费赛事要能整段跳过支付</h3>
+    <p>状态机里必须有一条捷径：报名费为 0 时，组合成立后<b>直接进入已确认</b>，不经过待支付。否则第一场社区友谊赛就会卡在一个支付 ¥0 的页面上。</p>
+    <p>这条阶段 0 和阶段 1 都没提到 —— 是画极端数据时发现的。<b>需要回头补进报名状态机。</b></p>
+  </div>
+
+  <div class="note">
+    <h3>设计系统 v0.2 仍然够用</h3>
+    <p>12 屏没有新增组件。新用到的两个都是既有组件的组合：微信支付按钮（btn 加微信绿）、倒计时的紧急态（cd 加 loss 色）。</p>
+    <p>建议把这两个补进规范页：<code>--c-wx</code> 微信绿是<b>唯一允许出现的品牌外颜色</b>，只用于微信支付按钮，别处禁用 —— 和网球黄一样的约束逻辑。</p>
+  </div>
+
+  <h3 style="font-size:15px;font-weight:600;margin:32px 0 12px">已覆盖的状态</h3>
+  <ul class="check">
+    <li><b>空状态</b> —— 筛选无结果（切「杭州」可见）</li>
+    <li><b>加载态</b> —— 赛事列表骨架，筛选控件不做骨架</li>
+    <li><b>错误态</b> —— 支付失败，说清原因/名额/下一步</li>
+    <li><b>三个等待态</b> —— 待搭档确认、待支付、候补转正，各带倒计时与超时后果</li>
+    <li><b>极端数据</b> —— 超长赛事名、¥0、候补第 12 位、倒计时不足一分钟、超长双打名</li>
+  </ul>
+
+  <div class="note" style="margin-top:28px">
+    <h3>下一批：注册与个人</h3>
+    <p>第一版不做积分，第三批改为<b>注册与个人</b>：注册流程、我的、选手主页、我的战绩、资料编辑、规则说明。「排行」tab 整个取消。</p>
+  </div>
+</section>
+
+<footer>LJTennis 阶段 4 第二批 · 报名链路 · 12 屏 · 设计系统 v0.2</footer>
+</div>
+
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById("tgl");
+  btn.addEventListener("click",function(){
+    var n=root.getAttribute("data-theme");
+    root.setAttribute("data-theme", n?(n==="dark"?"light":"dark")
+      :(window.matchMedia("(prefers-color-scheme: dark)").matches?"light":"dark"));
+  });
+
+  /* ---- 赛事列表筛选 ---- */
+  var T=[
+    {s:"open",c:"sh",n:"2026 春季双打公开赛",d:"4月18–19日",v:"上海静安体育中心",ev:["男双","女双","混双"],left:"截止 4月10日",fee:"¥200"},
+    {s:"open",c:"sh",n:"静安周末双打邀请赛",d:"4月25日",v:"上海静安网球中心",ev:["男双","混双"],left:"截止 4月20日",fee:"¥120"},
+    {s:"open",c:"sh",n:"社区友谊赛",d:"5月3日",v:"上海江宁球场",ev:["混双"],left:"截止 4月28日",fee:"免费"},
+    {s:"live",c:"sh",n:"春季团体循环赛",d:"进行中",v:"上海徐汇体育中心",ev:["男双","女双"],left:"第 2 轮",fee:"¥150"},
+    {s:"done",c:"sh",n:"冬季邀请赛",d:"3月1–2日",v:"上海浦东网球馆",ev:["男双"],left:"已结束",fee:"¥200"}
+  ];
+  var curS="open", curC="all", list=document.getElementById("tList");
+  function chipFor(s){
+    if(s==="open") return '<span class="chip win">报名中</span>';
+    if(s==="live") return '<span class="chip live"><i></i>进行中</span>';
+    return '<span class="chip void">已结束</span>';
+  }
+  function renderT(){
+    var rows=T.filter(function(t){ return t.s===curS && (curC==="all"||t.c===curC); });
+    if(!rows.length){
+      list.innerHTML='<div class="empty"><div class="ic">🔍</div><b>这个筛选下没有赛事</b>'
+        +'<p>换个城市或时间看看</p><button class="btn btn-s" style="max-width:170px;margin:0 auto">清除筛选</button></div>';
+      var b=list.querySelector("button");
+      if(b) b.addEventListener("click",function(){
+        curC="all";
+        document.querySelectorAll("#cityChips .fchip").forEach(function(x){ x.classList.toggle("on", x.dataset.c==="all"); });
+        renderT();
+      });
+      return;
+    }
+    list.innerHTML=rows.map(function(t){
+      return '<div class="tcard">'
+        +'<div class="rowb">'+chipFor(t.s)+'<span class="k">'+t.left+'</span></div>'
+        +'<div class="tt">'+t.n+'</div>'
+        +'<div class="k">'+t.d+' · '+t.v+'</div>'
+        +'<div class="rowb"><span class="chips">'+t.ev.map(function(e){return '<span class="chip">'+e+'</span>';}).join("")
+        +'</span><span class="k">'+t.fee+'</span></div>'
+        +'</div>';
+    }).join("");
+  }
+  document.getElementById("stSeg").addEventListener("click",function(e){
+    var b=e.target.closest("button"); if(!b) return;
+    this.querySelectorAll("button").forEach(function(x){ x.classList.toggle("on",x===b); });
+    curS=b.dataset.s; renderT();
+  });
+  document.getElementById("cityChips").addEventListener("click",function(e){
+    var b=e.target.closest(".fchip"); if(!b) return;
+    this.querySelectorAll(".fchip").forEach(function(x){ x.classList.toggle("on",x===b); });
+    curC=b.dataset.c; renderT();
+  });
+  renderT();
+
+  /* ---- 倒计时 ---- */
+  function pad(n){ return n<10?"0"+n:""+n; }
+  function fmt(s){
+    var h=Math.floor(s/3600), m=Math.floor(s%3600/60), x=s%60;
+    return h>0 ? h+":"+pad(m)+":"+pad(x) : pad(m)+":"+pad(x);
+  }
+  var timers=[
+    {el:document.querySelector("#inviteCd b"), s:85268},
+    {el:document.querySelector("#payCd b"),    s:899},
+    {el:document.querySelector("#failCd b"),   s:252, box:document.getElementById("failCd")},
+    {el:document.querySelector("#promoCd b"),  s:86321},
+    {el:document.querySelector("#edgeCd b"),   s:47,  box:document.getElementById("edgeCd")}
+  ];
+  setInterval(function(){
+    timers.forEach(function(t){
+      if(!t.el) return;
+      if(t.s>0) t.s--;
+      t.el.textContent=fmt(t.s);
+      if(t.box) t.box.classList.toggle("urgent", t.s<300);
+    });
+  },1000);
+})();
+</script>

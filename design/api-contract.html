@@ -1,0 +1,379 @@
+<title>LJTennis 数据模型与 API 契约</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --c-surface:#FFFFFF; --c-surface-2:#EBEDF2; --c-line:#DFE2E9;
+  --c-ink:#141821; --c-ink-2:#4C5567; --c-ink-3:#7B8496;
+  --c-brand:#2E4FD8; --c-brand-weak:#E7EBFC;
+  --c-win:#0E9F6E; --c-loss:#E0294B; --c-live:#F5A524;
+  --page-bg:#FAFAFB; --page-card:#FFFFFF; --page-line:#E3E6EC;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --c-surface:#161A21; --c-surface-2:#1F242D; --c-line:#252B35;
+  --c-ink:#E7EAF0; --c-ink-2:#A3ACBD; --c-ink-3:#6F7889;
+  --c-brand:#7A93F5; --c-brand-weak:#1A2140;
+  --c-win:#2FBF88; --c-loss:#FF5C77; --c-live:#FFB84D;
+  --page-bg:#0B0D11; --page-card:#13161C; --page-line:#222731;
+}}
+:root[data-theme="dark"]{
+  --c-surface:#161A21; --c-surface-2:#1F242D; --c-line:#252B35;
+  --c-ink:#E7EAF0; --c-ink-2:#A3ACBD; --c-ink-3:#6F7889;
+  --c-brand:#7A93F5; --c-brand-weak:#1A2140;
+  --c-win:#2FBF88; --c-loss:#FF5C77; --c-live:#FFB84D;
+  --page-bg:#0B0D11; --page-card:#13161C; --page-line:#222731;
+}
+*{box-sizing:border-box}
+body{background:var(--page-bg);color:var(--c-ink);margin:0;line-height:1.65;
+  font-family:-apple-system,"PingFang SC","Source Han Sans CN",system-ui,sans-serif}
+.wrap{max-width:1060px;margin:0 auto;padding:clamp(24px,4vw,56px) clamp(16px,4vw,40px) 96px}
+h1,h2,h3,h4{font-family:Archivo,-apple-system,"PingFang SC",sans-serif;margin:0;text-wrap:balance}
+code{font-family:"IBM Plex Mono",monospace;font-size:.87em;background:var(--c-surface-2);
+  padding:1px 5px;border-radius:3px;color:var(--c-ink);white-space:nowrap}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--c-ink-3)}
+header{border-bottom:2px solid var(--c-ink);padding-bottom:22px;display:flex;flex-direction:column;gap:11px}
+h1{font-size:clamp(26px,4.6vw,40px);font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.hrow{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.sub{color:var(--c-ink-2);max-width:66ch;margin:0;font-size:15px}
+.tgl{font-family:"IBM Plex Mono",monospace;font-size:12px;padding:8px 16px;border-radius:999px;
+  border:1px solid var(--page-line);background:var(--page-card);color:var(--c-ink-2);cursor:pointer}
+.tgl:hover{border-color:var(--c-brand);color:var(--c-ink)}
+.tgl:focus-visible{outline:2px solid var(--c-brand);outline-offset:2px}
+.files{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1px;background:var(--page-line);
+  border:1px solid var(--page-line);border-radius:6px;overflow:hidden;margin-top:22px}
+.files div{background:var(--page-card);padding:13px 16px}
+.files dt{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--c-brand);font-weight:500}
+.files dd{margin:4px 0 0;font-size:13px;color:var(--c-ink-2)}
+section{margin-top:clamp(44px,7vw,74px)}
+.shead{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--page-line);padding-bottom:10px;margin-bottom:20px}
+.shead h2{font-size:clamp(20px,3vw,26px);font-weight:600;letter-spacing:-.01em}
+.snote{color:var(--c-ink-2);font-size:14.5px;max-width:74ch;margin:0 0 24px}
+figure{margin:0}
+figure svg{display:block;width:100%;max-width:100%;height:auto;color:var(--c-ink-2)}
+.figbox{background:var(--page-card);border:1px solid var(--page-line);border-radius:8px;padding:22px 20px 16px;overflow-x:auto}
+figcaption{font-size:13px;color:var(--c-ink-3);margin-top:14px;padding-top:12px;border-top:1px solid var(--page-line);max-width:78ch}
+.dg-box{fill:var(--c-surface);stroke:var(--c-line);stroke-width:1.5}
+.dg-key{fill:var(--c-brand-weak);stroke:var(--c-brand);stroke-width:1.5}
+.dg-end{fill:var(--c-surface);stroke:var(--c-ink-3);stroke-width:1.5;stroke-dasharray:4 3}
+.dg-t{fill:var(--c-ink);font-size:12.5px;font-weight:600;font-family:"IBM Plex Mono",monospace}
+.dg-s{fill:var(--c-ink-3);font-size:10px;font-family:-apple-system,"PingFang SC",sans-serif}
+.dg-l{fill:var(--c-ink-2);font-size:10.5px;font-family:-apple-system,"PingFang SC",sans-serif}
+.dg-line{stroke:currentColor;stroke-width:1.5;fill:none}
+.scroller{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px;min-width:620px}
+.tbl th{text-align:left;font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--c-ink-3);font-weight:400;padding:0 12px 8px 0;border-bottom:1px solid var(--page-line)}
+.tbl td{padding:9px 12px 9px 0;border-bottom:1px solid var(--page-line);color:var(--c-ink-2);vertical-align:top}
+.tbl td:first-child{color:var(--c-ink);white-space:nowrap}
+.tbl tr.grp td{background:var(--c-surface-2);color:var(--c-ink);font-weight:600;font-size:12.5px;padding:7px 12px 7px 10px}
+.m{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:10px;padding:1px 6px;border-radius:3px;
+  background:var(--c-surface-2);color:var(--c-ink-2);letter-spacing:.04em}
+.m.get{background:color-mix(in srgb,var(--c-win) 15%,transparent);color:var(--c-win)}
+.m.post{background:var(--c-brand-weak);color:var(--c-brand)}
+.m.patch{background:color-mix(in srgb,var(--c-live) 16%,transparent);color:var(--c-live)}
+.open{display:inline-block;font-size:10px;padding:1px 7px;border-radius:999px;
+  background:color-mix(in srgb,var(--c-live) 16%,transparent);color:var(--c-live);white-space:nowrap}
+.note{background:var(--page-card);border:1px solid var(--page-line);border-left:3px solid var(--c-brand);
+  border-radius:0 6px 6px 0;padding:16px 18px;margin-top:22px}
+.note.warn{border-left-color:var(--c-live)}
+.note.bad{border-left-color:var(--c-loss)}
+.note h3{font-size:15px;font-weight:600;margin-bottom:7px}
+.note p{margin:0 0 9px;font-size:14px;color:var(--c-ink-2);max-width:76ch}
+.note p:last-child{margin-bottom:0}
+pre{background:var(--page-card);border:1px solid var(--page-line);border-radius:6px;padding:15px;overflow-x:auto;
+  font-family:"IBM Plex Mono",monospace;font-size:12px;line-height:1.75;color:var(--c-ink-2);margin:0}
+pre b{color:var(--c-brand);font-weight:500}
+pre i{color:var(--c-live);font-style:normal}
+footer{margin-top:66px;padding-top:20px;border-top:1px solid var(--page-line);font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--c-ink-3)}
+</style>
+
+<div class="wrap">
+<header>
+  <span class="eyebrow">开发前置 · v1.0</span>
+  <div class="hrow">
+    <h1>数据模型与 API 契约</h1>
+    <button class="tgl" id="tgl">切换主题</button>
+  </div>
+  <p class="sub">从 41 屏高保真反推 —— 每一屏显示什么字段、有哪些状态、什么时候变，界面里已经全部定死了。这份契约同时约束<b>小程序、后端、组织者后台</b>三端，出来之后前后端可以并行开发。</p>
+</header>
+
+<dl class="files">
+  <div><dt>api/types.ts</dt><dd>实体、枚举、状态机的 TypeScript 定义。已过 <code>tsc --strict</code>，可直接引入</dd></div>
+  <div><dt>api/endpoints.md</dt><dd>接口清单、鉴权约定、幂等规则、定时任务</dd></div>
+  <div><dt>本页</dt><dd>关系图与状态机图，给人看的那一份</dd></div>
+</dl>
+
+<!-- 01 -->
+<section>
+  <div class="shead"><span class="eyebrow">01</span><h2>实体关系</h2></div>
+  <p class="snote"><code>Entry</code>（参赛主体）是整个模型的核心抽象：<b>单打时 1 人，双打时 2 人</b>。签表、赛程、比赛全部挂在它上面，所以单双打共用一套结构 —— 第一版只上双打，以后加单打不用重构。</p>
+
+  <div class="figbox">
+  <figure>
+    <svg viewBox="0 0 900 372" role="img" aria-label="实体关系：赛事包含多个项目，项目包含多个参赛主体 Entry，Entry 之间产生比赛。Entry 由 1 到 2 名用户组成，对应一张订单；小组循环赛制下项目还包含小组；比赛确认后结算积分记录。">
+      <defs>
+        <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker>
+      </defs>
+
+      <rect class="dg-box" x="365" y="26"  width="150" height="54" rx="8"/>
+      <text class="dg-t" x="440" y="50" text-anchor="middle">Tournament</text>
+      <text class="dg-s" x="440" y="67" text-anchor="middle">赛事</text>
+
+      <rect class="dg-box" x="365" y="112" width="150" height="54" rx="8"/>
+      <text class="dg-t" x="440" y="136" text-anchor="middle">Event</text>
+      <text class="dg-s" x="440" y="153" text-anchor="middle">项目 · 男双/女双/混双</text>
+
+      <rect class="dg-key" x="365" y="198" width="150" height="54" rx="8"/>
+      <text class="dg-t" x="440" y="222" text-anchor="middle">Entry</text>
+      <text class="dg-s" x="440" y="239" text-anchor="middle">参赛主体 · 1~2 人</text>
+
+      <rect class="dg-box" x="365" y="284" width="150" height="54" rx="8"/>
+      <text class="dg-t" x="440" y="308" text-anchor="middle">Match</text>
+      <text class="dg-s" x="440" y="325" text-anchor="middle">场次</text>
+
+      <path class="dg-line" d="M440,80  V108" marker-end="url(#a)"/>
+      <path class="dg-line" d="M440,166 V194" marker-end="url(#a)"/>
+      <path class="dg-line" d="M440,252 V280" marker-end="url(#a)"/>
+      <text class="dg-l" x="450" y="99">1..n 项目</text>
+      <text class="dg-l" x="450" y="185">1..n 报名</text>
+      <text class="dg-l" x="450" y="271">对阵双方</text>
+
+      <rect class="dg-box" x="130" y="112" width="150" height="54" rx="8"/>
+      <text class="dg-t" x="205" y="136" text-anchor="middle">Group</text>
+      <text class="dg-s" x="205" y="153" text-anchor="middle">小组 · 仅循环赛制</text>
+      <path class="dg-line" d="M365,139 H288" marker-end="url(#a)"/>
+      <text class="dg-l" x="326" y="130" text-anchor="middle">分组</text>
+
+      <rect class="dg-box" x="130" y="198" width="150" height="54" rx="8"/>
+      <text class="dg-t" x="205" y="222" text-anchor="middle">User</text>
+      <text class="dg-s" x="205" y="239" text-anchor="middle">选手</text>
+      <path class="dg-line" d="M280,225 H357" marker-end="url(#a)"/>
+      <text class="dg-l" x="318" y="216" text-anchor="middle">1~2 人</text>
+
+      <rect class="dg-box" x="620" y="198" width="150" height="54" rx="8"/>
+      <text class="dg-t" x="695" y="222" text-anchor="middle">Order</text>
+      <text class="dg-s" x="695" y="239" text-anchor="middle">发起人付全款</text>
+      <path class="dg-line" d="M515,225 H612" marker-end="url(#a)"/>
+      <text class="dg-l" x="563" y="216" text-anchor="middle">1..1</text>
+
+      <rect class="dg-box" x="620" y="284" width="150" height="54" rx="8"/>
+      <text class="dg-t" x="695" y="308" text-anchor="middle">PointRecord</text>
+      <text class="dg-s" x="695" y="325" text-anchor="middle">积分记录</text>
+      <path class="dg-line" d="M515,311 H612" marker-end="url(#a)"/>
+      <text class="dg-l" x="563" y="302" text-anchor="middle">确认后结算</text>
+    </svg>
+    <figcaption>积分挂在 <code>User</code> 上而不是 <code>Entry</code> 上 —— 双打两人各得积分、搭档会换，排组合没有连续性。<code>Match</code> 的 <code>sourceMatchAId/BId</code> 指向上游场次，用于渲染「待定（场次 11 胜者）」并在确认后自动填充胜者。</figcaption>
+  </figure>
+  </div>
+</section>
+
+<!-- 02 -->
+<section>
+  <div class="shead"><span class="eyebrow">02</span><h2>报名状态机 · 工程版</h2></div>
+  <p class="snote">和阶段 1 那张产品图的区别：这张标注了<b>触发它的接口</b>和<b>负责超时的定时任务</b>。三个等待态各有一个 job，缺一个就会有名额烂在手里。</p>
+
+  <div class="figbox">
+  <figure>
+    <svg viewBox="0 0 920 415" role="img" aria-label="报名状态机：创建后进入待搭档确认；搭档接受后若报名费为零直接确认，有名额则进入待支付，已满则进入候补。拒绝或超时作废。支付回调后确认。候补在有人退赛后转正，24 小时内支付则确认，超时则作废并顺延下一位。确认后可申请退款。">
+      <defs>
+        <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker>
+        <marker id="bw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--c-win)"/></marker>
+      </defs>
+
+      <rect class="dg-box" x="110" y="30"  width="180" height="54" rx="8"/>
+      <text class="dg-t" x="200" y="54" text-anchor="middle">pending_partner</text>
+      <text class="dg-s" x="200" y="71" text-anchor="middle">等待态① 待搭档确认</text>
+
+      <rect class="dg-box" x="110" y="130" width="180" height="54" rx="8"/>
+      <text class="dg-t" x="200" y="154" text-anchor="middle">pending_payment</text>
+      <text class="dg-s" x="200" y="171" text-anchor="middle">等待态② 发起人付全款</text>
+
+      <rect class="dg-key" x="110" y="230" width="180" height="54" rx="8"/>
+      <text class="dg-t" x="200" y="254" text-anchor="middle">confirmed</text>
+      <text class="dg-s" x="200" y="271" text-anchor="middle">已确认参赛 · 进签表</text>
+
+      <rect class="dg-end" x="110" y="330" width="180" height="54" rx="8"/>
+      <text class="dg-t" x="200" y="361" text-anchor="middle">refunded</text>
+
+      <rect class="dg-end" x="370" y="330" width="170" height="54" rx="8"/>
+      <text class="dg-t" x="455" y="354" text-anchor="middle">cancelled</text>
+      <text class="dg-s" x="455" y="371" text-anchor="middle">作废 · 释放名额</text>
+
+      <rect class="dg-box" x="620" y="30"  width="170" height="54" rx="8"/>
+      <text class="dg-t" x="705" y="54" text-anchor="middle">waitlisted</text>
+      <text class="dg-s" x="705" y="71" text-anchor="middle">候补 · 不预付</text>
+
+      <rect class="dg-box" x="620" y="130" width="170" height="54" rx="8"/>
+      <text class="dg-t" x="705" y="154" text-anchor="middle">promoted</text>
+      <text class="dg-s" x="705" y="171" text-anchor="middle">等待态③ 24h 倒计时</text>
+
+      <path class="dg-line" d="M200,84  V126" marker-end="url(#b)"/>
+      <path class="dg-line" d="M200,184 V226" marker-end="url(#b)"/>
+      <path class="dg-line" d="M200,284 V326" marker-end="url(#b)"/>
+      <text class="dg-l" x="210" y="110">accept · 有名额</text>
+      <text class="dg-l" x="210" y="210">wxpay webhook</text>
+      <text class="dg-l" x="210" y="311">POST /refund</text>
+
+      <path class="dg-line" d="M290,45 H330 V345 H362" marker-end="url(#b)"/>
+      <text class="dg-l" x="338" y="105">reject / job①</text>
+      <path class="dg-line" d="M290,157 H350 V369 H362" marker-end="url(#b)"/>
+      <text class="dg-l" x="358" y="215">job② 超时</text>
+
+      <path class="dg-line" d="M290,68 H612" marker-end="url(#b)"/>
+      <text class="dg-l" x="455" y="59" text-anchor="middle">accept · 已满</text>
+
+      <path class="dg-line" d="M705,84 V126" marker-end="url(#b)"/>
+      <text class="dg-l" x="715" y="110">有人退赛</text>
+
+      <path class="dg-line" d="M620,157 H580 V257 H298" marker-end="url(#b)"/>
+      <text class="dg-l" x="440" y="249" text-anchor="middle">24h 内支付</text>
+
+      <path class="dg-line" d="M705,184 V357 H548" marker-end="url(#b)"/>
+      <text class="dg-l" x="628" y="379" text-anchor="middle">job③ 超时 → 顺延下一位</text>
+
+      <path d="M110,45 H70 V257 H98" fill="none" stroke="var(--c-win)" stroke-width="1.5" marker-end="url(#bw)"/>
+      <text transform="rotate(-90 52 150)" x="52" y="150" text-anchor="middle" fill="var(--c-win)"
+            style="font-size:10.5px;font-family:-apple-system,'PingFang SC',sans-serif">免费赛事捷径 fee=0</text>
+    </svg>
+    <figcaption>绿色那条是<b>免费赛事捷径</b>：<code>feeCents === 0</code> 时 accept 之后直接 confirmed，整段跳过支付。不实现的话第一场社区友谊赛会卡在一个支付 ¥0 的页面上 —— 这条是画极端数据时才发现的，阶段 0 和阶段 1 都漏了。</figcaption>
+  </figure>
+  </div>
+
+  <div class="note warn">
+    <h3>三个 job 里最关键的是 job③</h3>
+    <p><code>expire_promotion</code>：候补转正后 24 小时未付款 → 作废并<b>自动顺延下一位候补</b>。业余赛退赛率高，这个任务会频繁触发；不实现的话每个空位都会烂在一个不响应的人手里。</p>
+  </div>
+</section>
+
+<!-- 03 -->
+<section>
+  <div class="shead"><span class="eyebrow">03</span><h2>鉴权：三个接口必须免鉴权</h2></div>
+  <p class="snote">它们是转发卡片的落地页，也是唯一的获客路径。未登录用户要能完整浏览，登录墙放在「报名 / 接受邀请」这一步 —— 提前弹授权会直接劝退一半从群里点进来的人。</p>
+  <div class="scroller"><table class="tbl">
+    <thead><tr><th>接口</th><th>落地页</th><th>约束</th></tr></thead>
+    <tbody>
+      <tr><td><span class="m get">GET</span> <code>/tournaments/:id</code></td><td>赛事详情</td><td rowspan="3">返回体<b>不得包含任何用户手机号</b></td></tr>
+      <tr><td><span class="m get">GET</span> <code>/events/:id</code></td><td>项目详情</td></tr>
+      <tr><td><span class="m get">GET</span> <code>/entries/:id</code></td><td>组队邀请</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note"><h3>代价与收益</h3>
+  <p>代价：后端要额外提供一套无鉴权只读接口。收益：分享链路不掉人。这是第一版唯一的获客路径，值得。</p></div>
+</section>
+
+<!-- 04 -->
+<section>
+  <div class="shead"><span class="eyebrow">04</span><h2>幂等与并发</h2></div>
+  <p class="snote">两处必须做对，否则会丢数据或超发名额。</p>
+  <pre><b>// 1. 记分提交必须幂等 —— 球场信号差，客户端会离线累积后重传</b>
+POST /matches/:id/score  { sets, serveOrder, <i>version</i> }
+
+  version 不匹配   → <i>409</i> + 服务端当前 Match，由客户端决定合并还是放弃
+  相同请求重放     → <i>200</i> + 相同结果，不产生副作用
+
+<b>// 2. 名额是竞争资源 —— accept 触发名额判定，必须在事务内完成</b>
+POST /entries/:id/accept
+
+  BEGIN
+    性别校验                 → 400
+    IF feeCents = 0          → confirmed          <i>// 免费捷径</i>
+    ELSE IF count &lt; capacity → pending_payment    <i>// + paymentDeadlineAt</i>
+    ELSE                     → waitlisted         <i>// + waitlistPosition</i>
+  COMMIT</pre>
+</section>
+
+<!-- 05 -->
+<section>
+  <div class="shead"><span class="eyebrow">05</span><h2>接口清单</h2></div>
+  <p class="snote">按屏归组。<span class="open">免鉴权</span> 标记的三个见上一节。</p>
+  <div class="scroller"><table class="tbl">
+    <thead><tr><th>接口</th><th>用途</th><th>对应屏</th></tr></thead>
+    <tbody>
+      <tr class="grp"><td colspan="3">认证与用户</td></tr>
+      <tr><td><span class="m post">POST</span> <code>/auth/login</code></td><td>code → session</td><td>—</td></tr>
+      <tr><td><span class="m post">POST</span> <code>/auth/phone</code></td><td>微信加密数据 → 手机号</td><td>注册步骤 1</td></tr>
+      <tr><td><span class="m post">POST</span> <code>/users</code></td><td>注册：nickname + gender</td><td>注册步骤 2</td></tr>
+      <tr><td><span class="m get">GET</span> <code>/users/me</code></td><td>资料与参赛统计</td><td>我的</td></tr>
+      <tr><td><span class="m patch">PATCH</span> <code>/users/me</code></td><td>改昵称；<b>gender 有 active entry 时 409</b></td><td>资料编辑 · 锁定态</td></tr>
+      <tr><td><span class="m get">GET</span> <code>/users/:id</code></td><td>他人主页（无手机号）</td><td>选手主页</td></tr>
+      <tr><td><span class="m get">GET</span> <code>/users/me/partners</code></td><td>常搭档</td><td>发起报名 · 选搭档</td></tr>
+      <tr><td><span class="m get">GET</span> <code>/users/me/records</code></td><td>战绩，按赛事分组</td><td>我的战绩</td></tr>
+
+      <tr class="grp"><td colspan="3">赛事与报名</td></tr>
+      <tr><td><span class="m get">GET</span> <code>/tournaments</code></td><td>列表，筛选 status / city</td><td>赛事列表</td></tr>
+      <tr><td><span class="m get">GET</span> <code>/tournaments/:id</code> <span class="open">免鉴权</span></td><td>详情 + 项目列表</td><td>赛事详情</td></tr>
+      <tr><td><span class="m get">GET</span> <code>/events/:id</code> <span class="open">免鉴权</span></td><td>项目详情</td><td>项目详情</td></tr>
+      <tr><td><span class="m get">GET</span> <code>/events/:id/entries</code></td><td>已报名组合，<b>按报名先后</b></td><td>项目详情</td></tr>
+      <tr><td><span class="m post">POST</span> <code>/entries</code></td><td>发起报名 → pending_partner</td><td>发起报名</td></tr>
+      <tr><td><span class="m get">GET</span> <code>/entries/:id</code> <span class="open">免鉴权</span></td><td>邀请数据（含「谁付钱」）</td><td>组队邀请</td></tr>
+      <tr><td><span class="m post">POST</span> <code>/entries/:id/accept</code></td><td>接受 → 名额判定（见 §04）</td><td>组队邀请</td></tr>
+      <tr><td><span class="m post">POST</span> <code>/entries/:id/reject</code></td><td>拒绝 → cancelled</td><td>组队邀请</td></tr>
+      <tr><td><span class="m get">GET</span> <code>/users/me/entries</code></td><td>我的报名，五种状态</td><td>我的报名</td></tr>
+      <tr><td><span class="m post">POST</span> <code>/entries/:id/order</code></td><td>下单 → requestPayment 参数</td><td>支付确认</td></tr>
+      <tr><td><span class="m post">POST</span> <code>/webhooks/wxpay</code></td><td>支付回调 → confirmed</td><td>—</td></tr>
+      <tr><td><span class="m post">POST</span> <code>/entries/:id/refund</code></td><td>申请退款</td><td>我的报名</td></tr>
+
+      <tr class="grp"><td colspan="3">签表 · 赛程 · 记分</td></tr>
+      <tr><td><span class="m get">GET</span> <code>/events/:id/draw</code></td><td>淘汰赛树 / 小组表</td><td>签表</td></tr>
+      <tr><td><span class="m get">GET</span> <code>/events/:id/schedule</code></td><td>按时间排的场次</td><td>赛程</td></tr>
+      <tr><td><span class="m get">GET</span> <code>/users/me/matches?scope=today</code></td><td><b>今日/进行中的比赛</b></td><td>赛事 tab 首页今日比赛区</td></tr>
+      <tr><td><span class="m post">POST</span> <code>/matches/:id/start</code></td><td>{serveOrder} → live</td><td>开局设置</td></tr>
+      <tr><td><span class="m post">POST</span> <code>/matches/:id/score</code></td><td>提交比分，<b>幂等</b></td><td>记分器</td></tr>
+      <tr><td><span class="m post">POST</span> <code>/matches/:id/confirm</code></td><td>确认 → <b>签表推进</b></td><td>赛后确认</td></tr>
+      <tr><td><span class="m post">POST</span> <code>/matches/:id/dispute</code></td><td>异议 → 冻结</td><td>比分有误</td></tr>
+
+      <tr class="grp"><td colspan="3">积分</td></tr>
+      <tr><td><span class="m get">GET</span> <code>/rank</code></td><td>榜单，含并列名次</td><td>积分榜</td></tr>
+      <tr><td><span class="m get">GET</span> <code>/users/me/points</code></td><td>明细，<b>含 0 分场次</b></td><td>积分明细</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note warn">
+    <h3>最关键的一个接口</h3>
+    <p><code>GET /users/me/matches?scope=today</code>。记分让出了 tab 位，比赛日能不能压回 2 tap 全靠赛事 tab 首页的今日比赛区置顶 —— 而那个区就是这个接口。<b>它必须快、必须能缓存。</b></p>
+  </div>
+</section>
+
+<!-- 06 -->
+<section>
+  <div class="shead"><span class="eyebrow">06</span><h2>一个刻意的取舍：第一版不上传逐分数据</h2></div>
+  <div class="note">
+    <p>记分器在本地逐分记录（撤销、断网续记、杀进程恢复都要用），但<b>上传时只传 <code>sets</code> 和 <code>serveOrder</code></b>。</p>
+    <p>逐分数据的唯一消费场景是发球统计（保发率、落点分布），第一版没有那个界面，存了是负担 —— 数据量大、还要设计归档策略。</p>
+    <p>要做发球统计时，加一个 <code>points</code> 字段即可，<b>不影响现有结构</b>。发球顺序已经记到人了，那才是难补的部分。</p>
+  </div>
+</section>
+
+<!-- 07 -->
+<section>
+  <div class="shead"><span class="eyebrow">07</span><h2>还阻塞着开发的三件事</h2></div>
+
+  <div class="note bad">
+    <h3>1 · 组织者后台 —— 最大的缺口</h3>
+    <p>本契约只覆盖<b>选手端</b>。建赛事、开项目、抽签、排赛程、管报名这些写操作的接口尚未定义。</p>
+    <p>赛事、项目、签表、赛程全部由组织者创建 —— <b>没有它，小程序里一条真实数据都没有</b>，做出来是个漂亮的空壳。</p>
+  </div>
+
+  <div class="note warn">
+    <h3>2 · 积分规则</h3>
+    <p>各轮次分值 · 赛事等级系数 · 双打各得全额还是各半 · 赛季划分方式。界面结构已定、不受规则影响，但没有规则算不出 <code>PointRecord.points</code>。</p>
+  </div>
+
+  <div class="note warn">
+    <h3>3 · 企业主体与微信支付商户号</h3>
+    <p>支付和手机号授权的硬前提，行政流程可能数周。它不阻塞写代码，但阻塞上线 —— <b>建议现在就去办</b>。</p>
+  </div>
+</section>
+
+<footer>LJTennis 数据模型与 API 契约 v1.0 · api/types.ts · api/endpoints.md · 从 41 屏高保真反推</footer>
+</div>
+
+<script>
+(function(){var r=document.documentElement,b=document.getElementById("tgl");
+b.addEventListener("click",function(){var n=r.getAttribute("data-theme");
+r.setAttribute("data-theme", n?(n==="dark"?"light":"dark")
+ :(window.matchMedia("(prefers-color-scheme: dark)").matches?"light":"dark"));});})();
+</script>

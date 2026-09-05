@@ -1,0 +1,132 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    :root{
+      --c-ground:#F4F5F7; --c-surface:#FFFFFF; --c-surface-2:#EBEDF2;
+      --c-ink:#141821; --c-ink-2:#4C5567; --c-ink-3:#7B8496; --c-line:#DFE2E9;
+      --c-brand:#2E4FD8; --c-brand-ink:#FFFFFF; --c-brand-weak:#E7EBFC;
+      --c-win:#0E9F6E; --c-loss:#E0294B; --c-live:#F5A524; --c-on-live:#FFFFFF;
+      --c-danger:#E0294B; --c-void:#7B8496; --c-serve:#D9E64B;
+      /* 桌面控件 36px：88rpx(44pt) 是给手指的，鼠标不需要 */
+      --h-ctl:36px; --r-s:4px; --r-m:8px; --r-l:12px; --r-full:999px;
+      --e-1:0 1px 3px rgba(20,24,33,.06); --e-2:0 6px 20px rgba(20,24,33,.10);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--c-ground);color:var(--c-ink);font-size:14px;line-height:1.5;
+      font-family:-apple-system,"PingFang SC","Source Han Sans CN",system-ui,sans-serif}
+    a{color:var(--c-brand)}a:hover{color:#243FAD}
+    .app{display:flex;height:900px;overflow:hidden}
+    .side{width:216px;flex:none;background:var(--c-surface);border-right:1px solid var(--c-line);
+      display:flex;flex-direction:column;padding:16px 0}
+    .brand{padding:0 16px 16px;font-weight:700;font-size:16px;letter-spacing:-.01em}
+    /* 工作区切换器 —— 侧栏最重的一块，不是一个普通导航项 */
+    /* 工作区切换器沉到侧栏底部：顶部留给导航，账号/工作区归底 */
+    .switch{margin:14px 8px 0;padding:10px;border-radius:var(--r-m);background:var(--c-brand-weak);
+      display:flex;align-items:center;gap:10px;cursor:pointer;margin-top:auto}
+    .switch .logo{width:34px;height:34px;flex:none;border-radius:var(--r-s);background:var(--c-brand);
+      color:var(--c-brand-ink);display:grid;place-items:center;font-size:14px;font-weight:700}
+    .switch .nm{flex:1;min-width:0}
+    .switch .nm b{display:block;font-size:14px;color:var(--c-brand);line-height:1.25}
+    .switch .nm span{font-size:11.5px;color:var(--c-ink-3)}
+    .switch .car{color:var(--c-brand);font-size:11px;flex:none}
+    .snav{display:flex;flex-direction:column;gap:2px;padding:0 8px}
+    .snav a{display:flex;align-items:center;justify-content:space-between;gap:8px;
+      padding:8px 10px;border-radius:var(--r-s);color:var(--c-ink-2);text-decoration:none;font-size:13.5px}
+    .snav a.on{background:var(--c-brand-weak);color:var(--c-brand);font-weight:600}
+    .sgrp{padding:14px 18px 6px;font-size:11px;color:var(--c-ink-3);letter-spacing:.08em}
+    .main{flex:1;min-width:0;display:flex;flex-direction:column}
+    .top{height:56px;flex:none;background:var(--c-surface);border-bottom:1px solid var(--c-line);
+      display:flex;align-items:center;justify-content:space-between;padding:0 20px;gap:16px}
+    .crumb{font-size:13px;color:var(--c-ink-3)}
+    .crumb b{color:var(--c-ink);font-weight:600}
+    .body{flex:1;min-height:0;overflow:hidden;padding:20px;display:flex;flex-direction:column;gap:14px}
+    .btn{height:var(--h-ctl);padding:0 16px;border-radius:var(--r-s);border:1px solid var(--c-line);
+      background:var(--c-surface);color:var(--c-ink-2);font-size:13.5px;display:inline-flex;
+      align-items:center;gap:6px;cursor:pointer}
+    .btn.pri{background:var(--c-brand);border-color:var(--c-brand);color:var(--c-brand-ink);font-weight:600}
+    .btn.dgr{border-color:var(--c-danger);color:var(--c-danger)}
+    .row{display:flex;align-items:center;gap:10px}
+    .sp{flex:1}
+    .card{background:var(--c-surface);border:1px solid var(--c-line);border-radius:var(--r-m)}
+    .pad{padding:16px}
+    .h2{font-size:18px;font-weight:600;letter-spacing:-.01em}
+    .h3{font-size:15px;font-weight:600}
+    .mut{color:var(--c-ink-3);font-size:12.5px}
+    .inp{height:var(--h-ctl);padding:0 10px;border:1px solid var(--c-line);border-radius:var(--r-s);
+      background:var(--c-surface);color:var(--c-ink-3);font-size:13.5px;display:flex;align-items:center}
+    table{width:100%;border-collapse:collapse;font-size:13.5px}
+    th{text-align:left;font-weight:500;color:var(--c-ink-3);font-size:12px;padding:8px 10px;
+      border-bottom:1px solid var(--c-line);white-space:nowrap}
+    td{padding:9px 10px;border-bottom:1px solid var(--c-surface-2)}
+    .tag{display:inline-block;padding:1px 8px;border-radius:var(--r-full);font-size:11px;font-weight:600}
+    .tier-a{background:var(--c-brand);color:var(--c-brand-ink)}
+    .tier-b{background:var(--c-brand-weak);color:var(--c-brand)}
+    .tier-c{border:1px solid var(--c-line);color:var(--c-ink-3)}
+    .st{font-size:12px;padding:1px 8px;border-radius:var(--r-full);display:inline-block}
+    .st.ok{background:#E4F6EE;color:var(--c-win)}
+    .st.wait{background:#FDF0DC;color:#B87508}
+    .st.gray{background:var(--c-surface-2);color:var(--c-void)}
+    .badge{min-width:18px;height:18px;padding:0 6px;border-radius:var(--r-full);background:var(--c-live);
+      color:var(--c-on-live);font-size:11px;font-weight:600;display:inline-grid;place-items:center}
+    .anns{margin:0;padding:14px 20px 20px;list-style:none;display:grid;gap:6px;background:var(--c-ground)}
+    .anns li{font-size:12.5px;color:var(--c-ink-2);display:flex;gap:8px;align-items:flex-start}
+    .anns li > b{flex:none;width:16px;height:16px;border-radius:999px;border:1px solid #B03A2E;
+      color:#B03A2E;font-size:9.5px;display:grid;place-items:center;margin-top:2px;font-weight:400}
+  </style>
+</helmet>
+<div class="app" style="align-items:center;justify-content:center">
+  <div class="card" style="width:500px;box-shadow:var(--e-2)">
+    <div class="pad" style="border-bottom:1px solid var(--c-line)">
+      <div class="h2">代为确认</div>
+      <div class="mut">替搭档完成这一步</div>
+    </div>
+    <div class="pad" style="display:flex;flex-direction:column;gap:14px">
+      <div class="card pad" style="background:var(--c-surface-2);border-color:transparent">
+        <div class="row"><b style="font-size:15px">张伟 / 李强</b><span class="mut">男双</span></div>
+        <div class="mut" style="margin-top:4px">张伟 发起 · 4月3日 09:10</div>
+      </div>
+
+      <div class="row" style="gap:8px;align-items:flex-start">
+        <span class="st wait" style="flex:none">待搭档确认</span>
+        <div class="mut" style="flex:1">李强 尚未点击确认，已等待 26 小时</div>
+      </div>
+
+      <div class="card pad" style="background:var(--c-brand-weak);border-color:transparent">
+        <div style="font-size:13px;color:var(--c-brand);line-height:1.7">
+          确认后<b>直接进已确认，不产生付款义务</b>。<br>
+          名单与账目里会标记<b>「组织者代确认 · 免付」</b>。
+        </div>
+      </div>
+
+      <div class="row" style="gap:8px">
+        <div style="width:16px;height:16px;border:1px solid var(--c-ink-3);border-radius:3px;flex:none"></div>
+        <div style="flex:1">仍要求发起人付款 ¥200<span class="mut"> · 默认不勾</span></div>
+      </div>
+
+      <div class="mut">操作会记入日志：谁、什么时候、代谁确认。</div>
+    </div>
+    <div class="pad" style="border-top:1px solid var(--c-line);display:flex;justify-content:flex-end;gap:10px">
+      <div class="btn">取消</div>
+      <div class="btn pri">代为确认</div>
+    </div>
+  </div>
+</div>
+<ul class="anns">
+  <li><b>1</b><span><b>这不是「创建报名」，是替已注册用户补上那一下点击。</b>人已经在系统里、条目也已存在（<code>pending_partner</code>），缺的只是搭档没确认 —— 多半是没看到微信消息，而线下早就说好了。</span></li>
+  <li><b>2</b><span><b>管理员代确认默认免付</b> —— 直接进已确认，不进待支付，也就没有 24 小时倒计时。多半是钱已经线下收了，或者组织者请客。</span></li>
+  <li><b>6</b><span><b>免付必须在名单和账目里标出来。</b>否则那条报名显示「¥200」，月底对账会少一笔。字段记下是谁免的、什么时候免的。</span></li>
+  <li><b>7</b><span>「仍要求付款」是可选的逃生口，默认不勾 —— 极少数情况组织者只是帮忙点确认，钱还是要选手自己付。</span></li>
+  <li><b>3</b><span>只在 <code>pending_partner</code> 这一个状态下出现。已付款、候补、作废的条目都没有这个动作。</span></li>
+  <li><b>4</b><span><b>记操作日志。</b>替别人做决定必须留痕 —— 事后有争议时要能查是谁代的。</span></li>
+  <li><b>5</b><span>名额规则不变：确认时若已满员，照样进候补，与选手自己点确认走的是同一条 <code>acceptResult</code>。</span></li>
+</ul>
+</x-dc>
+</body>
+</html>

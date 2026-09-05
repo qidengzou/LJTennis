@@ -1,0 +1,78 @@
+{
+  "_comment": "第一版：注册 + 报名 + 记分 + 积分。tabBar = 赛事 / 积分 / 我的，记分入口收在赛事 tab 首页。确认后重命名为项目根目录的 app.json",
+  "pages": [
+    "pages/tournament/index",
+    "pages/rank/index",
+    "pages/me/index",
+    "pages/auth/register",
+    "pages/tournament/detail",
+    "pages/event/detail",
+    "pages/entry/create",
+    "pages/entry/invite",
+    "pages/entry/pay",
+    "pages/draw/index",
+    "pages/schedule/index",
+    "pages/score/setup",
+    "pages/score/live",
+    "pages/score/confirm",
+    "pages/me/entries",
+    "pages/player/detail"
+  ],
+  "subPackages": [
+    {
+      "root": "packageMe",
+      "name": "more",
+      "pages": [
+        "pages/me/records",
+        "pages/rank/detail",
+        "pages/me/profile",
+        "pages/me/settings",
+        "pages/about/rules"
+      ]
+    }
+  ],
+  "preloadRule": {
+    "pages/rank/index": {
+      "network": "all",
+      "packages": [
+        "more"
+      ]
+    },
+    "pages/me/index": {
+      "network": "wifi",
+      "packages": [
+        "more"
+      ]
+    }
+  },
+  "tabBar": {
+    "custom": false,
+    "color": "#7B8496",
+    "selectedColor": "#2E4FD8",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/tournament/index",
+        "text": "赛事"
+      },
+      {
+        "pagePath": "pages/rank/index",
+        "text": "积分"
+      },
+      {
+        "pagePath": "pages/me/index",
+        "text": "我的"
+      }
+    ]
+  },
+  "window": {
+    "navigationBarTitleText": "LJTennis",
+    "navigationBarBackgroundColor": "#FFFFFF",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#F4F5F7"
+  },
+  "darkmode": true,
+  "themeLocation": "theme.json",
+  "sitemapLocation": "sitemap.json"
+}

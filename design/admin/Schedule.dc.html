@@ -1,0 +1,142 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    :root{
+      --c-ground:#F4F5F7; --c-surface:#FFFFFF; --c-surface-2:#EBEDF2;
+      --c-ink:#141821; --c-ink-2:#4C5567; --c-ink-3:#7B8496; --c-line:#DFE2E9;
+      --c-brand:#2E4FD8; --c-brand-ink:#FFFFFF; --c-brand-weak:#E7EBFC;
+      --c-win:#0E9F6E; --c-loss:#E0294B; --c-live:#F5A524; --c-on-live:#FFFFFF;
+      --c-danger:#E0294B; --c-void:#7B8496; --c-serve:#D9E64B;
+      /* 桌面控件 36px：88rpx(44pt) 是给手指的，鼠标不需要 */
+      --h-ctl:36px; --r-s:4px; --r-m:8px; --r-l:12px; --r-full:999px;
+      --e-1:0 1px 3px rgba(20,24,33,.06); --e-2:0 6px 20px rgba(20,24,33,.10);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--c-ground);color:var(--c-ink);font-size:14px;line-height:1.5;
+      font-family:-apple-system,"PingFang SC","Source Han Sans CN",system-ui,sans-serif}
+    a{color:var(--c-brand)}a:hover{color:#243FAD}
+    .app{display:flex;height:900px;overflow:hidden}
+    .side{width:216px;flex:none;background:var(--c-surface);border-right:1px solid var(--c-line);
+      display:flex;flex-direction:column;padding:16px 0}
+    .brand{padding:0 16px 16px;font-weight:700;font-size:16px;letter-spacing:-.01em}
+    .snav{display:flex;flex-direction:column;gap:2px;padding:0 8px}
+    .snav a{display:flex;align-items:center;justify-content:space-between;gap:8px;
+      padding:8px 10px;border-radius:var(--r-s);color:var(--c-ink-2);text-decoration:none;font-size:13.5px}
+    .snav a.on{background:var(--c-brand-weak);color:var(--c-brand);font-weight:600}
+    .sgrp{padding:14px 18px 6px;font-size:11px;color:var(--c-ink-3);letter-spacing:.08em}
+    .main{flex:1;min-width:0;display:flex;flex-direction:column}
+    .top{height:56px;flex:none;background:var(--c-surface);border-bottom:1px solid var(--c-line);
+      display:flex;align-items:center;justify-content:space-between;padding:0 20px;gap:16px}
+    .crumb{font-size:13px;color:var(--c-ink-3)}
+    .crumb b{color:var(--c-ink);font-weight:600}
+    .body{flex:1;min-height:0;overflow:hidden;padding:20px;display:flex;flex-direction:column;gap:14px}
+    .btn{height:var(--h-ctl);padding:0 16px;border-radius:var(--r-s);border:1px solid var(--c-line);
+      background:var(--c-surface);color:var(--c-ink-2);font-size:13.5px;display:inline-flex;
+      align-items:center;gap:6px;cursor:pointer}
+    .btn.pri{background:var(--c-brand);border-color:var(--c-brand);color:var(--c-brand-ink);font-weight:600}
+    .btn.dgr{border-color:var(--c-danger);color:var(--c-danger)}
+    .row{display:flex;align-items:center;gap:10px}
+    .sp{flex:1}
+    .card{background:var(--c-surface);border:1px solid var(--c-line);border-radius:var(--r-m)}
+    .pad{padding:16px}
+    .h2{font-size:18px;font-weight:600;letter-spacing:-.01em}
+    .h3{font-size:15px;font-weight:600}
+    .mut{color:var(--c-ink-3);font-size:12.5px}
+    .inp{height:var(--h-ctl);padding:0 10px;border:1px solid var(--c-line);border-radius:var(--r-s);
+      background:var(--c-surface);color:var(--c-ink-3);font-size:13.5px;display:flex;align-items:center}
+    table{width:100%;border-collapse:collapse;font-size:13.5px}
+    th{text-align:left;font-weight:500;color:var(--c-ink-3);font-size:12px;padding:8px 10px;
+      border-bottom:1px solid var(--c-line);white-space:nowrap}
+    td{padding:9px 10px;border-bottom:1px solid var(--c-surface-2)}
+    .tag{display:inline-block;padding:1px 8px;border-radius:var(--r-full);font-size:11px;font-weight:600}
+    .tier-a{background:var(--c-brand);color:var(--c-brand-ink)}
+    .tier-b{background:var(--c-brand-weak);color:var(--c-brand)}
+    .tier-c{border:1px solid var(--c-line);color:var(--c-ink-3)}
+    .st{font-size:12px;padding:1px 8px;border-radius:var(--r-full);display:inline-block}
+    .st.ok{background:#E4F6EE;color:var(--c-win)}
+    .st.wait{background:#FDF0DC;color:#B87508}
+    .st.gray{background:var(--c-surface-2);color:var(--c-void)}
+    .badge{min-width:18px;height:18px;padding:0 6px;border-radius:var(--r-full);background:var(--c-live);
+      color:var(--c-on-live);font-size:11px;font-weight:600;display:inline-grid;place-items:center}
+    .anns{margin:0;padding:14px 20px 20px;list-style:none;display:grid;gap:6px;background:var(--c-ground)}
+    .anns li{font-size:12.5px;color:var(--c-ink-2);display:flex;gap:8px;align-items:flex-start}
+    .anns li > b{flex:none;width:16px;height:16px;border-radius:999px;border:1px solid #B03A2E;
+      color:#B03A2E;font-size:9.5px;display:grid;place-items:center;margin-top:2px;font-weight:400}
+  </style>
+</helmet>
+<div class="app">
+  <div class="side">
+      <div class="brand">LJTennis 后台</div>
+      <div class="snav"><a href="#">赛事<span class="badge">3</span></a><a href="#">成员 128</a><a href="#">俱乐部资料</a></div>
+      <div class="sgrp">春季双打赛</div>
+      <div class="snav"><a href="#">报名名单</a><a href="#">抽签</a><a class="on" href="#">排程</a><a href="#">场次与比分</a></div>
+    <div class="switch">
+        <div class="logo">深</div>
+        <div class="nm"><b>深圳网球会</b><span>3 个赛事 · 128 成员</span></div>
+        <div class="car">切换 ⌄</div>
+      </div>
+    </div>
+    <div class="main">
+    <div class="top"><div class="crumb">春季双打赛 › <b>排程</b> · 4月13日</div>
+      <div class="row"><div class="btn">4月13日 ▾</div><div class="btn">自动排满</div><div class="btn pri">保存</div></div></div>
+    <div class="body" style="flex-direction:row;gap:16px">
+
+      <div class="card" style="width:210px;flex:none;display:flex;flex-direction:column;overflow:hidden">
+        <div class="pad" style="padding:12px 14px;border-bottom:1px solid var(--c-line)">
+          <div class="h3">未排 · 6 场</div><div class="mut">拖到场地队列</div>
+        </div>
+        <div style="padding:10px;display:flex;flex-direction:column;gap:6px;overflow:auto">
+          <div class="card" style="padding:8px 10px;cursor:grab"><div class="mut">男双 · 场次 9</div><b style="font-size:13px">高翔/黎明</b><div class="mut">vs 杜康/方正</div></div>
+          <div class="card" style="padding:8px 10px;cursor:grab"><div class="mut">女双 · 场次 10</div><b style="font-size:13px">李娜/周雨</b><div class="mut">vs 何静/苏晴</div></div>
+          <div class="card" style="padding:8px 10px;cursor:grab"><div class="mut">混双 · 场次 11</div><b style="font-size:13px">王芳/赵敏</b><div class="mut">vs 许涛/何平</div></div>
+          <div class="mut" style="text-align:center;padding:2px">… 还有 3 场</div>
+        </div>
+      </div>
+
+      <div style="flex:1;min-width:0;display:flex;gap:12px">
+        <div class="card" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+          <div style="padding:9px 12px;border-bottom:1px solid var(--c-line);background:var(--c-surface-2)"><b>1 号场</b> <span class="mut">4 场</span></div>
+          <div style="padding:10px;display:flex;flex-direction:column;gap:8px;overflow:auto">
+            <div class="card" style="padding:8px 10px"><div class="mut">① 男双 · 场次 1</div><b style="font-size:13px">张伟/李强</b><div class="mut">vs 李娜/周雨</div></div>
+            <div class="card" style="padding:8px 10px"><div class="mut">② 男双 · 场次 2</div><b style="font-size:13px">陈明/刘洋</b><div class="mut">vs 孙浩/吴迪</div></div>
+            <div class="card" style="padding:8px 10px"><div class="mut">③ 男双 · 四强</div><b style="font-size:13px">场次 1 胜者</b><div class="mut">vs 场次 2 胜者</div></div>
+            <div style="border:1px dashed var(--c-brand);background:var(--c-brand-weak);color:var(--c-brand);
+                        border-radius:var(--r-s);padding:10px;text-align:center;font-size:12px">拖到这里</div>
+          </div>
+        </div>
+        <div class="card" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+          <div style="padding:9px 12px;border-bottom:1px solid var(--c-line);background:var(--c-surface-2)"><b>2 号场</b> <span class="mut">3 场</span></div>
+          <div style="padding:10px;display:flex;flex-direction:column;gap:8px;overflow:auto">
+            <div class="card" style="padding:8px 10px"><div class="mut">① 女双 · 场次 5</div><b style="font-size:13px">何静/苏晴</b><div class="mut">vs 林梅/唐雅</div></div>
+            <div class="card" style="padding:8px 10px;border-color:var(--c-danger)">
+              <div style="color:var(--c-danger);font-size:11.5px">⚠ 张伟同时在 1 号场</div>
+              <div class="mut">② 混双 · 场次 6</div><b style="font-size:13px">张伟/王芳</b><div class="mut">vs 许涛/何平</div></div>
+          </div>
+        </div>
+        <div class="card" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+          <div style="padding:9px 12px;border-bottom:1px solid var(--c-line);background:var(--c-surface-2)"><b>3 号场</b> <span class="mut">2 场</span></div>
+          <div style="padding:10px;display:flex;flex-direction:column;gap:8px;overflow:auto">
+            <div class="card" style="padding:8px 10px"><div class="mut">① 混双 · 场次 7</div><b style="font-size:13px">郑凯/林梅</b><div class="mut">vs 冯磊/唐雅</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<ul class="anns">
+  <li><b>1</b><span><b>只排场地与顺序，不定时间。</b>业余赛打完一场才知道下一场几点开 —— 定死时间会全部作废，选手还会按作废的时间来。①②③ 是次序不是时刻。</span></li>
+  <li><b>2</b><span>场地是列，场次卡拖进去排队。列内可上下拖调整先后。</span></li>
+  <li><b>3</b><span><b>冲突检测是这屏的核心价值：</b>同一选手被排进两个场地的相邻位置时，卡片描红并写明和谁撞了。双打一人可报三个项目，冲突是常态不是异常。</span></li>
+  <li><b>4</b><span>未确定对阵的场次（「场次 1 胜者」）也能预先排位 —— 场地和顺序不依赖谁赢。</span></li>
+  <li><b>5</b><span>「自动排满」按项目和轮次均分到各场地，人再微调。同抽签的思路：机器铺底，人处理例外。</span></li>
+</ul>
+</x-dc>
+</body>
+</html>

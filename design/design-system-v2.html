@@ -1,0 +1,571 @@
+<title>LJTennis 设计系统 v0.2</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Barlow+Condensed:wght@500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --c-av-1:#2E4FD8; --c-av-2:#5B6EA8; --c-av-3:#7A5EA8; --c-av-4:#3F6E7F; --c-av-5:#5A6470;
+  --c-ground:#F4F5F7; --c-surface:#FFFFFF; --c-surface-2:#EBEDF2;
+  --c-ink:#141821; --c-ink-2:#4C5567; --c-ink-3:#7B8496; --c-line:#DFE2E9;
+  --c-brand:#2E4FD8; --c-brand-ink:#FFFFFF; --c-brand-weak:#E7EBFC;
+  --c-win:#0E9F6E; --c-loss:#E0294B; --c-live:#F5A524; --c-serve:#D9E64B; --c-void:#7B8496;
+  --e-1:0 2px 8px rgba(20,24,33,.06); --e-2:0 8px 32px rgba(20,24,33,.12);
+  --page-bg:#FAFAFB; --page-card:#FFFFFF; --page-line:#E3E6EC;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --c-ground:#0E1116; --c-surface:#161A21; --c-surface-2:#1F242D;
+  --c-ink:#E7EAF0; --c-ink-2:#A3ACBD; --c-ink-3:#6F7889; --c-line:#252B35;
+  --c-brand:#7A93F5; --c-brand-ink:#0E1116; --c-brand-weak:#1A2140;
+  --c-win:#2FBF88; --c-loss:#FF5C77; --c-live:#FFB84D; --c-serve:#DFEB5C; --c-void:#6F7889;
+  --e-1:0 2px 8px rgba(0,0,0,.4); --e-2:0 8px 32px rgba(0,0,0,.6);
+  --page-bg:#0B0D11; --page-card:#13161C; --page-line:#222731;
+}}
+:root[data-theme="dark"]{
+  --c-ground:#0E1116; --c-surface:#161A21; --c-surface-2:#1F242D;
+  --c-ink:#E7EAF0; --c-ink-2:#A3ACBD; --c-ink-3:#6F7889; --c-line:#252B35;
+  --c-brand:#7A93F5; --c-brand-ink:#0E1116; --c-brand-weak:#1A2140;
+  --c-win:#2FBF88; --c-loss:#FF5C77; --c-live:#FFB84D; --c-serve:#DFEB5C; --c-void:#6F7889;
+  --e-1:0 2px 8px rgba(0,0,0,.4); --e-2:0 8px 32px rgba(0,0,0,.6);
+  --page-bg:#0B0D11; --page-card:#13161C; --page-line:#222731;
+}
+*{box-sizing:border-box}
+body{background:var(--page-bg);color:var(--c-ink);margin:0;line-height:1.65;
+  font-family:-apple-system,"PingFang SC","Source Han Sans CN",system-ui,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:clamp(24px,4vw,56px) clamp(16px,4vw,40px) 96px}
+h1,h2,h3,h4{font-family:Archivo,-apple-system,"PingFang SC",sans-serif;margin:0;text-wrap:balance}
+code,.mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
+code{font-size:.88em;background:var(--c-surface-2);padding:1px 5px;border-radius:3px;color:var(--c-ink)}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--c-ink-3)}
+header{border-bottom:2px solid var(--c-ink);padding-bottom:22px;display:flex;flex-direction:column;gap:11px}
+h1{font-size:clamp(27px,5vw,42px);font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.hrow{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.sub{color:var(--c-ink-2);max-width:62ch;margin:0;font-size:15px}
+.tgl{font-family:"IBM Plex Mono",monospace;font-size:12px;padding:8px 16px;border-radius:999px;
+  border:1px solid var(--page-line);background:var(--page-card);color:var(--c-ink-2);cursor:pointer}
+.tgl:hover{border-color:var(--c-brand);color:var(--c-ink)}
+.tgl:focus-visible{outline:2px solid var(--c-brand);outline-offset:2px}
+
+.diff{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1px;background:var(--page-line);
+  border:1px solid var(--page-line);border-radius:6px;overflow:hidden;margin-top:26px}
+.diff div{background:var(--page-card);padding:14px 16px}
+.diff dt{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.1em;color:var(--c-ink-3);text-transform:uppercase}
+.diff dd{margin:4px 0 0;font-size:13.5px;color:var(--c-ink-2)}
+.diff b{color:var(--c-ink);font-weight:600}
+
+section{margin-top:clamp(44px,7vw,76px)}
+.shead{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--page-line);padding-bottom:10px;margin-bottom:20px}
+.shead h2{font-size:clamp(20px,3vw,26px);font-weight:600;letter-spacing:-.01em}
+.snote{color:var(--c-ink-2);font-size:14.5px;max-width:70ch;margin:0 0 24px}
+h3.sh{font-size:15px;font-weight:600;margin:32px 0 12px}
+
+.pal{display:grid;grid-template-columns:repeat(auto-fill,minmax(166px,1fr));gap:12px}
+.sw{border:1px solid var(--page-line);border-radius:6px;overflow:hidden;background:var(--page-card)}
+.sw i{display:block;height:52px}
+.sw .m{padding:9px 11px}
+.sw .n{font-size:13px;font-weight:600;display:block}
+.sw .v{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--c-ink-3);display:block}
+.sw .u{font-size:11.5px;color:var(--c-ink-2);margin-top:3px;display:block}
+
+.scroller{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:14px;min-width:520px}
+.tbl th{text-align:left;font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--c-ink-3);font-weight:400;padding:0 12px 8px 0;border-bottom:1px solid var(--page-line)}
+.tbl td{padding:10px 12px 10px 0;border-bottom:1px solid var(--page-line);color:var(--c-ink-2);vertical-align:middle}
+.tbl td:first-child{color:var(--c-ink)}
+.tbl .nc{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;white-space:nowrap}
+
+.phones{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:24px;align-items:start}
+.pv{border:1px solid var(--page-line);border-radius:8px;overflow:hidden;background:var(--page-card)}
+.pv>figcaption{padding:11px 14px;border-bottom:1px solid var(--page-line);display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.pv-t{font-size:13.5px;font-weight:600}
+.pv-c{font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--c-ink-3);letter-spacing:.06em}
+.frame{background:var(--c-ground);padding:16px;font-family:-apple-system,"PingFang SC",sans-serif;font-size:14px;color:var(--c-ink)}
+.pv-note{padding:10px 14px;border-top:1px solid var(--page-line);font-size:12.5px;color:var(--c-ink-2)}
+
+/* ===== 小程序组件（预览值 = rpx / 2） ===== */
+.num{font-family:"Barlow Condensed",-apple-system,sans-serif;font-variant-numeric:tabular-nums;font-weight:600}
+.card{background:var(--c-surface);border-radius:12px;padding:14px;box-shadow:var(--e-1)}
+.pair{display:flex;gap:5px;align-items:baseline;min-width:0}
+.pair .n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pair .sep{color:var(--c-ink-3);flex:none}
+.pair.stack{flex-direction:column;gap:1px;align-items:flex-start}
+.pair.stack .sep{display:none}
+
+/* 记分器 */
+.scr{background:var(--c-ground);display:flex;flex-direction:column;gap:8px}
+.tapz{background:var(--c-surface);border:0;border-radius:14px;padding:16px 14px;cursor:pointer;
+  font-family:inherit;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  min-height:126px;text-align:left;transition:background .1s;width:100%}
+.tapz:active{background:var(--c-brand-weak)}
+.tapz:focus-visible{outline:2px solid var(--c-brand);outline-offset:-2px}
+.tz-names{display:flex;flex-direction:column;gap:6px;font-size:15px;color:var(--c-ink);min-width:0}
+.tz-names span{display:flex;align-items:center;gap:6px}
+.dotS{width:8px;height:8px;border-radius:999px;background:var(--c-serve);flex:none;visibility:hidden}
+.on .dotS{visibility:visible}
+.tz-pt{font-size:48px;line-height:.9;color:var(--c-ink);flex:none}
+.scrbar{display:flex;align-items:center;justify-content:space-between;background:var(--c-surface);border-radius:10px;padding:9px 13px}
+.sets{display:flex;gap:14px;font-size:11.5px;color:var(--c-ink-3);align-items:baseline}
+.sets b{font-family:"Barlow Condensed",sans-serif;font-size:17px;color:var(--c-ink);font-weight:600;margin-left:4px}
+.sets sup{font-size:9px;color:var(--c-ink-3)}
+.undo{background:transparent;border:1px solid var(--c-line);color:var(--c-ink-2);border-radius:999px;
+  padding:4px 12px;font-size:12px;cursor:pointer;font-family:inherit}
+.undo:disabled{opacity:.35;cursor:default}
+.offline{font-size:11px;color:var(--c-ink-3);text-align:center}
+
+/* 签表场次卡 */
+.mc{background:var(--c-surface);border-radius:12px;padding:12px 14px;box-shadow:var(--e-1);display:flex;flex-direction:column;gap:8px}
+.mc.mine{outline:2px solid var(--c-brand);outline-offset:-2px}
+.mc-h{display:flex;justify-content:space-between;font-size:11.5px;color:var(--c-ink-3)}
+.mc-r{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:15px}
+.mc-r.lose{color:var(--c-ink-3)}
+.mc-r .sc{display:flex;gap:11px}
+.mc-r .sc i{font-style:normal;width:15px;text-align:center;font-family:"Barlow Condensed",sans-serif;font-size:17px;font-weight:600}
+.mc-r .sc sup{font-size:9px;margin-left:1px;vertical-align:super}
+.btn{display:block;width:100%;border:0;border-radius:10px;padding:11px;font-size:14.5px;font-weight:500;cursor:pointer;font-family:inherit;text-align:center}
+.btn-p{background:var(--c-brand);color:var(--c-brand-ink)}
+.btn-s{background:var(--c-surface-2);color:var(--c-ink)}
+.btn:focus-visible{outline:2px solid var(--c-brand);outline-offset:2px}
+
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 9px;border-radius:999px;
+  background:var(--c-surface-2);color:var(--c-ink-2);line-height:1.5}
+.chip i{width:5px;height:5px;border-radius:999px;background:currentColor;display:block;flex:none}
+.chip.live{background:color-mix(in srgb,var(--c-live) 16%,transparent);color:var(--c-live)}
+.chip.win{background:color-mix(in srgb,var(--c-win) 16%,transparent);color:var(--c-win)}
+.chip.void{background:var(--c-surface-2);color:var(--c-void)}
+.chip.brand{background:var(--c-brand-weak);color:var(--c-brand)}
+
+/* 组表 / 榜单 */
+.gt{width:100%;border-collapse:collapse;font-size:13px}
+.gt th{text-align:left;font-size:10.5px;color:var(--c-ink-3);font-weight:400;padding:4px 4px 7px;border-bottom:1px solid var(--c-line)}
+.gt td{padding:8px 4px;border-bottom:1px solid var(--c-line)}
+.gt tr.qual td{background:color-mix(in srgb,var(--c-win) 8%,transparent)}
+.gt .r{color:var(--c-ink-3);width:18px}
+.gt .nm{font-family:"Barlow Condensed",sans-serif;font-size:15px;font-weight:600;text-align:right}
+.gt-note{font-size:11px;color:var(--c-ink-3);margin-top:8px}
+
+.rk{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid var(--c-line)}
+.rk:last-child{border-bottom:0}
+.rk .r{width:20px;font-family:"Barlow Condensed",sans-serif;font-size:15px;font-weight:600;color:var(--c-ink-3)}
+.rk .av{width:32px;height:32px;border-radius:999px;display:grid;place-items:center;color:#fff;font-size:12.5px;font-weight:600;flex:none}
+.rk .nm{flex:1;font-size:14px}
+.rk .pt{font-family:"Barlow Condensed",sans-serif;font-size:17px;font-weight:600}
+.rk .mt{font-size:10.5px;color:var(--c-ink-3);text-align:right;display:block}
+.rk-me{background:var(--c-brand-weak);border-radius:10px;padding:9px 12px;margin-bottom:10px}
+
+/* 进度 / 倒计时 */
+.evrow{display:flex;flex-direction:column;gap:7px}
+.evrow .t{display:flex;justify-content:space-between;align-items:baseline;font-size:14.5px}
+.bar{height:5px;background:var(--c-surface-2);border-radius:999px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--c-brand);border-radius:999px}
+.bar.full i{background:var(--c-live)}
+.cd{display:flex;align-items:center;justify-content:space-between;background:color-mix(in srgb,var(--c-live) 12%,transparent);
+  border-radius:8px;padding:9px 12px;font-size:12.5px;color:var(--c-live)}
+.cd b{font-family:"Barlow Condensed",sans-serif;font-size:16px;font-weight:600}
+
+/* 数值卡 */
+.two{display:flex;gap:12px}
+.two>div{flex:1}
+.k{font-size:11.5px;color:var(--c-ink-3)}
+.v{font-family:"Barlow Condensed",sans-serif;font-size:30px;font-weight:600;line-height:1.1}
+.v.range{font-size:24px}
+.s{font-size:11px;color:var(--c-ink-3)}
+
+.rules{display:grid;gap:14px}
+.rule{background:var(--page-card);border:1px solid var(--page-line);border-left:3px solid var(--c-brand);
+  border-radius:0 6px 6px 0;padding:16px 18px}
+.rule h4{font-size:14.5px;font-weight:600;margin-bottom:6px}
+.rule p{margin:0;font-size:14px;color:var(--c-ink-2)}
+.rule .demo{margin-top:12px;padding:12px 14px;background:var(--c-ground);border-radius:6px;display:flex;gap:26px;flex-wrap:wrap}
+.demo .lbl{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.1em;display:block;color:var(--c-ink-3);margin-bottom:3px}
+.bad{color:var(--c-loss)} .good{color:var(--c-win)}
+pre{background:var(--page-card);border:1px solid var(--page-line);border-radius:6px;padding:16px;overflow-x:auto;
+  font-family:"IBM Plex Mono",monospace;font-size:12px;line-height:1.7;color:var(--c-ink-2);margin:0}
+pre b{color:var(--c-brand);font-weight:500}
+.check{list-style:none;padding:0;margin:0;display:grid;gap:9px}
+.check li{display:flex;gap:10px;font-size:14px;color:var(--c-ink-2);align-items:flex-start}
+.check li::before{content:"□";color:var(--c-ink-3);font-family:monospace;flex:none;line-height:1.55}
+.check li b{color:var(--c-ink);font-weight:600}
+footer{margin-top:68px;padding-top:20px;border-top:1px solid var(--page-line);font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--c-ink-3)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+<header>
+  <span class="eyebrow">阶段 3 · v0.2 赛事双打版</span>
+  <div class="hrow">
+    <h1>LJTennis 设计系统</h1>
+    <button class="tgl" id="tgl">切换主题</button>
+  </div>
+  <p class="sub">承接阶段 2 的三个结论重做。色彩、字号、间距沿用 v0.1；记分器重画，新增签表、榜单、报名状态所需的组件。<b>记分器可以直接点，发球会按双打规则在四人间轮转。</b></p>
+</header>
+
+<dl class="diff">
+  <div><dt>记分器</dt><dd>左右并排 → <b>上下堆叠</b>，每块容纳两个名字</dd></div>
+  <div><dt>t-score</dt><dd>120rpx → <b>96rpx</b>，给两行名字让位</dd></div>
+  <div><dt>发球指示</dt><dd>2 选 1 → <b>4 选 1</b>，每局自动轮转</dd></div>
+  <div><dt>新增组件</dt><dd>签表场次卡、小组积分表、榜单行、名额进度、倒计时、状态标签</dd></div>
+  <div><dt>新增排版规则</dt><dd><b>双打组合名</b>的分行与截断规则</dd></div>
+</dl>
+
+<!-- 01 色彩 -->
+<section>
+  <div class="shead"><span class="eyebrow">01</span><h2>色彩</h2></div>
+  <p class="snote">沿用 v0.1。主色是硬地场蓝，<b>红绿留给记分语义</b>，主色不占用。网球黄唯一用途仍是发球方指示 —— 双打里它指向四人中的当前发球者。</p>
+  <div class="pal">
+    <div class="sw"><i style="background:var(--c-brand)"></i><div class="m"><span class="n">brand</span><span class="v">2E4FD8 / 7A93F5</span><span class="u">主按钮 · 选中 · 我的场次</span></div></div>
+    <div class="sw"><i style="background:var(--c-win)"></i><div class="m"><span class="n">win</span><span class="v">0E9F6E / 2FBF88</span><span class="u">赢 · 已确认 · 出线</span></div></div>
+    <div class="sw"><i style="background:var(--c-loss)"></i><div class="m"><span class="n">loss</span><span class="v">E0294B / FF5C77</span><span class="u">输 · 双误</span></div></div>
+    <div class="sw"><i style="background:var(--c-live)"></i><div class="m"><span class="n">live</span><span class="v">F5A524 / FFB84D</span><span class="u">待处理 · 倒计时 · 满员</span></div></div>
+    <div class="sw"><i style="background:var(--c-serve)"></i><div class="m"><span class="n">serve</span><span class="v">D9E64B / DFEB5C</span><span class="u">发球者指示点，别处禁用</span></div></div>
+    <div class="sw"><i style="background:var(--c-void)"></i><div class="m"><span class="n">void</span><span class="v">7B8496 / 6F7889</span><span class="u">作废 · 已退款 · 未开始</span></div></div>
+  </div>
+
+  <h3 class="sh">头像色块</h3>
+  <p class="snote">按用户 id 取模选色，配白字。<b>刻意是一组冷色，不含绿 / 红 / 橙</b> —— 否则会和记分语义色冲突：一个绿色头像会让人以为这个人赢了。</p>
+  <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <span class="av" style="background:var(--c-av-1);width:38px;height:38px;border-radius:999px;display:grid;place-items:center;color:#fff;font-size:14px;font-weight:600">张</span>
+    <span class="av" style="background:var(--c-av-2);width:38px;height:38px;border-radius:999px;display:grid;place-items:center;color:#fff;font-size:14px;font-weight:600">高</span>
+    <span class="av" style="background:var(--c-av-3);width:38px;height:38px;border-radius:999px;display:grid;place-items:center;color:#fff;font-size:14px;font-weight:600">邓</span>
+    <span class="av" style="background:var(--c-av-4);width:38px;height:38px;border-radius:999px;display:grid;place-items:center;color:#fff;font-size:14px;font-weight:600">吴</span>
+    <span class="av" style="background:var(--c-av-5);width:38px;height:38px;border-radius:999px;display:grid;place-items:center;color:#fff;font-size:14px;font-weight:600">李</span>
+  </div>
+
+  <h3 class="sh">报名状态 → 颜色，固定映射</h3>
+  <p class="snote">五种状态，颜色不可临时改。多一种状态用户就不看了，所以也不要再加。</p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <span class="chip live"><i></i>待搭档确认</span>
+    <span class="chip live"><i></i>待支付</span>
+    <span class="chip live">候补</span>
+    <span class="chip win">已确认</span>
+    <span class="chip void">已退款 / 作废</span>
+  </div>
+</section>
+
+<!-- 02 文字 -->
+<section>
+  <div class="shead"><span class="eyebrow">02</span><h2>文字</h2></div>
+  <p class="snote">中文走系统苹方。数字单独用 <code>wx.loadFontFace</code> 加载子集化的 Barlow Condensed（约 4KB）—— 比分、积分、签表全靠它。</p>
+  <div class="scroller"><table class="tbl">
+    <thead><tr><th>令牌</th><th>rpx</th><th>用途</th><th>示例</th></tr></thead>
+    <tbody>
+      <tr><td>t-score</td><td class="nc">96</td><td>记分器当前分（v0.2 下调）</td><td><span class="num" style="font-size:34px">40</span></td></tr>
+      <tr><td>t-set</td><td class="nc">34</td><td>已完成盘的分数</td><td><span class="num" style="font-size:17px">7<sup style="font-size:9px">7</sup> 6<sup style="font-size:9px">5</sup></span></td></tr>
+      <tr><td>t-display</td><td class="nc">64</td><td>积分 / 水平数值</td><td><span class="num" style="font-size:26px">1240</span></td></tr>
+      <tr><td>t-h1</td><td class="nc">44</td><td>页面标题</td><td><span style="font-size:20px;font-weight:600">签表 · 男双</span></td></tr>
+      <tr><td>t-h3</td><td class="nc">32</td><td>卡片标题 · 组合名</td><td><span style="font-size:15px;font-weight:500">张伟 / 李强</span></td></tr>
+      <tr><td>t-body</td><td class="nc">28</td><td><b>基准</b></td><td><span style="font-size:14px">3 号场 · 14:00</span></td></tr>
+      <tr><td>t-caption</td><td class="nc">24</td><td>辅助说明</td><td><span style="font-size:12px;color:var(--c-ink-3)">基于 14 场 · 可信度 34%</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- 03 组件 -->
+<section>
+  <div class="shead"><span class="eyebrow">03</span><h2>组件</h2></div>
+  <p class="snote">尺寸按 375pt 设备（rpx ÷ 2）。记分器是活的，点两块任意一块加分，发球点会按 A1→B1→A2→B2 轮转。</p>
+
+  <div class="phones">
+
+    <figure class="pv" style="grid-column:1/-1;max-width:430px">
+      <figcaption><span class="pv-t">记分器 · 双打</span><span class="pv-c">Scorer · 核心组件</span></figcaption>
+      <div class="frame scr">
+        <button class="tapz" id="tzB">
+          <span class="tz-names">
+            <span><i class="dotS" data-p="1"></i>陈曦</span>
+            <span><i class="dotS" data-p="3"></i>周涛</span>
+          </span>
+          <span class="tz-pt num" id="ptB">0</span>
+        </button>
+        <button class="tapz" id="tzA">
+          <span class="tz-names">
+            <span><i class="dotS" data-p="0"></i>张伟</span>
+            <span><i class="dotS" data-p="2"></i>李强</span>
+          </span>
+          <span class="tz-pt num" id="ptA">0</span>
+        </button>
+        <div class="scrbar">
+          <div class="sets">
+            <span>盘<b id="setS">0-0</b></span>
+            <span>局<b id="gameS">0-0</b></span>
+            <span id="doneSets" style="color:var(--c-ink-3)"></span>
+          </div>
+          <button class="undo" id="undo" disabled>撤销</button>
+        </div>
+        <div class="offline" id="mode">未联网 · 已本地保存</div>
+      </div>
+      <div class="pv-note">两块各约 126pt 高，整块可点。发球点挂在具体的人身上，每局自动轮转；6-6 进抢七时分数改为原始计数、发球每两分换一次 —— 全程用户零操作。撤销固定右下角。</div>
+    </figure>
+
+    <figure class="pv">
+      <figcaption><span class="pv-t">签表场次卡</span><span class="pv-c">DrawMatchCard</span></figcaption>
+      <div class="frame" style="display:flex;flex-direction:column;gap:10px">
+        <div class="mc mine">
+          <div class="mc-h"><span>场次 12 · 14:00 · 3 号场</span><span class="chip brand">我的</span></div>
+          <div class="mc-r"><span class="pair"><span class="n">张伟</span><span class="sep">/</span><span class="n">李强</span></span><span class="sc"><i class="num">6</i><i class="num">4</i><i class="num">—</i></span></div>
+          <div class="mc-r"><span class="pair"><span class="n">陈曦</span><span class="sep">/</span><span class="n">周涛</span></span><span class="sc"><i class="num">3</i><i class="num">6</i><i class="num">—</i></span></div>
+          <button class="btn btn-p">进入记分</button>
+        </div>
+        <div class="mc">
+          <div class="mc-h"><span>场次 13 · 已结束</span><span class="chip win">已确认</span></div>
+          <div class="mc-r"><span class="pair"><span class="n">吴迪</span><span class="sep">/</span><span class="n">郑凯</span></span><span class="sc"><i class="num">6</i><i class="num">7<sup>7</sup></i></span></div>
+          <div class="mc-r lose"><span class="pair"><span class="n">何军</span><span class="sep">/</span><span class="n">罗宇</span></span><span class="sc"><i class="num">4</i><i class="num">6<sup>5</sup></i></span></div>
+        </div>
+        <div class="mc">
+          <div class="mc-h"><span>场次 14 · 15:30</span><span class="chip void">未开始</span></div>
+          <div class="mc-r"><span class="pair"><span class="n">高翔</span><span class="sep">/</span><span class="n">邓琳</span></span><span style="color:var(--c-ink-3)">—</span></div>
+          <div class="mc-r lose"><span>待定（场次 11 胜者）</span><span>—</span></div>
+        </div>
+      </div>
+      <div class="pv-note">三态一个组件。「我的」用主色描边而不是填充 —— 填充会和已确认的绿色抢注意力。败方整行降到 ink-3，不用删除线。</div>
+    </figure>
+
+    <figure class="pv">
+      <figcaption><span class="pv-t">小组积分表</span><span class="pv-c">GroupTable</span></figcaption>
+      <div class="frame"><div class="card">
+        <table class="gt">
+          <thead><tr><th class="r"></th><th>组合</th><th style="text-align:right">胜负</th><th style="text-align:right">净局</th></tr></thead>
+          <tbody>
+            <tr class="qual"><td class="r">1</td><td>张伟 / 李娜</td><td class="nm">2-0</td><td class="nm">+7</td></tr>
+            <tr class="qual"><td class="r">2</td><td>陈曦 / 王芳</td><td class="nm">1-1</td><td class="nm">+1</td></tr>
+            <tr><td class="r">3</td><td>吴迪 / 刘敏</td><td class="nm">1-1</td><td class="nm">−2</td></tr>
+            <tr><td class="r">4</td><td>何军 / 赵璐</td><td class="nm">0-2</td><td class="nm">−6</td></tr>
+          </tbody>
+        </table>
+        <div class="gt-note">前 2 名出线 · 同分看净胜局</div>
+      </div></div>
+      <div class="pv-note">出线位用 win 色淡底整行标记，不用角标。出线规则写在表下面，不藏进规则页 —— 同分争议全靠这一行说清。</div>
+    </figure>
+
+    <figure class="pv">
+      <figcaption><span class="pv-t">榜单行</span><span class="pv-c">RankRow</span></figcaption>
+      <div class="frame"><div class="card">
+        <div class="rk rk-me">
+          <span class="r">18</span>
+          <span class="av" style="background:var(--c-av-1)">张</span>
+          <span class="nm">张伟<span class="mt" style="text-align:left">我</span></span>
+          <span><span class="pt">1240</span><span class="mt">7 场</span></span>
+        </div>
+        <div class="rk"><span class="r">1</span><span class="av" style="background:var(--c-av-2)">高</span><span class="nm">高翔</span><span><span class="pt">2180</span><span class="mt">9 场</span></span></div>
+        <div class="rk"><span class="r">2</span><span class="av" style="background:var(--c-av-3)">邓</span><span class="nm">邓琳</span><span><span class="pt">2050</span><span class="mt">8 场</span></span></div>
+        <div class="rk"><span class="r">3</span><span class="av" style="background:var(--c-av-4)">吴</span><span class="nm">吴迪</span><span><span class="pt">1890</span><span class="mt">11 场</span></span></div>
+      </div></div>
+      <div class="pv-note">排的是<b>人</b>不是组合 —— 双打积分两人各得全额，搭档会换，排组合没有连续性。参赛场次必须显示，否则「打得多分就高」会显得榜单不公平。</div>
+    </figure>
+
+    <figure class="pv">
+      <figcaption><span class="pv-t">项目行与名额</span><span class="pv-c">EventRow</span></figcaption>
+      <div class="frame" style="display:flex;flex-direction:column;gap:10px">
+        <div class="card evrow">
+          <div class="t"><span>男双</span><span style="color:var(--c-ink-3);font-size:12.5px"><span class="num">24</span>/<span class="num">32</span> 组</span></div>
+          <div class="bar"><i style="width:75%"></i></div>
+        </div>
+        <div class="card evrow">
+          <div class="t"><span>混双</span><span style="color:var(--c-live);font-size:12.5px">已满 · 候补 <span class="num">3</span></span></div>
+          <div class="bar full"><i style="width:100%"></i></div>
+          <button class="btn btn-s">加入候补</button>
+        </div>
+      </div>
+      <div class="pv-note"><b>满员不是错误状态</b>，所以用 live 橙不用 loss 红，按钮也不灰掉，而是变成「加入候补」。</div>
+    </figure>
+
+    <figure class="pv">
+      <figcaption><span class="pv-t">倒计时</span><span class="pv-c">Countdown</span></figcaption>
+      <div class="frame" style="display:flex;flex-direction:column;gap:10px">
+        <div class="card" style="display:flex;flex-direction:column;gap:10px">
+          <div class="cd"><span>待支付 · 超时释放名额</span><b>23:41</b></div>
+          <div style="font-size:12.5px;color:var(--c-ink-3)">¥200 / 组 · 由发起人张伟支付</div>
+          <button class="btn btn-p">微信支付</button>
+        </div>
+        <div class="card"><div class="cd"><span>候补转正 · 24h 内支付</span><b>18:02</b></div></div>
+      </div>
+      <div class="pv-note">三个等待态共用一个倒计时组件。文案必须写明<b>超时会发生什么</b>，不能只显示数字。</div>
+    </figure>
+
+    <figure class="pv">
+      <figcaption><span class="pv-t">积分与水平</span><span class="pv-c">StatPair</span></figcaption>
+      <div class="frame" style="display:flex;flex-direction:column;gap:10px">
+        <div class="card two">
+          <div><div class="k">积分 · 男双</div><div class="v num">1240</div><div class="s">第 18 位 · 7 场</div></div>
+          <div style="border-left:1px solid var(--c-line);padding-left:12px">
+            <div class="k">双打水平</div><div class="v range num">6.8–7.6</div><div class="s">可信度 34% ⓘ</div></div>
+        </div>
+        <div class="card two">
+          <div><div class="k">积分 · 男双</div><div class="v num">2180</div><div class="s">第 1 位 · 9 场</div></div>
+          <div style="border-left:1px solid var(--c-line);padding-left:12px">
+            <div class="k">双打水平</div><div class="v num">7.94</div><div class="s">可信度 81%</div></div>
+        </div>
+      </div>
+      <div class="pv-note">可信度 <b>&lt; 60% 显示为区间</b>，≥ 60% 才显示确切值。两个数字必须视觉分组明确、各带自己的注解 —— 用户会问「赢了为什么积分没涨」，只有分开才解释得通。</div>
+    </figure>
+
+  </div>
+</section>
+
+<!-- 04 排版规则 -->
+<section>
+  <div class="shead"><span class="eyebrow">04</span><h2>排版规则</h2></div>
+  <p class="snote">前三条是网球的，后三条是这个产品的。做错了，网球玩家一眼看得出是外行做的。</p>
+  <div class="rules">
+
+    <div class="rule">
+      <h4>1 · 双打组合名：宽容器一行，窄容器两行，绝不只截断一个</h4>
+      <p>分隔符用带空格的 <code>/</code>。宽度不够时整体改为两行堆叠，<b>不允许出现「张伟 / 李…」这种一个完整一个被截断</b>的情况 —— 那会让人误以为后者不重要。</p>
+      <div class="demo">
+        <div><span class="lbl">宽容器</span><span class="pair" style="font-size:15px"><span class="n">张伟</span><span class="sep">/</span><span class="n">李强</span></span></div>
+        <div><span class="lbl">窄容器</span><span class="pair stack" style="font-size:14px"><span class="n">Wang Xiaoming</span><span class="n">Zhang Weiguo</span></span></div>
+        <div><span class="lbl">禁止</span><span class="bad" style="font-size:15px">张伟 / 李…</span></div>
+      </div>
+    </div>
+
+    <div class="rule">
+      <h4>2 · 抢七比分用上标</h4>
+      <p>决胜局比分是盘分的附属信息，做成上标，不能平铺、不能加括号。</p>
+      <div class="demo">
+        <div><span class="lbl">错</span><span class="bad num" style="font-size:18px">7-6 (7-5)</span></div>
+        <div><span class="lbl">对</span><span class="good num" style="font-size:18px">7<sup style="font-size:10px">7</sup> &nbsp; 6<sup style="font-size:10px">5</sup></span></div>
+      </div>
+    </div>
+
+    <div class="rule">
+      <h4>3 · 发球指示是网球黄的唯一用途</h4>
+      <p>双打里它指向四人中的当前发球者，每局自动轮转，抢七时每两分换一次。<code>--c-serve</code> 不允许出现在任何其他位置。</p>
+    </div>
+
+    <div class="rule">
+      <h4>4 · 水平低于 60% 可信度时显示为区间</h4>
+      <p><code>6.8–7.6</code> 而不是 <code>7.2</code>。用区间号（en dash）不用连字符。评分不能脱离样本量出现 —— 榜单、卡片、角标上禁止出现裸的水平数值。</p>
+    </div>
+
+    <div class="rule">
+      <h4>5 · 满员不是错误状态</h4>
+      <p>名额满用 live 橙不用 loss 红，按钮变「加入候补」而不是灰掉。红色只留给真正的失败：支付失败、比分冲突、报名作废。</p>
+    </div>
+
+    <div class="rule">
+      <h4>6 · 头像色不能用语义色</h4>
+      <p>头像色板是一组冷色，不含绿 / 红 / 橙。一个绿色头像会让人误读成「这个人赢了」—— 语义色一旦被装饰用途占用，记分场景的可读性就废了。</p>
+    </div>
+
+    <div class="rule">
+      <h4>7 · 倒计时必须写明超时后果</h4>
+      <p>「23:41」没有意义，「待支付 · 超时释放名额 23:41」才有。三个等待态各有各的后果文案。</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- 05 落地 -->
+<section>
+  <div class="shead"><span class="eyebrow">05</span><h2>落地</h2></div>
+  <p class="snote">令牌文件已更新为 v0.2：<code>styles/tokens.wxss</code>。</p>
+  <pre><b>/* app.wxss */</b>
+@import "styles/tokens.wxss";
+
+<b>/* 组件只引用令牌，不写死颜色 */</b>
+.draw-match { background: var(--c-surface); border-radius: var(--r-l); padding: var(--s-2); }
+.draw-match.mine { outline: 2rpx solid var(--c-brand); outline-offset: -2rpx; }
+.scorer-tap { min-height: 252rpx; }          <b>/* 126pt */</b>
+.scorer-point { font-size: var(--t-score); } <b>/* 96rpx */</b>
+
+<b>/* app.js — 子集化数字字体，只含 0-9 . - – 和空格 */</b>
+wx.loadFontFace({ family: 'LJNum', source: 'url("https://你的CDN/ljnum.woff2")',
+                  scopes: ['webview', 'native'] })</pre>
+
+  <h3 class="sh">做每一屏之前过一遍</h3>
+  <ul class="check">
+    <li>顶部右侧给<b>胶囊按钮留出 87×32px</b></li>
+    <li>底部固定元素加 <b>safe-area-inset-bottom</b></li>
+    <li>交互反馈用 <code>:active</code>，<b>没有 hover</b></li>
+    <li>点击区不小于 <b>88rpx</b>；记分器远大于此</li>
+    <li>出了<b>空状态 / 加载态 / 错误态</b>没有</li>
+    <li>试过<b>极端数据</b>没有：很长的双打名字、7-6 7-6、积分 0、可信度 0%</li>
+    <li>在 <b>iPhone SE</b> 上看过没有</li>
+    <li>深色模式下颜色<b>全部来自令牌</b>，没有写死的 hex</li>
+    <li>图标是 <b>SVG / iconfont</b>，不是 png</li>
+  </ul>
+</section>
+
+<footer>LJTennis 设计系统 v0.2 · 赛事双打版 · 令牌 styles/tokens.wxss · 取代 v0.1（约球版）</footer>
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement, btn = document.getElementById("tgl");
+  btn.addEventListener("click", function () {
+    var n = root.getAttribute("data-theme");
+    root.setAttribute("data-theme", n ? (n === "dark" ? "light" : "dark")
+      : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "light" : "dark"));
+  });
+
+  // ---- 双打记分：含发球轮转与抢七 ----
+  // 发球顺序索引：0=张伟(我方) 1=陈曦(对方) 2=李强(我方) 3=周涛(对方)
+  var LB = ["0", "15", "30", "40"];
+  var st, hist;
+  function reset() { st = { p:[0,0], g:[0,0], s:[0,0], gi:0, tb:false, done:[] }; hist = []; }
+  reset();
+
+  var el = {
+    A: document.getElementById("tzA"), B: document.getElementById("tzB"),
+    ptA: document.getElementById("ptA"), ptB: document.getElementById("ptB"),
+    setS: document.getElementById("setS"), gameS: document.getElementById("gameS"),
+    doneSets: document.getElementById("doneSets"), undo: document.getElementById("undo"),
+    mode: document.getElementById("mode"), dots: document.querySelectorAll(".dotS")
+  };
+
+  function label(me, opp) {
+    if (st.tb) return String(me);
+    if (me >= 3 && opp >= 3) return me === opp ? "40" : (me > opp ? "Ad" : "-");
+    return LB[me];
+  }
+  function serverIdx() {
+    if (!st.tb) return st.gi % 4;
+    var tot = st.p[0] + st.p[1];
+    return (st.gi + Math.floor((tot + 1) / 2)) % 4;
+  }
+  function render() {
+    el.ptA.textContent = label(st.p[0], st.p[1]);
+    el.ptB.textContent = label(st.p[1], st.p[0]);
+    el.gameS.textContent = st.g[0] + "-" + st.g[1];
+    el.setS.textContent = st.s[0] + "-" + st.s[1];
+    el.doneSets.innerHTML = st.done.map(function (d) {
+      return d.tb ? (d.a + "<sup>" + d.ta + "</sup> " + d.b + "<sup>" + d.tb2 + "</sup>") : (d.a + "-" + d.b);
+    }).join(" · ");
+    var si = serverIdx();
+    el.dots.forEach(function (d) { d.parentElement.classList.toggle("on", +d.dataset.p === si); });
+    el.undo.disabled = hist.length === 0;
+    el.mode.textContent = st.tb ? "抢七 · 每两分换发球 · 已本地保存" : "未联网 · 已本地保存";
+  }
+  function endSet(w, l, tbScore) {
+    var rec = { a: st.g[0], b: st.g[1] };
+    if (tbScore) { rec.tb = true; rec.ta = tbScore[0]; rec.tb2 = tbScore[1]; }
+    st.done.push(rec);
+    st.s[w]++; st.g = [0, 0]; st.gi = 0; st.tb = false;
+  }
+  function point(i) {
+    hist.push(JSON.stringify(st));
+    if (hist.length > 60) hist.shift();
+    var o = 1 - i;
+    st.p[i]++;
+    if (st.tb) {
+      if (st.p[i] >= 7 && st.p[i] - st.p[o] >= 2) {
+        st.g[i]++;                                   // 7-6
+        var ts = [st.p[0], st.p[1]];
+        st.p = [0, 0];
+        endSet(i, o, ts);
+      }
+    } else if (st.p[i] >= 4 && st.p[i] - st.p[o] >= 2) {
+      st.g[i]++; st.p = [0, 0]; st.gi++;
+      if (st.g[0] === 6 && st.g[1] === 6) st.tb = true;
+      else if (st.g[i] >= 6 && st.g[i] - st.g[o] >= 2) endSet(i, o, null);
+    }
+    render();
+  }
+  el.A.addEventListener("click", function () { point(0); });
+  el.B.addEventListener("click", function () { point(1); });
+  el.undo.addEventListener("click", function () {
+    if (!hist.length) return;
+    st = JSON.parse(hist.pop());
+    render();
+  });
+  render();
+})();
+</script>

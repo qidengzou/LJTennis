@@ -1,0 +1,128 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    :root{
+      --c-ground:#F4F5F7; --c-surface:#FFFFFF; --c-surface-2:#EBEDF2;
+      --c-ink:#141821; --c-ink-2:#4C5567; --c-ink-3:#7B8496; --c-line:#DFE2E9;
+      --c-brand:#2E4FD8; --c-brand-ink:#FFFFFF; --c-brand-weak:#E7EBFC;
+      --c-win:#0E9F6E; --c-loss:#E0294B; --c-live:#F5A524; --c-on-live:#FFFFFF;
+      --c-danger:#E0294B; --c-void:#7B8496; --c-serve:#D9E64B;
+      /* 桌面控件 36px：88rpx(44pt) 是给手指的，鼠标不需要 */
+      --h-ctl:36px; --r-s:4px; --r-m:8px; --r-l:12px; --r-full:999px;
+      --e-1:0 1px 3px rgba(20,24,33,.06); --e-2:0 6px 20px rgba(20,24,33,.10);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--c-ground);color:var(--c-ink);font-size:14px;line-height:1.5;
+      font-family:-apple-system,"PingFang SC","Source Han Sans CN",system-ui,sans-serif}
+    a{color:var(--c-brand)}a:hover{color:#243FAD}
+    .app{display:flex;height:900px;overflow:hidden}
+    .side{width:216px;flex:none;background:var(--c-surface);border-right:1px solid var(--c-line);
+      display:flex;flex-direction:column;padding:16px 0}
+    .brand{padding:0 16px 16px;font-weight:700;font-size:16px;letter-spacing:-.01em}
+    .switch{margin:0 8px 10px;padding:9px 10px;border:1px solid var(--c-line);border-radius:var(--r-s);
+      display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;font-size:13.5px;font-weight:600}
+    .switch .mut{font-weight:400}
+    .snav{display:flex;flex-direction:column;gap:2px;padding:0 8px}
+    .snav a{display:flex;align-items:center;justify-content:space-between;gap:8px;
+      padding:8px 10px;border-radius:var(--r-s);color:var(--c-ink-2);text-decoration:none;font-size:13.5px}
+    .snav a.on{background:var(--c-brand-weak);color:var(--c-brand);font-weight:600}
+    .sgrp{padding:14px 18px 6px;font-size:11px;color:var(--c-ink-3);letter-spacing:.08em}
+    .main{flex:1;min-width:0;display:flex;flex-direction:column}
+    .top{height:56px;flex:none;background:var(--c-surface);border-bottom:1px solid var(--c-line);
+      display:flex;align-items:center;justify-content:space-between;padding:0 20px;gap:16px}
+    .crumb{font-size:13px;color:var(--c-ink-3)}
+    .crumb b{color:var(--c-ink);font-weight:600}
+    .body{flex:1;min-height:0;overflow:hidden;padding:20px;display:flex;flex-direction:column;gap:14px}
+    .btn{height:var(--h-ctl);padding:0 16px;border-radius:var(--r-s);border:1px solid var(--c-line);
+      background:var(--c-surface);color:var(--c-ink-2);font-size:13.5px;display:inline-flex;
+      align-items:center;gap:6px;cursor:pointer}
+    .btn.pri{background:var(--c-brand);border-color:var(--c-brand);color:var(--c-brand-ink);font-weight:600}
+    .btn.dgr{border-color:var(--c-danger);color:var(--c-danger)}
+    .row{display:flex;align-items:center;gap:10px}
+    .sp{flex:1}
+    .card{background:var(--c-surface);border:1px solid var(--c-line);border-radius:var(--r-m)}
+    .pad{padding:16px}
+    .h2{font-size:18px;font-weight:600;letter-spacing:-.01em}
+    .h3{font-size:15px;font-weight:600}
+    .mut{color:var(--c-ink-3);font-size:12.5px}
+    .inp{height:var(--h-ctl);padding:0 10px;border:1px solid var(--c-line);border-radius:var(--r-s);
+      background:var(--c-surface);color:var(--c-ink-3);font-size:13.5px;display:flex;align-items:center}
+    table{width:100%;border-collapse:collapse;font-size:13.5px}
+    th{text-align:left;font-weight:500;color:var(--c-ink-3);font-size:12px;padding:8px 10px;
+      border-bottom:1px solid var(--c-line);white-space:nowrap}
+    td{padding:9px 10px;border-bottom:1px solid var(--c-surface-2)}
+    .tag{display:inline-block;padding:1px 8px;border-radius:var(--r-full);font-size:11px;font-weight:600}
+    .tier-a{background:var(--c-brand);color:var(--c-brand-ink)}
+    .tier-b{background:var(--c-brand-weak);color:var(--c-brand)}
+    .tier-c{border:1px solid var(--c-line);color:var(--c-ink-3)}
+    .st{font-size:12px;padding:1px 8px;border-radius:var(--r-full);display:inline-block}
+    .st.ok{background:#E4F6EE;color:var(--c-win)}
+    .st.wait{background:#FDF0DC;color:#B87508}
+    .st.gray{background:var(--c-surface-2);color:var(--c-void)}
+    .badge{min-width:18px;height:18px;padding:0 6px;border-radius:var(--r-full);background:var(--c-live);
+      color:var(--c-on-live);font-size:11px;font-weight:600;display:inline-grid;place-items:center}
+    .anns{margin:0;padding:14px 20px 20px;list-style:none;display:grid;gap:6px;background:var(--c-ground)}
+    .anns li{font-size:12.5px;color:var(--c-ink-2);display:flex;gap:8px;align-items:flex-start}
+    .anns li > b{flex:none;width:16px;height:16px;border-radius:999px;border:1px solid #B03A2E;
+      color:#B03A2E;font-size:9.5px;display:grid;place-items:center;margin-top:2px;font-weight:400}
+  </style>
+</helmet>
+<div class="app" style="align-items:center;justify-content:center">
+  <div style="width:520px">
+    <div class="h2" style="margin-bottom:4px">选择俱乐部</div>
+    <div class="mut" style="margin-bottom:18px">你管理 3 个俱乐部</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="card pad" style="display:flex;align-items:center;gap:14px;cursor:pointer">
+        <div style="width:44px;height:44px;border-radius:var(--r-s);background:var(--c-surface-2);
+                    display:grid;place-items:center;font-size:11px;color:var(--c-ink-3);flex:none">LOGO</div>
+        <div style="flex:1">
+          <div style="font-weight:600">深圳网球会</div>
+          <div class="mut">深圳 · 龙岗 · 成员 128 · 赛事 3</div>
+        </div>
+        <span class="badge">3</span>
+        <span class="mut">›</span>
+      </div>
+      <div class="card pad" style="display:flex;align-items:center;gap:14px;cursor:pointer">
+        <div style="width:44px;height:44px;border-radius:var(--r-s);background:var(--c-surface-2);
+                    display:grid;place-items:center;font-size:15px;color:var(--c-ink-3);flex:none">城</div>
+        <div style="flex:1">
+          <div style="font-weight:600">城北网球会</div>
+          <div class="mut">深圳 · 宝安 · 成员 34 · 赛事 1</div>
+        </div>
+        <span class="badge">1</span>
+        <span class="mut">›</span>
+      </div>
+      <div class="card pad" style="display:flex;align-items:center;gap:14px;cursor:pointer">
+        <div style="width:44px;height:44px;border-radius:var(--r-s);background:var(--c-surface-2);
+                    display:grid;place-items:center;font-size:15px;color:var(--c-ink-3);flex:none">湾</div>
+        <div style="flex:1">
+          <div style="font-weight:600">湾区网球联盟</div>
+          <div class="mut">广州 · 天河 · 成员 61 · 赛事 0</div>
+        </div>
+        <span class="mut">›</span>
+      </div>
+      <div class="card pad" style="display:flex;align-items:center;gap:14px;cursor:pointer;
+                  border-style:dashed;color:var(--c-ink-3)">
+        <div style="width:44px;height:44px;display:grid;place-items:center;font-size:20px;flex:none">+</div>
+        <div style="flex:1">创建俱乐部</div>
+      </div>
+    </div>
+  </div>
+</div>
+<ul class="anns">
+  <li><b>1</b><span>扫码登录后的<b>第一步</b>。一个管理员可能管多个俱乐部 —— 先确定上下文，后面每一屏都在这个俱乐部里。</span></li>
+  <li><b>2</b><span><b>只有一个俱乐部时自动跳过这一屏</b>，直接进工作区。多数人是这种情况，不该为少数人多一次点击。</span></li>
+  <li><b>3</b><span>待办角标聚合到俱乐部一级 —— 哪个俱乐部有事，在这一屏就看得见，不用逐个点进去。</span></li>
+  <li><b>4</b><span>进工作区后侧栏顶部有<b>切换器</b>，随时换俱乐部，不必退回这一屏。</span></li>
+  <li><b>5</b><span>「创建俱乐部」在这里 —— 它是网页端的职责（赛前操作），小程序只指路不给按钮。</span></li>
+</ul>
+</x-dc>
+</body>
+</html>

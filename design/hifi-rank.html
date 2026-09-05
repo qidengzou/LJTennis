@@ -1,0 +1,398 @@
+<title>LJTennis 积分榜</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Barlow+Condensed:wght@500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --c-av-1:#2E4FD8; --c-av-2:#5B6EA8; --c-av-3:#7A5EA8; --c-av-4:#3F6E7F; --c-av-5:#5A6470;
+  --c-ground:#F4F5F7; --c-surface:#FFFFFF; --c-surface-2:#EBEDF2;
+  --c-ink:#141821; --c-ink-2:#4C5567; --c-ink-3:#7B8496; --c-line:#DFE2E9;
+  --c-brand:#2E4FD8; --c-brand-ink:#FFFFFF; --c-brand-weak:#E7EBFC;
+  --c-win:#0E9F6E; --c-loss:#E0294B; --c-live:#F5A524; --c-void:#7B8496;
+  --e-1:0 1px 2px rgba(20,24,33,.04),0 2px 8px rgba(20,24,33,.06);
+  --page-bg:#FAFAFB; --page-card:#FFFFFF; --page-line:#E3E6EC; --dev-shadow:0 12px 40px -12px rgba(20,24,33,.28);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --c-ground:#0E1116; --c-surface:#161A21; --c-surface-2:#1F242D;
+  --c-ink:#E7EAF0; --c-ink-2:#A3ACBD; --c-ink-3:#6F7889; --c-line:#252B35;
+  --c-brand:#7A93F5; --c-brand-ink:#0E1116; --c-brand-weak:#1A2140;
+  --c-win:#2FBF88; --c-loss:#FF5C77; --c-live:#FFB84D; --c-void:#6F7889;
+  --e-1:0 1px 2px rgba(0,0,0,.5),0 2px 8px rgba(0,0,0,.35);
+  --page-bg:#0B0D11; --page-card:#13161C; --page-line:#222731; --dev-shadow:0 12px 40px -12px rgba(0,0,0,.8);
+}}
+:root[data-theme="dark"]{
+  --c-ground:#0E1116; --c-surface:#161A21; --c-surface-2:#1F242D;
+  --c-ink:#E7EAF0; --c-ink-2:#A3ACBD; --c-ink-3:#6F7889; --c-line:#252B35;
+  --c-brand:#7A93F5; --c-brand-ink:#0E1116; --c-brand-weak:#1A2140;
+  --c-win:#2FBF88; --c-loss:#FF5C77; --c-live:#FFB84D; --c-void:#6F7889;
+  --e-1:0 1px 2px rgba(0,0,0,.5),0 2px 8px rgba(0,0,0,.35);
+  --page-bg:#0B0D11; --page-card:#13161C; --page-line:#222731; --dev-shadow:0 12px 40px -12px rgba(0,0,0,.8);
+}
+*{box-sizing:border-box}
+body{background:var(--page-bg);color:var(--c-ink);margin:0;line-height:1.65;
+  font-family:-apple-system,"PingFang SC","Source Han Sans CN",system-ui,sans-serif}
+.wrap{max-width:1220px;margin:0 auto;padding:clamp(24px,4vw,56px) clamp(16px,4vw,40px) 96px}
+h1,h2,h3,h4{font-family:Archivo,-apple-system,"PingFang SC",sans-serif;margin:0;text-wrap:balance}
+code{font-family:"IBM Plex Mono",monospace;font-size:.88em;background:var(--c-surface-2);padding:1px 5px;border-radius:3px;color:var(--c-ink)}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--c-ink-3)}
+header{border-bottom:2px solid var(--c-ink);padding-bottom:22px;display:flex;flex-direction:column;gap:11px}
+h1{font-size:clamp(27px,5vw,42px);font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.hrow{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.sub{color:var(--c-ink-2);max-width:64ch;margin:0;font-size:15px}
+.tgl{font-family:"IBM Plex Mono",monospace;font-size:12px;padding:8px 16px;border-radius:999px;
+  border:1px solid var(--page-line);background:var(--page-card);color:var(--c-ink-2);cursor:pointer}
+.tgl:hover{border-color:var(--c-brand);color:var(--c-ink)}
+.tgl:focus-visible{outline:2px solid var(--c-brand);outline-offset:2px}
+.warnbox{margin-top:22px;border:1px solid var(--c-live);border-left-width:3px;border-radius:0 6px 6px 0;
+  padding:16px 19px;background:var(--page-card);font-size:14px;color:var(--c-ink-2);line-height:1.7}
+.warnbox b{color:var(--c-ink)}
+.warnbox ul{margin:10px 0 0;padding-left:20px}
+.warnbox li{margin-bottom:5px}
+section{margin-top:clamp(46px,7vw,78px)}
+.shead{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--page-line);padding-bottom:10px;margin-bottom:18px}
+.shead h2{font-size:clamp(20px,3vw,26px);font-weight:600;letter-spacing:-.01em}
+.snote{color:var(--c-ink-2);font-size:14.5px;max-width:72ch;margin:0 0 26px}
+.gridF{display:flex;flex-wrap:wrap;gap:32px;align-items:flex-start}
+.unit{width:375px;flex:none}
+.ut{font-size:14px;font-weight:600;margin-bottom:2px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ut .tagx{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.08em;border:1px solid var(--c-brand);
+  color:var(--c-brand);padding:1px 6px;border-radius:3px;font-weight:400}
+.ut .tagx.w{border-color:var(--c-live);color:var(--c-live)}
+.us{font-size:12px;color:var(--c-ink-3);margin:0 0 12px;font-family:"IBM Plex Mono",monospace}
+.un{margin-top:12px;font-size:12.5px;color:var(--c-ink-2)}
+
+.dev{width:375px;border-radius:26px;overflow:hidden;background:var(--c-ground);box-shadow:var(--dev-shadow);
+  border:1px solid var(--c-line);display:flex;flex-direction:column}
+.stat{height:22px;display:flex;justify-content:space-between;align-items:center;padding:0 18px;font-size:11px;font-weight:600}
+.stat .r{display:flex;gap:4px;font-size:9px;opacity:.75}
+.nav{height:44px;display:flex;align-items:center;justify-content:center;position:relative;padding:0 12px}
+.nav .ttl{font-size:16px;font-weight:600}
+.nav .bk{position:absolute;left:14px;font-size:17px;line-height:1}
+.cap{position:absolute;right:10px;width:87px;height:32px;border-radius:16px;border:1px solid var(--c-line);
+  background:var(--c-surface);display:flex;align-items:center;justify-content:space-around;color:var(--c-ink-3);font-size:12px}
+.cap b{width:1px;height:16px;background:var(--c-line);display:block}
+.body{padding:12px;display:flex;flex-direction:column;gap:11px;min-height:470px}
+.tabbar{display:flex;background:var(--c-surface);border-top:1px solid var(--c-line);padding-bottom:8px}
+.tabbar div{flex:1;text-align:center;padding:7px 0 2px}
+.tabbar .i{font-size:18px;line-height:1.25;opacity:.5}
+.tabbar .t{font-size:10px;color:var(--c-ink-3)}
+.tabbar .on .i{opacity:1}
+.tabbar .on .t{color:var(--c-brand);font-weight:600}
+.home{height:5px;width:120px;background:var(--c-ink);opacity:.25;border-radius:3px;margin:6px auto 7px}
+.dock{margin-top:auto;padding-top:12px;display:flex;flex-direction:column;gap:9px}
+
+.num{font-family:"Barlow Condensed",-apple-system,sans-serif;font-variant-numeric:tabular-nums;font-weight:600}
+.card{background:var(--c-surface);border-radius:12px;padding:14px;box-shadow:var(--e-1)}
+.k{font-size:12px;color:var(--c-ink-3)}
+.rowb{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.seg{display:flex;background:var(--c-surface-2);border-radius:8px;padding:3px;gap:2px}
+.seg button{flex:1;border:0;background:transparent;font-family:inherit;font-size:13px;color:var(--c-ink-2);
+  padding:6px 2px;border-radius:6px;cursor:pointer;white-space:nowrap}
+.seg button.on{background:var(--c-surface);color:var(--c-ink);font-weight:600;box-shadow:var(--e-1)}
+.seg button:focus-visible{outline:2px solid var(--c-brand);outline-offset:1px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.fchip{border:1px solid var(--c-line);background:transparent;font-family:inherit;font-size:12px;
+  padding:4px 11px;border-radius:999px;color:var(--c-ink-2);cursor:pointer}
+.fchip.on{background:var(--c-brand-weak);border-color:var(--c-brand);color:var(--c-brand);font-weight:600}
+.av{width:32px;height:32px;border-radius:999px;display:grid;place-items:center;color:#fff;font-size:12.5px;font-weight:600;flex:none}
+.rk{display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:1px solid var(--c-line)}
+.rk:last-child{border-bottom:0}
+.rk .r{width:30px;font-family:"Barlow Condensed",sans-serif;font-size:16px;font-weight:600;color:var(--c-ink-3);text-align:center}
+.rk .r.top{color:var(--c-ink)}
+.rk .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14.5px}
+.rk .rt{text-align:right;flex:none}
+.rk .pt{font-family:"Barlow Condensed",sans-serif;font-size:18px;font-weight:600;display:block;line-height:1.15}
+.rk .mt{font-size:10.5px;color:var(--c-ink-3);display:block}
+.rk-me{background:var(--c-brand-weak);border-radius:10px;padding:10px 12px;border-bottom:0}
+.tie{font-size:9.5px;color:var(--c-ink-3);margin-left:2px}
+.drow{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:11px 0}
+.drow+.drow{border-top:1px solid var(--c-line)}
+.drow .l{min-width:0}
+.drow .l b{display:block;font-size:14px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.drow .l span{font-size:11.5px;color:var(--c-ink-3)}
+.drow .g{font-family:"Barlow Condensed",sans-serif;font-size:17px;font-weight:600;color:var(--c-win);flex:none}
+.drow .g.zero{color:var(--c-ink-3)}
+.empty{text-align:center;padding:38px 18px}
+.empty .ic{width:56px;height:56px;border-radius:999px;background:var(--c-surface-2);margin:0 auto 14px;display:grid;place-items:center;font-size:24px}
+.empty b{display:block;font-size:16px;font-weight:600;margin-bottom:5px}
+.empty p{margin:0 0 20px;font-size:13px;color:var(--c-ink-3)}
+.btn{display:block;width:100%;border:0;border-radius:8px;padding:12px;font-size:15px;font-weight:500;cursor:pointer;font-family:inherit;text-align:center}
+.btn-p{background:var(--c-brand);color:var(--c-brand-ink)}
+.btn-s{background:var(--c-surface-2);color:var(--c-ink)}
+.banner{border-radius:8px;padding:11px 13px;font-size:12.5px;line-height:1.6}
+.banner.b{background:var(--c-brand-weak);color:var(--c-brand)}
+.banner.v{background:var(--c-surface-2);color:var(--c-ink-2)}
+.tbd{border:1px dashed var(--c-live);color:var(--c-live);border-radius:6px;padding:9px 11px;font-size:11.5px;line-height:1.55}
+.note{background:var(--page-card);border:1px solid var(--page-line);border-left:3px solid var(--c-brand);
+  border-radius:0 6px 6px 0;padding:16px 18px;margin-top:26px}
+.note.warn{border-left-color:var(--c-live)}
+.note h3{font-size:15px;font-weight:600;margin-bottom:7px}
+.note p{margin:0 0 9px;font-size:14px;color:var(--c-ink-2);max-width:74ch}
+.note p:last-child{margin-bottom:0}
+footer{margin-top:66px;padding-top:20px;border-top:1px solid var(--page-line);font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--c-ink-3)}
+</style>
+
+<div class="wrap">
+<header>
+  <span class="eyebrow">阶段 4 · 第四批</span>
+  <div class="hrow">
+    <h1>积分榜</h1>
+    <button class="tgl" id="tgl">切换主题</button>
+  </div>
+  <p class="sub">积分回到第一版，占据第二个 tab。5 屏。<b>筛选可以直接点。</b></p>
+</header>
+
+<div class="warnbox">
+  <b>⚠️ 积分规则还没定，以下是我按通行做法设的假设。</b>规则一定，对着改即可 —— 界面结构不会变，变的只是数字来源。
+  <ul>
+    <li><b>排「人」不排「组合」</b> —— 双打两人各得全额积分。搭档会换，排组合没有连续性</li>
+    <li><b>榜单一行</b> = 名次 · 头像 · 昵称 · 积分 · 参赛场次</li>
+    <li><b>筛选三层</b> = 项目（男双/女双/混双）× 赛季 × 地区</li>
+    <li><b>同分并列</b>，并列占用名次（1 · 2 · 2 · 4）</li>
+    <li><b>赛季</b>按自然年划分，年末清零</li>
+    <li><b>积分明细</b>按赛事列出每次所得，具体分值待规则确定</li>
+  </ul>
+</div>
+
+<!-- 01 -->
+<section>
+  <div class="shead"><span class="eyebrow">01</span><h2>积分榜</h2></div>
+  <p class="snote"><b>参赛场次必须和积分同时显示。</b>积分和参赛频率强相关，只给分数不给场次，打得少的人会觉得榜单不公平 —— 这是所有累计积分制产品的通病。</p>
+
+  <div class="gridF">
+
+    <div class="unit">
+      <div class="ut">积分榜 <span class="tagx">可交互</span></div>
+      <p class="us">rank/index</p>
+      <div class="dev">
+        <div class="stat"><span>9:41</span><span class="r">▮▮▮ ᯤ ▉</span></div>
+        <div class="nav"><span class="ttl">积分</span><span class="cap"><span>⋯</span><b></b><span>◉</span></span></div>
+        <div class="body">
+          <div class="seg" id="evSeg"><button class="on" data-e="md">男双</button><button data-e="wd">女双</button><button data-e="xd">混双</button></div>
+          <div class="chips" id="fchips">
+            <button class="fchip on" data-c="all">全部地区</button>
+            <button class="fchip" data-c="sh">上海</button>
+            <button class="fchip on" data-s="2026">2026 赛季</button>
+          </div>
+          <div class="card" style="padding:4px 12px" id="meRow"></div>
+          <div class="card" style="padding:4px 14px" id="rankList"></div>
+          <div class="k" style="text-align:center">积分每场比赛确认后实时更新</div>
+        </div>
+        <div class="tabbar">
+          <div><div class="i">🏆</div><div class="t">赛事</div></div>
+          <div class="on"><div class="i">📊</div><div class="t">积分</div></div>
+          <div><div class="i">👤</div><div class="t">我的</div></div>
+        </div>
+        <div class="home"></div>
+      </div>
+      <p class="un">「我」的行<b>固定在榜单上方</b>，不用滚到第 18 位去找自己。切到「女双」看不同项目 —— 同一个人在不同项目的积分是分开的。</p>
+    </div>
+
+    <div class="unit">
+      <div class="ut">积分明细 <span class="tagx w">信任基础</span></div>
+      <p class="us">rank/detail</p>
+      <div class="dev">
+        <div class="stat"><span>9:41</span><span class="r">▮▮▮ ᯤ ▉</span></div>
+        <div class="nav"><span class="bk">‹</span><span class="ttl">我的积分</span><span class="cap"><span>⋯</span><b></b><span>◉</span></span></div>
+        <div class="body">
+          <div class="card" style="display:flex;flex-direction:column;gap:10px">
+            <div class="rowb"><span class="k">男双 · 2026 赛季</span><span class="k">第 <span class="num">18</span> 位</span></div>
+            <div style="display:flex;align-items:baseline;gap:8px">
+              <span class="num" style="font-size:38px;line-height:1">1240</span>
+              <span class="k">积分 · 7 场赛事</span>
+            </div>
+          </div>
+          <div class="k">积分来源</div>
+          <div class="card" style="padding:2px 14px">
+            <div class="drow"><span class="l"><b>2026 春季双打公开赛</b><span>男双 · 8 强</span></span><span class="g num">+320</span></div>
+            <div class="drow"><span class="l"><b>静安周末双打邀请赛</b><span>男双 · 亚军</span></span><span class="g num">+450</span></div>
+            <div class="drow"><span class="l"><b>冬季邀请赛</b><span>男双 · 16 强</span></span><span class="g num">+180</span></div>
+            <div class="drow"><span class="l"><b>秋季团体循环赛</b><span>男双 · 小组未出线</span></span><span class="g num zero">+0</span></div>
+          </div>
+          <div class="tbd"><b>分值待定</b> —— 每轮次多少分、赛事有没有等级系数、双打是各得全额还是各得一半，都取决于积分规则。界面结构不受影响。</div>
+          <div class="dock"><button class="btn btn-s">积分规则说明</button></div>
+        </div>
+        <div class="home"></div>
+      </div>
+      <p class="un">「我的积分是怎么来的」是评分类产品的信任基础。<b>要显示得 0 分的那场</b>（小组未出线）—— 只列加分不列零分，用户会觉得少算了。</p>
+    </div>
+
+    <div class="unit">
+      <div class="ut">空态 · 赛季刚开始</div>
+      <p class="us">rank/index · empty</p>
+      <div class="dev">
+        <div class="stat"><span>9:41</span><span class="r">▮▮▮ ᯤ ▉</span></div>
+        <div class="nav"><span class="ttl">积分</span><span class="cap"><span>⋯</span><b></b><span>◉</span></span></div>
+        <div class="body">
+          <div class="seg"><button class="on">男双</button><button>女双</button><button>混双</button></div>
+          <div class="chips"><span class="fchip on">全部地区</span><span class="fchip on">2027 赛季</span></div>
+          <div class="empty">
+            <div class="ic">📊</div>
+            <b>2027 赛季还没有积分</b>
+            <p>赛季从 1 月 1 日开始<br>第一场比赛确认后榜单就会出现</p>
+            <button class="btn btn-s" style="max-width:200px;margin:0 auto">看 2026 赛季</button>
+          </div>
+        </div>
+        <div class="tabbar">
+          <div><div class="i">🏆</div><div class="t">赛事</div></div>
+          <div class="on"><div class="i">📊</div><div class="t">积分</div></div>
+          <div><div class="i">👤</div><div class="t">我的</div></div>
+        </div>
+        <div class="home"></div>
+      </div>
+      <p class="un">赛季清零会造成一个必然出现的空窗期。空态要<b>给一个回看上赛季的出口</b>，否则元旦那几天打开这个 tab 会像坏掉了。</p>
+    </div>
+
+    <div class="unit">
+      <div class="ut">我还没有积分</div>
+      <p class="us">rank/index · no personal points</p>
+      <div class="dev">
+        <div class="stat"><span>9:41</span><span class="r">▮▮▮ ᯤ ▉</span></div>
+        <div class="nav"><span class="ttl">积分</span><span class="cap"><span>⋯</span><b></b><span>◉</span></span></div>
+        <div class="body">
+          <div class="seg"><button class="on">男双</button><button>女双</button><button>混双</button></div>
+          <div class="chips"><span class="fchip on">全部地区</span><span class="fchip on">2026 赛季</span></div>
+          <div class="card" style="padding:12px">
+            <div class="banner b" style="margin:0">你还没有男双积分。报名并完成一场比赛后就会上榜。</div>
+          </div>
+          <div class="card" style="padding:4px 14px">
+            <div class="rk"><span class="r top">1</span><span class="av" style="background:var(--c-av-1)">高</span><span class="nm">高翔</span><span class="rt"><span class="pt num">2180</span><span class="mt">9 场</span></span></div>
+            <div class="rk"><span class="r top">2</span><span class="av" style="background:var(--c-av-2)">邓</span><span class="nm">邓琳</span><span class="rt"><span class="pt num">2050</span><span class="mt">8 场</span></span></div>
+            <div class="rk"><span class="r top">3</span><span class="av" style="background:var(--c-av-3)">吴</span><span class="nm">吴迪</span><span class="rt"><span class="pt num">1890</span><span class="mt">11 场</span></span></div>
+            <div class="rk"><span class="r">4</span><span class="av" style="background:var(--c-av-4)">郑</span><span class="nm">郑凯</span><span class="rt"><span class="pt num">1890</span><span class="mt">11 场</span></span></div>
+          </div>
+        </div>
+        <div class="tabbar">
+          <div><div class="i">🏆</div><div class="t">赛事</div></div>
+          <div class="on"><div class="i">📊</div><div class="t">积分</div></div>
+          <div><div class="i">👤</div><div class="t">我的</div></div>
+        </div>
+        <div class="home"></div>
+      </div>
+      <p class="un">榜单本身有内容，只是我不在上面。<b>用一条提示替换「我的行」</b>，不要留空位，也不要显示「第 — 位 / 0 分」—— 那看起来像出错了。</p>
+    </div>
+
+    <div class="unit">
+      <div class="ut">极端与边界</div>
+      <p class="us">stress</p>
+      <div class="dev">
+        <div class="stat"><span>9:41</span><span class="r">▮▮▮ ᯤ ▉</span></div>
+        <div class="nav"><span class="ttl">积分</span><span class="cap"><span>⋯</span><b></b><span>◉</span></span></div>
+        <div class="body" style="gap:10px">
+          <div class="k">① 同分并列 → 并列占用名次</div>
+          <div class="card" style="padding:4px 14px">
+            <div class="rk"><span class="r top">2</span><span class="av" style="background:var(--c-av-2)">吴</span><span class="nm">吴迪</span><span class="rt"><span class="pt num">1890</span><span class="mt">11 场</span></span></div>
+            <div class="rk"><span class="r top">2<span class="tie">并列</span></span><span class="av" style="background:var(--c-av-4)">郑</span><span class="nm">郑凯</span><span class="rt"><span class="pt num">1890</span><span class="mt">11 场</span></span></div>
+            <div class="rk"><span class="r">4</span><span class="av" style="background:var(--c-av-5)">何</span><span class="nm">何军</span><span class="rt"><span class="pt num">1640</span><span class="mt">6 场</span></span></div>
+          </div>
+          <div class="k">② 超长昵称 → 单行省略，积分列不被挤压</div>
+          <div class="card" style="padding:4px 14px">
+            <div class="rk"><span class="r">12</span><span class="av" style="background:var(--c-av-3)">一</span><span class="nm">一只喜欢打网球又爱睡觉的小猫咪🐱🎾</span><span class="rt"><span class="pt num">1420</span><span class="mt">5 场</span></span></div>
+          </div>
+          <div class="k">③ 四位数名次 + 五位数积分</div>
+          <div class="card" style="padding:4px 14px">
+            <div class="rk"><span class="r">1284</span><span class="av" style="background:var(--c-av-5)">王</span><span class="nm">王小明</span><span class="rt"><span class="pt num">10240</span><span class="mt">128 场</span></span></div>
+          </div>
+          <div class="k">④ 场次多但积分低 → 数字本身说明问题</div>
+          <div class="card" style="padding:4px 14px">
+            <div class="rk"><span class="r">96</span><span class="av" style="background:var(--c-av-1)">李</span><span class="nm">李强</span><span class="rt"><span class="pt num">210</span><span class="mt">23 场</span></span></div>
+          </div>
+        </div>
+        <div class="home"></div>
+      </div>
+      <p class="un">③ 名次列<b>固定 30pt 宽</b>，按四位数实测（16px Barlow Condensed 下「1284」需 26pt）留的余量。列宽不随内容变，否则每行的头像位置会对不齐。</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- 02 -->
+<section>
+  <div class="shead"><span class="eyebrow">02</span><h2>这一批的结论</h2></div>
+
+  <div class="note warn">
+    <h3>记分收进赛事 tab，代价是比赛日多一次点击</h3>
+    <p>原来记分独占 tab，球场边 1 tap 可达。现在第二个 tab 让给积分，记分入口收进<b>赛事 tab 首页的今日比赛区</b>。</p>
+    <p>补偿办法是这一区<b>永远置顶</b>：只要今天有比赛，打开小程序第一眼就是它，第二下点「进入记分」—— 压回 2 tap。<b>如果这一区没做好，实际会变成 3–4 tap，球场边会直接放弃记分。</b></p>
+    <p>意外的好处：签表 → 记分器现在是<b>同 tab 内跳转</b>，可以直接 <code>navigateTo</code> 带参数，省掉了原来那套 storage 传参。（本地存储仍必需，断网续记要用。）</p>
+  </div>
+
+  <div class="note">
+    <h3>积分和参赛场次必须同时出现</h3>
+    <p>累计积分制天然对参赛频率高的人有利。只显示分数不显示场次，打得少的人一定会觉得榜单不公平。</p>
+    <p>这条在积分明细页也一样：<b>得 0 分的那场也要列出来</b>（比如小组未出线）。只列加分不列零分，用户会怀疑漏算了。</p>
+  </div>
+
+  <div class="note">
+    <h3>赛季清零会造成一个必然的空窗期</h3>
+    <p>每年元旦榜单归零，那几天打开积分 tab 会是空的。空态必须给一个<b>回看上赛季</b>的出口，否则看起来像坏了。</p>
+  </div>
+
+  <div class="note warn">
+    <h3>还是需要你给积分规则</h3>
+    <p>界面结构已经定了，不受规则影响。但下面这些数字来源必须有答案，否则开发无法实现：</p>
+    <p><b>1 · 各轮次分值</b>（冠军/亚军/四强/八强/十六强/小组未出线各多少分）<br>
+    <b>2 · 赛事等级系数</b>（不同规格的赛事是否权重不同）<br>
+    <b>3 · 双打分配</b>（两人各得全额，还是各得一半）<br>
+    <b>4 · 赛季划分</b>（自然年？跨年？是否保留上赛季部分积分）</p>
+  </div>
+</section>
+
+<footer>LJTennis 阶段 4 第四批 · 积分榜 · 5 屏 · 分值待规则确定</footer>
+</div>
+
+<script>
+(function(){
+  var root=document.documentElement,btn=document.getElementById("tgl");
+  btn.addEventListener("click",function(){
+    var n=root.getAttribute("data-theme");
+    root.setAttribute("data-theme", n?(n==="dark"?"light":"dark")
+      :(window.matchMedia("(prefers-color-scheme: dark)").matches?"light":"dark"));
+  });
+
+  var AV=["var(--c-av-1)","var(--c-av-2)","var(--c-av-3)","var(--c-av-4)","var(--c-av-5)"];
+  var DATA={
+    md:{me:{r:18,n:"张伟",p:1240,m:7},
+        list:[["高翔",2180,9],["邓琳",2050,8],["吴迪",1890,11],["郑凯",1890,11],["何军",1640,6],["罗宇",1520,7]]},
+    wd:{me:null,
+        list:[["李娜",1980,8],["王芳",1760,9],["刘敏",1540,6],["赵璐",1310,5]]},
+    xd:{me:{r:5,n:"张伟",p:820,m:4},
+        list:[["高翔",1420,6],["邓琳",1420,6],["陈曦",1180,5],["王芳",960,4]]}
+  };
+  var cur="md";
+  var meEl=document.getElementById("meRow"), listEl=document.getElementById("rankList");
+
+  function ranks(list){
+    var out=[],prev=null,prevRank=0;
+    list.forEach(function(row,i){
+      var rank = (prev!==null && row[1]===prev) ? prevRank : i+1;
+      out.push({r:rank, tie:(prev!==null && row[1]===prev), n:row[0], p:row[1], m:row[2]});
+      prev=row[1]; prevRank=rank;
+    });
+    return out;
+  }
+  function rowHTML(x,i,me){
+    return '<div class="rk'+(me?' rk-me':'')+'">'
+      +'<span class="r'+(x.r<=3?' top':'')+'">'+x.r+(x.tie?'<span class="tie">并列</span>':'')+'</span>'
+      +'<span class="av" style="background:'+AV[i%5]+'">'+x.n.charAt(0)+'</span>'
+      +'<span class="nm">'+x.n+(me?'<span class="mt" style="text-align:left">我</span>':'')+'</span>'
+      +'<span class="rt"><span class="pt num">'+x.p+'</span><span class="mt">'+x.m+' 场</span></span></div>';
+  }
+  function render(){
+    var d=DATA[cur];
+    meEl.innerHTML = d.me
+      ? rowHTML({r:d.me.r,tie:false,n:d.me.n,p:d.me.p,m:d.me.m},0,true)
+      : '<div class="banner b" style="margin:8px 0">你还没有这个项目的积分。报名并完成一场比赛后就会上榜。</div>';
+    listEl.innerHTML = ranks(d.list).map(function(x,i){ return rowHTML(x,i+1,false); }).join("");
+  }
+  document.getElementById("evSeg").addEventListener("click",function(e){
+    var b=e.target.closest("button"); if(!b) return;
+    this.querySelectorAll("button").forEach(function(x){ x.classList.toggle("on",x===b); });
+    cur=b.dataset.e; render();
+  });
+  document.getElementById("fchips").addEventListener("click",function(e){
+    var b=e.target.closest(".fchip"); if(!b||!b.dataset.c) return;
+    this.querySelectorAll("[data-c]").forEach(function(x){ x.classList.toggle("on",x===b); });
+  });
+  render();
+})();
+</script>

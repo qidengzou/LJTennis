@@ -1,0 +1,175 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    :root{
+      --c-ground:#F4F5F7; --c-surface:#FFFFFF; --c-surface-2:#EBEDF2;
+      --c-ink:#141821; --c-ink-2:#4C5567; --c-ink-3:#7B8496; --c-line:#DFE2E9;
+      --c-brand:#2E4FD8; --c-brand-ink:#FFFFFF; --c-brand-weak:#E7EBFC;
+      --c-win:#0E9F6E; --c-loss:#E0294B; --c-live:#F5A524; --c-on-live:#FFFFFF;
+      --c-danger:#E0294B; --c-void:#7B8496; --c-serve:#D9E64B;
+      /* 桌面控件 36px：88rpx(44pt) 是给手指的，鼠标不需要 */
+      --h-ctl:36px; --r-s:4px; --r-m:8px; --r-l:12px; --r-full:999px;
+      --e-1:0 1px 3px rgba(20,24,33,.06); --e-2:0 6px 20px rgba(20,24,33,.10);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--c-ground);color:var(--c-ink);font-size:14px;line-height:1.5;
+      font-family:-apple-system,"PingFang SC","Source Han Sans CN",system-ui,sans-serif}
+    a{color:var(--c-brand)}a:hover{color:#243FAD}
+    .app{display:flex;height:900px;overflow:hidden}
+    .side{width:216px;flex:none;background:var(--c-surface);border-right:1px solid var(--c-line);
+      display:flex;flex-direction:column;padding:16px 0}
+    .brand{padding:0 16px 16px;font-weight:700;font-size:16px;letter-spacing:-.01em}
+    .snav{display:flex;flex-direction:column;gap:2px;padding:0 8px}
+    .snav a{display:flex;align-items:center;justify-content:space-between;gap:8px;
+      padding:8px 10px;border-radius:var(--r-s);color:var(--c-ink-2);text-decoration:none;font-size:13.5px}
+    .snav a.on{background:var(--c-brand-weak);color:var(--c-brand);font-weight:600}
+    .sgrp{padding:14px 18px 6px;font-size:11px;color:var(--c-ink-3);letter-spacing:.08em}
+    .main{flex:1;min-width:0;display:flex;flex-direction:column}
+    .top{height:56px;flex:none;background:var(--c-surface);border-bottom:1px solid var(--c-line);
+      display:flex;align-items:center;justify-content:space-between;padding:0 20px;gap:16px}
+    .crumb{font-size:13px;color:var(--c-ink-3)}
+    .crumb b{color:var(--c-ink);font-weight:600}
+    .body{flex:1;min-height:0;overflow:hidden;padding:20px;display:flex;flex-direction:column;gap:14px}
+    .btn{height:var(--h-ctl);padding:0 16px;border-radius:var(--r-s);border:1px solid var(--c-line);
+      background:var(--c-surface);color:var(--c-ink-2);font-size:13.5px;display:inline-flex;
+      align-items:center;gap:6px;cursor:pointer}
+    .btn.pri{background:var(--c-brand);border-color:var(--c-brand);color:var(--c-brand-ink);font-weight:600}
+    .btn.dgr{border-color:var(--c-danger);color:var(--c-danger)}
+    .row{display:flex;align-items:center;gap:10px}
+    .sp{flex:1}
+    .card{background:var(--c-surface);border:1px solid var(--c-line);border-radius:var(--r-m)}
+    .pad{padding:16px}
+    .h2{font-size:18px;font-weight:600;letter-spacing:-.01em}
+    .h3{font-size:15px;font-weight:600}
+    .mut{color:var(--c-ink-3);font-size:12.5px}
+    .inp{height:var(--h-ctl);padding:0 10px;border:1px solid var(--c-line);border-radius:var(--r-s);
+      background:var(--c-surface);color:var(--c-ink-3);font-size:13.5px;display:flex;align-items:center}
+    table{width:100%;border-collapse:collapse;font-size:13.5px}
+    th{text-align:left;font-weight:500;color:var(--c-ink-3);font-size:12px;padding:8px 10px;
+      border-bottom:1px solid var(--c-line);white-space:nowrap}
+    td{padding:9px 10px;border-bottom:1px solid var(--c-surface-2)}
+    .tag{display:inline-block;padding:1px 8px;border-radius:var(--r-full);font-size:11px;font-weight:600}
+    .tier-a{background:var(--c-brand);color:var(--c-brand-ink)}
+    .tier-b{background:var(--c-brand-weak);color:var(--c-brand)}
+    .tier-c{border:1px solid var(--c-line);color:var(--c-ink-3)}
+    .st{font-size:12px;padding:1px 8px;border-radius:var(--r-full);display:inline-block}
+    .st.ok{background:#E4F6EE;color:var(--c-win)}
+    .st.wait{background:#FDF0DC;color:#B87508}
+    .st.gray{background:var(--c-surface-2);color:var(--c-void)}
+    .badge{min-width:18px;height:18px;padding:0 6px;border-radius:var(--r-full);background:var(--c-live);
+      color:var(--c-on-live);font-size:11px;font-weight:600;display:inline-grid;place-items:center}
+    .anns{margin:0;padding:14px 20px 20px;list-style:none;display:grid;gap:6px;background:var(--c-ground)}
+    .anns li{font-size:12.5px;color:var(--c-ink-2);display:flex;gap:8px;align-items:flex-start}
+    .anns li > b{flex:none;width:16px;height:16px;border-radius:999px;border:1px solid #B03A2E;
+      color:#B03A2E;font-size:9.5px;display:grid;place-items:center;margin-top:2px;font-weight:400}
+  </style>
+</helmet>
+<div class="app">
+  <div class="side">
+      <div class="brand">LJTennis 后台</div>
+      <div class="snav"><a href="#">赛事<span class="badge">3</span></a><a href="#">成员 128</a><a href="#">俱乐部资料</a></div>
+      <div class="sgrp">春季双打赛</div>
+      <div class="snav"><a href="#">报名名单</a><a class="on" href="#">抽签</a><a href="#">排程</a><a href="#">场次与比分</a></div>
+    <div class="switch">
+        <div class="logo">深</div>
+        <div class="nm"><b>深圳网球会</b><span>3 个赛事 · 128 成员</span></div>
+        <div class="car">切换 ⌄</div>
+      </div>
+    </div>
+    <div class="main">
+    <div class="top"><div class="crumb">春季双打赛 › <b>抽签</b> · 男双</div>
+      <div class="row"><div class="mut">未保存</div><div class="btn">清空</div><div class="btn">自动生成</div><div class="btn pri">保存签表</div></div></div>
+    <div class="body" style="flex-direction:row;gap:16px">
+
+      <div class="card" style="width:210px;flex:none;display:flex;flex-direction:column;overflow:hidden">
+        <div class="pad" style="padding:12px 14px;border-bottom:1px solid var(--c-line)">
+          <div class="h3">未入位 · 3</div>
+          <div class="mut">拖到右侧空位</div>
+        </div>
+        <div style="padding:10px;display:flex;flex-direction:column;gap:6px;overflow:auto">
+          <div class="card" style="padding:8px 10px;cursor:grab"><b>孙浩 / 吴迪</b><div class="mut">3.5 · 4月4日</div></div>
+          <div class="card" style="padding:8px 10px;cursor:grab"><b>郑凯 / 冯磊</b><div class="mut">3.0 · 4月5日</div></div>
+          <div class="card" style="padding:8px 10px;cursor:grab"><b>许涛 / 何平</b><div class="mut">2.5 · 4月5日</div></div>
+        </div>
+        <div class="pad" style="padding:12px 14px;border-top:1px solid var(--c-line)">
+          <div class="mut">种子数</div>
+          <div class="row" style="gap:6px;margin-top:6px">
+            <div class="btn" style="flex:1;justify-content:center;padding:0 8px">0</div>
+            <div class="btn pri" style="flex:1;justify-content:center;padding:0 8px">4</div>
+            <div class="btn" style="flex:1;justify-content:center;padding:0 8px">8</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden">
+        <div style="display:flex;border-bottom:1px solid var(--c-line);background:var(--c-surface-2)">
+          <div style="flex:1;padding:8px 12px;font-size:12px;color:var(--c-ink-3)">第一轮 · 8 场</div>
+          <div style="flex:1;padding:8px 12px;font-size:12px;color:var(--c-ink-3)">四分之一决赛</div>
+          <div style="flex:1;padding:8px 12px;font-size:12px;color:var(--c-ink-3)">半决赛</div>
+          <div style="flex:1;padding:8px 12px;font-size:12px;color:var(--c-ink-3)">决赛</div>
+        </div>
+        <div style="flex:1;display:flex;padding:12px;gap:12px;overflow:auto">
+
+          <div style="flex:1;display:flex;flex-direction:column;gap:10px">
+            <div class="card" style="padding:0;overflow:hidden">
+              <div style="padding:6px 9px;border-bottom:1px solid var(--c-surface-2);display:flex;gap:6px"><span class="tag tier-a" style="padding:0 5px">1</span><b>张伟 / 李强</b></div>
+              <div style="padding:6px 9px;color:var(--c-ink-3)">李娜 / 周雨</div>
+            </div>
+            <div class="card" style="padding:0;overflow:hidden">
+              <div style="padding:6px 9px;border-bottom:1px solid var(--c-surface-2)">陈明 / 刘洋</div>
+              <div style="padding:6px 9px;border:1px dashed var(--c-brand);background:var(--c-brand-weak);color:var(--c-brand);font-size:12px">拖到这里</div>
+            </div>
+            <div class="card" style="padding:0;overflow:hidden">
+              <div style="padding:6px 9px;border-bottom:1px solid var(--c-surface-2);display:flex;gap:6px"><span class="tag tier-b" style="padding:0 5px">3</span>马超 / 秦岭</div>
+              <div style="padding:6px 9px;color:var(--c-ink-3);font-style:italic">轮空</div>
+            </div>
+            <div class="card" style="padding:0;overflow:hidden">
+              <div style="padding:6px 9px;border-bottom:1px solid var(--c-surface-2)">高翔 / 黎明</div>
+              <div style="padding:6px 9px">杜康 / 方正</div>
+            </div>
+            <div class="mut" style="text-align:center;padding:2px">… 还有 4 场</div>
+          </div>
+
+          <div style="flex:1;display:flex;flex-direction:column;gap:10px;justify-content:space-around;padding:28px 0">
+            <div class="card" style="padding:0;opacity:.55;overflow:hidden">
+              <div style="padding:6px 9px;border-bottom:1px solid var(--c-surface-2);color:var(--c-ink-3)">场次 1 胜者</div>
+              <div style="padding:6px 9px;color:var(--c-ink-3)">场次 2 胜者</div></div>
+            <div class="card" style="padding:0;opacity:.55;overflow:hidden">
+              <div style="padding:6px 9px;border-bottom:1px solid var(--c-surface-2);color:var(--c-ink-3)">场次 3 胜者</div>
+              <div style="padding:6px 9px;color:var(--c-ink-3)">场次 4 胜者</div></div>
+          </div>
+
+          <div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:28px 0">
+            <div class="card" style="padding:0;opacity:.4;overflow:hidden">
+              <div style="padding:6px 9px;border-bottom:1px solid var(--c-surface-2);color:var(--c-ink-3)">待定</div>
+              <div style="padding:6px 9px;color:var(--c-ink-3)">待定</div></div>
+          </div>
+
+          <div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:28px 0">
+            <div class="card" style="padding:0;opacity:.4;overflow:hidden">
+              <div style="padding:6px 9px;border-bottom:1px solid var(--c-surface-2);color:var(--c-ink-3)">待定</div>
+              <div style="padding:6px 9px;color:var(--c-ink-3)">待定</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<ul class="anns">
+  <li><b>1</b><span><b>自动生成后可拖拽调整。</b>点「自动生成」按种子位随机排满，不满意的地方拖两个位置对调。全手动 32 组要拖 32 次，全自动又应付不了「这两对是师徒别第一轮碰」。</span></li>
+  <li><b>2</b><span>种子号用等级标签同一套配方（1 号实心、3/4 号浅底），<b>不新开颜色</b>。</span></li>
+  <li><b>3</b><span>后续轮次显示「场次 N 胜者」并<b>降低不透明度</b> —— 它们不可拖，视觉上要和可操作的第一轮分开。</span></li>
+  <li><b>4</b><span>组合卡带<b>自评水平</b>，这是抽签时唯一能参考的强弱信息（系统水平第一版没有）。</span></li>
+  <li><b>5</b><span>名额不满时自动补「轮空」位，用斜体灰字，与真实空位（虚线蓝框）形态区分。</span></li>
+  <li><b>6</b><span>顶栏常驻「未保存」提示 —— 拖了一半刷新页面会全丢，这是后台最容易出事的一屏。</span></li>
+</ul>
+</x-dc>
+</body>
+</html>
