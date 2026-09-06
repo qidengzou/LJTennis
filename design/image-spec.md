@@ -29,7 +29,7 @@
 | 头像 · 大 | 96–120rpx | 180 px | JPEG | 25 KB |
 | 列表缩略图 | 200 × 150rpx | 300 × 225 | JPEG | 40 KB |
 | 卡片大图 | 750 × 420rpx | 1125 × 630 | JPEG | 120 KB |
-| **注册页赞助商条** | 满宽 750rpx | **2250 × 1560**（现为 750×520） | JPEG | 150 KB |
+| **注册页赞助商条** | 满宽 750rpx | **2250 × 990**（现为 750×330） | JPEG | 150 KB |
 | 分享卡片 | 比例 **5:4** | 500 × 400 | JPEG | 128 KB（微信硬限制） |
 | 空态插画 | 200–300rpx | 450 px | SVG 优先 | 20 KB |
 
@@ -97,7 +97,7 @@
 | | |
 |---|---|
 | 页面底色 | `--c-sky: #98C5FE`，写在 `styles/tokens.wxss` |
-| 赞助商条 | `mp/miniprogram/images/register-sponsors.jpg` · 750 × 520 · JPEG · 80 KB |
+| 赞助商条 | `mp/miniprogram/images/register-sponsors.jpg` · 750 × 330 · JPEG · 54 KB |
 | 母版 | `design/assets/register-bg-source-lt.jpg`（750 × 1600，包外） |
 | 上一版 | 摄影底图 `register-bg.jpg`（Unsplash，1080×2341）已删；留档见 `design/assets/register-bg-source.jpg` |
 
@@ -107,7 +107,8 @@
 意义就没了。所以拆开用：
 
 - **上半部的浅蓝**→ 页面 `background: var(--c-sky)`（纯色，任何屏幕比例都不会裁）
-- **下半部的 logo + 品牌字**→ 裁成 750×520 的一条，**当内容排在表单后面**，跟着滚
+- **中间的九宫格 logo**→ 裁成 750×330 的一条，**当内容排在表单后面**，跟着滚
+- **底下两行品牌字**→ **不要**。连品牌字一起裁整条会到 520rpx，压在表单下面太长
 
 `--c-sky` 是从母版逐位取的（`sips -c 6 6 --cropOffset … -s format bmp` 读像素），
 必须和图里的蓝完全一致，否则图和纯色之间会有一道接缝。**换底图就重新取色。**
@@ -115,19 +116,19 @@
 **重新出图（可完全复现）：**
 
 ```bash
-sips -c 520 750 --cropOffset 850 0 design/assets/register-bg-source-lt.jpg \
+sips -c 330 750 --cropOffset 850 0 design/assets/register-bg-source-lt.jpg \
   --out mp/miniprogram/images/register-sponsors.jpg -s formatOptions 88
 ```
 
 > `--cropOffset` 的两个参数是 **offsetY offsetX，从左上角算起**（不是从中心）。
-> 850 是 logo 上方留 40px 蓝，520 高刚好切到品牌字下方 20px。
+> 850 是 logo 上方留 40px 蓝，330 高刚好切到九宫格下方 25px，品牌字切掉。
 
 ### 待办：换 @3x 母版
 
 现在这张母版是 **750px 宽 = @1x**。赞助商条按 1:1 铺满 750rpx，在 @2x/@3x 手机上
 要放大 2~3 倍，logo 和 `™` 会发虚。`npm run check` 会为此报一条警告，宽度到
 **2250px** 才消。这是素材问题，不是代码问题——向主办方要一张 2250×4800 的原图，
-用同样的比例重裁即可（offset 2550、高 1560）。
+用同样的比例重裁即可（offset 2550、高 990）。
 
 ## 七、自动检查
 

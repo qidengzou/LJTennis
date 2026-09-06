@@ -25,7 +25,6 @@ Page({
   data: {
     statusBar: 20,
     navRight: 100,        // 胶囊按钮占位，返回键要避开
-    ctx: null,
     nickname: '',
     phoneFrom: '',      // 'wx' = 已授权，此时只读展示
     phoneShown: '',
@@ -51,10 +50,10 @@ Page({
     const back = store.getRegisterReturn();
     this.back = back || (q.back ? { type: 'navigate', url: decodeURIComponent(q.back) } : null);
     this.lvIdx = 1;                                // 默认 2.5
+    // back.ctx（「你正在报名什么」）不再上屏，但回跳目标仍然要靠它
     this.setData({
       statusBar: statusBar,
       navRight: navRight,
-      ctx: back && back.ctx ? back.ctx : null,
     }, this.renderLevels);
   },
 

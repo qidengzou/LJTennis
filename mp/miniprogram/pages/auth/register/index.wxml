@@ -6,9 +6,7 @@
   </view>
 
   <view class="hero">
-    <text class="hero-k">LJTENNIS</text>
     <text class="hero-t">上场之前</text>
-    <text class="hero-s" wx:if="{{ctx}}">{{ctx.title}}</text>
   </view>
 
   <scroll-view class="sheet-wrap" scroll-y enhanced show-scrollbar="{{false}}">
