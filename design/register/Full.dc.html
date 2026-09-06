@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&display=swap">
+  <style>
+    body { margin: 0; font-family: -apple-system, "PingFang SC", "Source Han Sans CN", sans-serif; }
+    .num { font-family: "Barlow Condensed", -apple-system, sans-serif; font-variant-numeric: tabular-nums; }
+    .lbl { font-size: 10px; color: #7B8496; letter-spacing: .08em }
+    .fld { display: flex; flex-direction: column; gap: 5px }
+  </style>
+</helmet>
+
+<!-- 同一页，填完 + 全页展开。主按钮实际常驻底部不随滚动，这里为了看全铺开画 -->
+<div style="position: relative; width: 390px; min-height: 880px; background: #98C5FE; color: #0B2350; display: flex; flex-direction: column">
+
+  <div style="display: flex; align-items: center; padding: 44px 0 0 10px; height: 44px; box-sizing: content-box">
+    <div style="width: 37px; height: 37px; border-radius: 999px; background: #FFFFFF; box-shadow: 0 1px 4px rgba(20,24,33,.06); display: flex; align-items: center; justify-content: center; font-size: 25px; line-height: 1; padding-bottom: 3px">‹</div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 3px; padding: 4px 21px 10px">
+    <div style="font-size: 10px; letter-spacing: .28em; font-weight: 600; opacity: .62">LJTENNIS</div>
+    <div style="font-size: 29px; font-weight: 700; letter-spacing: .04em; line-height: 1.15">上场之前</div>
+    <!-- 从「报名」进来时带上下文；从「我的」tab 进来时这一行不出现 -->
+    <div style="font-size: 12px; opacity: .72">深圳网球会 · 春季公开赛 · 男双</div>
+  </div>
+
+  <div style="flex: 1; min-height: 0">
+    <div style="margin: 0 15px; padding: 15px 15px 10px; border-radius: 15px; background: #FFFFFF; box-shadow: 0 4px 16px rgba(20,24,33,.12); color: #141821; display: flex; flex-direction: column; gap: 11px">
+
+      <div class="fld">
+        <div class="lbl">昵称</div>
+        <div style="height: 46px; display: flex; align-items: center; background: #EBEDF2; border-radius: 8px; padding: 0 11px; font-size: 15px; color: #141821">李娜</div>
+      </div>
+
+      <!-- 已授权：只读掩码 + 红色「更换」。真号只在云函数里，客户端只拿掩码 -->
+      <div class="fld">
+        <div class="lbl">手机号</div>
+        <div style="display: flex; gap: 6px; align-items: stretch">
+          <div style="flex: 2; min-width: 0; height: 46px; display: flex; align-items: center; gap: 6px; background: #EBEDF2; border-radius: 8px; padding: 0 11px; font-size: 15px; color: #141821">
+            <span style="width: 7px; height: 7px; border-radius: 999px; background: #07C160"></span>
+            <span class="num">138****6421</span>
+          </div>
+          <div style="flex: 1; min-width: 0; height: 46px; border-radius: 8px; background: #E0294B; color: #FFFFFF; font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center">更换</div>
+        </div>
+      </div>
+
+      <div class="fld">
+        <div class="lbl">性别</div>
+        <div style="display: flex; background: #EBEDF2; border-radius: 8px; padding: 3px; gap: 2px">
+          <div style="flex: 1; text-align: center; height: 40px; line-height: 40px; border-radius: 6px; font-size: 15px; color: #4C5567">男</div>
+          <div style="flex: 1; text-align: center; height: 40px; line-height: 40px; border-radius: 6px; font-size: 15px; background: #FFFFFF; color: #141821; font-weight: 600; box-shadow: 0 1px 2px rgba(20,24,33,.10)">女</div>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <div style="display: flex; align-items: baseline; justify-content: space-between">
+          <div class="lbl">水平</div><div class="lbl" style="letter-spacing:.06em">NTRP</div>
+        </div>
+        <div style="position: relative; height: 54px">
+          <div style="position: absolute; left: 11px; right: 11px; top: 16px; height: 4px; border-radius: 2px; background: #EBEDF2"></div>
+          <div style="position: absolute; left: 11px; top: 16px; height: 4px; border-radius: 2px; background: #2E4FD8; width: calc((100% - 22px) * .5)"></div>
+          <div style="position: absolute; inset: 0; display: flex; justify-content: space-between">
+            <div style="width:22px;display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:6px;height:6px;border-radius:999px;margin-top:15px;background:#2E4FD8"></div><span class="num" style="font-size:12px;color:#7B8496">2.0</span></div>
+            <div style="width:22px;display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:6px;height:6px;border-radius:999px;margin-top:15px;background:#2E4FD8"></div><span class="num" style="font-size:12px;color:#7B8496">2.5</span></div>
+            <div style="width:22px;display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:6px;height:6px;border-radius:999px;margin-top:15px;background:#2E4FD8"></div><span class="num" style="font-size:12px;color:#7B8496">3.0</span></div>
+            <div style="width:22px;display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:6px;height:6px;border-radius:999px;margin-top:15px;background:transparent"></div><span class="num" style="font-size:12px;color:#2E4FD8;font-weight:600">3.5</span></div>
+            <div style="width:22px;display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:6px;height:6px;border-radius:999px;margin-top:15px;background:#DFE2E9"></div><span class="num" style="font-size:12px;color:#7B8496">4.0</span></div>
+            <div style="width:22px;display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:6px;height:6px;border-radius:999px;margin-top:15px;background:#DFE2E9"></div><span class="num" style="font-size:12px;color:#7B8496">4.5</span></div>
+            <div style="width:22px;display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:6px;height:6px;border-radius:999px;margin-top:15px;background:#DFE2E9"></div><span class="num" style="font-size:12px;color:#7B8496">5.0</span></div>
+          </div>
+          <div style="position: absolute; top: 7px; left: calc(11px + (100% - 22px) * .5); width: 22px; height: 22px; margin-left: -11px; border-radius: 999px; background: #FFFFFF; border: 3px solid #2E4FD8; box-shadow: 0 2px 8px rgba(20,24,33,.22)"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <img src="sponsors.jpg" style="display: block; width: 100%; margin: 21px 0 0">
+  </div>
+
+  <div style="flex: none; padding: 12px 21px 24px; display: flex; flex-direction: column; align-items: center; gap: 10px">
+    <div style="width: 100%; padding: 15px; border-radius: 8px; text-align: center; font-size: 17px; font-weight: 600; letter-spacing: .12em; background: #2E4FD8; color: #FFFFFF; box-shadow: 0 6px 16px rgba(46,79,216,.38)">SERVE!!</div>
+    <div style="font-size: 10px; color: #0B2350; opacity: .62">继续即表示同意《用户协议》和《隐私政策》</div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

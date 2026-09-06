@@ -1,7 +1,4 @@
 <view class="root">
-  <image class="bg" src="/images/register-bg.jpg" mode="aspectFill" />
-  <view class="scrim"></view>
-
   <view class="nav" style="padding-top: {{statusBar}}px; padding-right: {{navRight}}px">
     <view class="back" bindtap="onBack" hover-class="back-on">
       <text class="back-i">‹</text>
@@ -67,6 +64,11 @@
       </view>
     </view>
   </view>
+
+  <!-- 赞助商条：从底图裁下来的那一段，跟着表单一起滚，**不当背景**。
+       当背景会被表单卡整块盖住 —— 那张图上半部留白就是给内容用的，
+       九宫格 logo 在 55%~72% 高度处，正是卡片落点。 -->
+  <image class="sponsors" src="/images/register-sponsors.jpg" mode="widthFix" />
   </scroll-view>
 
   <view class="dock">

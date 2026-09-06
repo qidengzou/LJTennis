@@ -8,7 +8,7 @@ const MP  = path.join(__dirname, '../miniprogram');
 
 const LIMITS = [
   { re: /icons\//,        max:  10 * 1024, label: 'tabBar / 行内图标' },
-  { re: /register-bg/,    max: 400 * 1024, label: '全屏背景' },
+  { re: /register-sponsors/, max: 150 * 1024, label: '注册页赞助商条' },
   { re: /./,              max: 120 * 1024, label: '一般图片' },
 ];
 
@@ -63,11 +63,9 @@ walk(DIR, []).forEach(function (file) {
     console.log('  ⚠ ' + rel + '  ' + kb(size) + '，超出「' + rule.label + '」预算 ' + kb(rule.max));
     warn++;
   }
-  if (/register-bg/.test(rel) && d) {
-    // 1080 是刻意选的：底图上压着遮罩，降分辨率比降质量划算（见 design/image-spec.md §六）
-    if (d.w < 1080) { console.log('  ⚠ ' + rel + '  宽 ' + d.w + 'px，全屏背景不应低于 1080'); warn++; }
-    const r = +(d.w / d.h).toFixed(3);
-    if (r > 0.50) { console.log('  ⚠ ' + rel + '  比例 ' + r + '，全屏背景建议 ≈0.46，否则左右会被 aspectFill 裁掉'); warn++; }
+  if (/register-sponsors/.test(rel) && d) {
+    // 这条是 1:1 铺满 750rpx 宽的，@3x 机器要 2250px 才锐；低于 1500 就已经看得出发虚
+    if (d.w < 1500) { console.log('  ⚠ ' + rel + '  宽 ' + d.w + 'px，@2x/@3x 上 logo 会发虚，理想 2250'); warn++; }
   }
 });
 

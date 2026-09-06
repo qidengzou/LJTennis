@@ -1,0 +1,151 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&display=swap">
+  <style>
+    body { margin: 0; font-family: -apple-system, "PingFang SC", "Source Han Sans CN", sans-serif; }
+    .num { font-family: "Barlow Condensed", -apple-system, sans-serif; font-variant-numeric: tabular-nums; }
+    .fold { position: absolute; left: 0; right: 0; border-top: 1px dashed rgba(11,35,80,.35); pointer-events: none; z-index: 9 }
+    .fold i { position: absolute; right: 6px; top: -14px; font-size: 9px; color: rgba(11,35,80,.55); font-style: normal; letter-spacing: .06em }
+  </style>
+</helmet>
+
+<!-- 注册页。底色 #98C5FE 逐位取自赞助商底图；图只用底部那一条，
+     跟着表单滚，不铺满 —— 铺满会被表单卡整块盖掉赞助商。 -->
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: #98C5FE; color: #0B2350; display: flex; flex-direction: column">
+
+  <!-- 自定义导航：状态栏 + 返回。白圆底，浅蓝上半透明白看不见 -->
+  <div style="position: relative; display: flex; align-items: center; padding: 44px 0 0 10px; height: 44px; box-sizing: content-box">
+    <div style="width: 37px; height: 37px; border-radius: 999px; background: #FFFFFF; box-shadow: 0 1px 4px rgba(20,24,33,.06); display: flex; align-items: center; justify-content: center; font-size: 25px; line-height: 1; padding-bottom: 3px">‹</div>
+  </div>
+
+  <div style="position: relative; display: flex; flex-direction: column; gap: 3px; padding: 4px 21px 10px">
+    <div style="font-size: 10px; letter-spacing: .28em; font-weight: 600; opacity: .62">LJTENNIS</div>
+    <div style="font-size: 29px; font-weight: 700; letter-spacing: .04em; line-height: 1.15">上场之前</div>
+  </div>
+
+  <!-- 表单 + 赞助商条同在一个滚动区。赞助商是内容，不是背景 -->
+  <div style="position: relative; flex: 1; min-height: 0; overflow-y: auto">
+
+    <div style="margin: 0 15px; padding: 15px 15px 10px; border-radius: 15px; background: #FFFFFF; box-shadow: 0 4px 16px rgba(20,24,33,.12); color: #141821; display: flex; flex-direction: column; gap: 11px">
+
+      <div style="display: flex; flex-direction: column; gap: 5px">
+        <div style="font-size: 10px; color: #7B8496; letter-spacing: .08em">昵称</div>
+        <div style="height: 46px; display: flex; align-items: center; background: #EBEDF2; border-radius: 8px; padding: 0 11px; font-size: 15px; color: #7B8496">会出现在签表上</div>
+      </div>
+
+      <!-- 手机号未授权：整行绿按钮。getPhoneNumber 必须由真实点击触发 -->
+      <div style="display: flex; flex-direction: column; gap: 5px">
+        <div style="font-size: 10px; color: #7B8496; letter-spacing: .08em">手机号</div>
+        <div style="height: 46px; border-radius: 8px; background: #07C160; color: #FFFFFF; font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center">快捷填写</div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 5px">
+        <div style="font-size: 10px; color: #7B8496; letter-spacing: .08em">性别</div>
+        <div style="display: flex; background: #EBEDF2; border-radius: 8px; padding: 3px; gap: 2px">
+          <sc-for list="{{genders}}" as="g" hint-placeholder-count="2">
+            <div onClick="{{ g.pick }}" style="flex: 1; text-align: center; height: 40px; line-height: 40px; border-radius: 6px; font-size: 15px; cursor: pointer; background: {{g.bg}}; color: {{g.fg}}; font-weight: {{g.fw}}; box-shadow: {{g.sh}}">{{g.label}}</div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <div style="display: flex; align-items: baseline; justify-content: space-between">
+          <div style="font-size: 10px; color: #7B8496; letter-spacing: .08em">水平</div>
+          <div style="font-size: 10px; color: #7B8496; letter-spacing: .06em">NTRP</div>
+        </div>
+        <!-- 拖比点准：7 档摊在 330px 里每格 47rpx，远低于 44px 最小点击区 -->
+        <div onPointerDown="{{ onDown }}" onPointerMove="{{ onMove }}" onPointerUp="{{ onUp }}" onPointerLeave="{{ onUp }}"
+             style="position: relative; height: 54px; touch-action: none; cursor: pointer; user-select: none">
+          <div style="position: absolute; left: 11px; right: 11px; top: 16px; height: 4px; border-radius: 2px; background: #EBEDF2"></div>
+          <div style="position: absolute; left: 11px; top: 16px; height: 4px; border-radius: 2px; background: #2E4FD8; width: {{fillW}}"></div>
+          <div style="position: absolute; inset: 0; display: flex; justify-content: space-between; pointer-events: none">
+            <sc-for list="{{ticks}}" as="t" hint-placeholder-count="7">
+              <div style="width: 22px; display: flex; flex-direction: column; align-items: center; gap: 8px">
+                <div style="width: 6px; height: 6px; border-radius: 999px; margin-top: 15px; background: {{t.dot}}"></div>
+                <span class="num" style="font-size: 12px; font-weight: {{t.fw}}; color: {{t.fg}}">{{t.v}}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="position: absolute; top: 7px; left: {{thumbL}}; width: 22px; height: 22px; margin-left: -11px; border-radius: 999px; background: #FFFFFF; border: 3px solid #2E4FD8; box-shadow: 0 2px 8px rgba(20,24,33,.22); pointer-events: none"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 赞助商条：750×520 原图 1:1 铺满宽度，左右的蓝正好接上页面底色 -->
+    <img src="sponsors.jpg" style="display: block; width: 100%; margin: 21px 0 0">
+  </div>
+
+  <!-- 主按钮常驻。资料没填完不灰掉：点了直接说缺什么 -->
+  <div style="position: relative; flex: none; padding: 12px 21px 24px; display: flex; flex-direction: column; align-items: center; gap: 10px">
+    <div style="width: 100%; padding: 15px; border-radius: 8px; text-align: center; font-size: 17px; font-weight: 600; letter-spacing: .12em; cursor: pointer; background: #FFFFFF; color: #7B8496; opacity: .8">SERVE!!</div>
+    <div style="font-size: 10px; color: #0B2350; opacity: .62">继续即表示同意《用户协议》和《隐私政策》</div>
+  </div>
+
+</div>
+</x-dc>
+
+<script data-dc-script>
+const SHORT = ['2.0','2.5','3.0','3.5','4.0','4.5','5.0'];
+
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { gender: 'M', idx: 1, dragging: false };
+  }
+
+  seek(e) {
+    const r = e.currentTarget.getBoundingClientRect();
+    const n = SHORT.length;
+    const p = (e.clientX - r.left - 11) / Math.max(1, r.width - 22);
+    const i = Math.round(Math.min(1, Math.max(0, p)) * (n - 1));
+    if (i !== this.state.idx) this.setState({ idx: i });
+  }
+
+  renderVals() {
+    const self = this;
+    const idx = this.state.idx;
+    const pct = idx / (SHORT.length - 1);
+
+    return {
+      genders: [{ v: 'M', label: '男' }, { v: 'F', label: '女' }].map(function (g) {
+        const on = self.state.gender === g.v;
+        return {
+          label: g.label,
+          bg: on ? '#FFFFFF' : 'transparent',
+          fg: on ? '#141821' : '#4C5567',
+          fw: on ? '600' : '400',
+          sh: on ? '0 1px 2px rgba(20,24,33,.10)' : 'none',
+          pick: function () { self.setState({ gender: g.v }); },
+        };
+      }),
+
+      ticks: SHORT.map(function (v, i) {
+        const sel = i === idx;
+        return {
+          v: v,
+          dot: sel ? 'transparent' : (i < idx ? '#2E4FD8' : '#DFE2E9'),
+          fg: sel ? '#2E4FD8' : '#7B8496',
+          fw: sel ? '600' : '500',
+        };
+      }),
+
+      fillW: 'calc((100% - 22px) * ' + pct + ')',
+      thumbL: 'calc(11px + (100% - 22px) * ' + pct + ')',
+
+      onDown: function (e) { self.setState({ dragging: true }); self.seek(e); },
+      onMove: function (e) { if (self.state.dragging) self.seek(e); },
+      onUp:   function () { if (self.state.dragging) self.setState({ dragging: false }); },
+    };
+  }
+}
+</script>
+</body>
+</html>
