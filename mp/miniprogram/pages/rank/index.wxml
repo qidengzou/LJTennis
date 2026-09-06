@@ -1,0 +1,11 @@
+<view class="page">
+  <view class="card ph">
+    <text class="ph-t">积分榜</text>
+    <text class="k">按项目 / 赛季 / 地区筛选，排「人」不排「组合」。</text>
+    <view class="tbd">
+      分值来源待积分规则确定：各轮次分值 · 赛事等级系数 · 双打各得全额还是各半 · 赛季划分方式。
+      界面结构见 design/hifi-rank.html。
+    </view>
+  </view>
+  <view class="safe-bottom"></view>
+</view>

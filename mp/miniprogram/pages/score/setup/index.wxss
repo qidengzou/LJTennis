@@ -1,0 +1,15 @@
+.page { padding: 24rpx; display: flex; flex-direction: column; gap: 24rpx; }
+.fmt { display: block; margin-top: 12rpx; font-size: var(--t-h3); color: var(--c-ink); }
+.fld { display: flex; flex-direction: column; gap: 14rpx; }
+.seg { display: flex; background: var(--c-surface-2); border-radius: var(--r-m); padding: 6rpx; gap: 4rpx; }
+.seg-i {
+  flex: 1; text-align: center; padding: 18rpx 4rpx; border-radius: 12rpx;
+  font-size: 28rpx; color: var(--c-ink-2);
+}
+.seg-i.on { background: var(--c-surface); color: var(--c-ink); font-weight: 600; box-shadow: var(--e-1); }
+.order { background: var(--c-surface-2); box-shadow: none; }
+.order-row { display: flex; align-items: center; flex-wrap: wrap; gap: 10rpx; margin-top: 10rpx; }
+.on-name { font-size: 28rpx; color: var(--c-ink); }
+.arrow { font-size: 26rpx; color: var(--c-ink-3); }
+.dot { width: 16rpx; height: 16rpx; border-radius: 999rpx; background: var(--c-serve); }
+.start { margin-top: 16rpx; }

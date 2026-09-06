@@ -1,0 +1,67 @@
+/* app.wxss —— 全局基线。所有颜色一律走令牌，不写死 hex */
+@import "styles/tokens.wxss";
+
+page {
+  box-sizing: border-box;
+}
+
+view, text, button, input, scroll-view {
+  box-sizing: border-box;
+}
+
+/* 微信默认按钮样式清理 */
+button {
+  padding: 0;
+  margin: 0;
+  line-height: normal;
+  background: initial;
+  border-radius: 0;
+}
+button::after { border: none; }
+button:focus { outline: 0; }
+
+/* ---- 通用工具类 ---- */
+.card {
+  background: var(--c-surface);
+  border-radius: var(--r-l);
+  padding: var(--s-3);
+  box-shadow: var(--e-1);
+}
+.row-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+}
+.k {
+  font-size: var(--t-caption);
+  color: var(--c-ink-3);
+}
+.btn {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 24rpx;
+  border-radius: var(--r-m);
+  font-size: 30rpx;
+  font-weight: 500;
+}
+.btn-primary { background: var(--c-brand); color: var(--c-brand-ink); }
+.btn-secondary { background: var(--c-surface-2); color: var(--c-ink); }
+.btn-outline { background: transparent; color: var(--c-ink-2); border: 2rpx solid var(--c-line); }
+.btn-primary:active { opacity: .82; }
+.btn-secondary:active, .btn-outline:active { background: var(--c-brand-weak); }
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10rpx;
+  font-size: var(--t-micro);
+  padding: 6rpx 18rpx;
+  border-radius: var(--r-full);
+  background: var(--c-surface-2);
+  color: var(--c-ink-2);
+}
+.chip-live { background: rgba(245, 165, 36, .16); color: var(--c-live); }
+.chip-win  { background: rgba(14, 159, 110, .16); color: var(--c-win); }
+.chip-brand{ background: var(--c-brand-weak); color: var(--c-brand); }

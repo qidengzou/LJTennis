@@ -1,0 +1,12 @@
+.page { padding: 24rpx; display: flex; flex-direction: column; gap: 20rpx; }
+.en { display: flex; flex-direction: column; gap: 14rpx; }
+.en.hero { outline: 4rpx solid var(--c-brand); outline-offset: -4rpx; }
+.en.faded { opacity: .6; }
+.dot { width: 10rpx; height: 10rpx; border-radius: var(--r-full); background: currentColor; }
+.t { font-size: var(--t-h3); color: var(--c-ink); }
+.cd-u { font-size: var(--t-caption); color: var(--c-live); font-weight: 600; }
+.mt12 { margin-top: 8rpx; padding: 18rpx; font-size: 28rpx; }
+.btn-wx { background: var(--c-wx); color: var(--c-on-wx); }
+.empty { text-align: center; padding: 96rpx 24rpx; display: flex; flex-direction: column; gap: 12rpx; }
+.empty-ic { font-size: 64rpx; }
+.empty-t { font-size: var(--t-h3); font-weight: 600; color: var(--c-ink); }

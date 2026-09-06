@@ -1,0 +1,32 @@
+<view class="page">
+  <view class="banner">
+    {{ev.tournamentName}} · <text class="b">{{ev.name}}</text> · {{ev.feeText}}
+    <block wx:if="{{genderHint}}">{{'\n'}}{{genderHint}}</block>
+  </view>
+
+  <text class="k">常搭档</text>
+  <view class="card list">
+    <view class="prow" wx:for="{{partners}}" wx:key="id">
+      <view class="av" style="background:{{item.color}}">{{item.nickname[0]}}</view>
+      <view class="nm">
+        <text class="nm-t">{{item.nickname}}</text>
+        <text class="k">同队 {{item.together}} 场 · 胜率 {{item.winRate}}%</text>
+      </view>
+      <view class="pick {{picked === item.id ? 'on' : ''}}" data-id="{{item.id}}" bindtap="onPick">
+        {{picked === item.id ? '已选' : '选择'}}
+      </view>
+    </view>
+    <view class="prow empty" wx:if="{{partners.length === 0}}">
+      <text class="k">这个项目下还没有可选的常搭档</text>
+    </view>
+  </view>
+
+  <text class="k">或者搜索选手</text>
+  <view class="srch"><text>🔍</text><text class="k">输入昵称或手机号</text></view>
+
+  <view class="dock">
+    <button class="btn btn-primary" bindtap="onInvite">发微信邀请搭档</button>
+    <text class="k center">搭档还没用过小程序？直接转发邀请即可</text>
+  </view>
+  <view class="safe-bottom"></view>
+</view>

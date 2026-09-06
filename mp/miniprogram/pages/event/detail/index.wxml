@@ -1,0 +1,33 @@
+<view class="page">
+  <view class="card ev">
+    <view class="row-between">
+      <text class="ev-n">{{ev.name}}</text>
+      <text class="{{ev.full ? 'full' : 'k'}}">{{ev.countText}}</text>
+    </view>
+    <view class="bar"><view class="bar-i {{ev.full ? 'f' : ''}}" style="width:{{ev.pct}}%"></view></view>
+    <text class="k">{{ev.feeText}} · {{rules}}</text>
+  </view>
+
+  <!-- 满员不是错误状态：用橙不用红，按钮不灰掉而是变候补 -->
+  <view class="banner" wx:if="{{ev.full}}">
+    候补不需要先付款。有组合退赛时按顺序转正，转正后 24 小时内支付即可。
+  </view>
+
+  <text class="k sec">已报名组合 · 按报名先后</text>
+  <view class="card list">
+    <view class="prow" wx:for="{{entries}}" wx:key="id">
+      <view class="av" style="background:{{item.color}}">{{item.initial}}</view>
+      <view class="nm">
+        <text class="nm-t">{{item.names[0]}} / {{item.names[1]}}</text>
+        <text class="k">{{item.at}}</text>
+      </view>
+    </view>
+    <view class="prow empty" wx:if="{{entries.length === 0}}"><text class="k">还没有组合报名</text></view>
+  </view>
+  <text class="k center">共 {{ev.confirmedCount}} 组</text>
+
+  <view class="dock">
+    <button class="btn {{ev.full ? 'btn-secondary' : 'btn-primary'}}" bindtap="onCreate">{{ctaText}}</button>
+  </view>
+  <view class="safe-bottom"></view>
+</view>

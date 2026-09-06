@@ -1,0 +1,44 @@
+<view class="scr">
+  <view class="scr-head">
+    <text>{{meta.tournament}} · {{meta.court}}</text>
+    <text>{{formatLabel}}</text>
+  </view>
+
+  <!-- 对方在上，我方在下：贴合球场物理方位 -->
+  <view class="tapz {{finished ? 'off' : ''}}" hover-class="tapz-hit" hover-stay-time="80" bindtap="onB">
+    <view class="tz-names">
+      <view class="tz-n"><view class="dot {{srvSide === 1 && srvIdx === 0 ? 'on' : ''}}"></view><text>{{meta.b[0]}}</text></view>
+      <view class="tz-n"><view class="dot {{srvSide === 1 && srvIdx === 1 ? 'on' : ''}}"></view><text>{{meta.b[1]}}</text></view>
+    </view>
+    <text class="tz-p num">{{ptB}}</text>
+  </view>
+
+  <view class="tapz {{finished ? 'off' : ''}}" hover-class="tapz-hit" hover-stay-time="80" bindtap="onA">
+    <view class="tz-names">
+      <view class="tz-n"><view class="dot {{srvSide === 0 && srvIdx === 0 ? 'on' : ''}}"></view><text>{{meta.a[0]}}</text></view>
+      <view class="tz-n"><view class="dot {{srvSide === 0 && srvIdx === 1 ? 'on' : ''}}"></view><text>{{meta.a[1]}}</text></view>
+    </view>
+    <text class="tz-p num">{{ptA}}</text>
+  </view>
+
+  <view class="scrbar">
+    <view class="sets">
+      <text>盘<text class="v num">{{setWins}}</text></text>
+      <text>局<text class="v num">{{gameScore}}</text></text>
+      <view class="done">
+        <block wx:for="{{doneSets}}" wx:key="index">
+          <text class="num">{{item.a}}<text class="sup" wx:if="{{item.ta !== null}}">{{item.ta}}</text></text>
+          <text class="num sep">{{item.b}}<text class="sup" wx:if="{{item.tb !== null}}">{{item.tb}}</text></text>
+        </block>
+      </view>
+    </view>
+    <view class="undo {{canUndo ? '' : 'dis'}}" bindtap="onUndo">撤销</view>
+  </view>
+
+  <view class="sync">{{syncTip}}</view>
+
+  <view class="foot">
+    <button class="btn btn-outline" bindtap="onFinish">{{finished ? '提交比分' : '结束比赛'}}</button>
+  </view>
+  <view class="safe-bottom"></view>
+</view>

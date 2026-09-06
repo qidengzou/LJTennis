@@ -1,0 +1,55 @@
+{
+  "pages": [
+    "pages/tournament/index",
+    "pages/rank/index",
+    "pages/me/index",
+    "pages/auth/register/index",
+    "pages/score/setup/index",
+    "pages/score/live/index",
+    "pages/draw/index",
+    "pages/draw/overview/index",
+    "pages/tournament/detail/index",
+    "pages/event/detail/index",
+    "pages/entry/create/index",
+    "pages/entry/invite/index",
+    "pages/entry/pay/index",
+    "pages/me/entries/index"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "LJTennis",
+    "backgroundColor": "#F4F5F7",
+    "backgroundTextStyle": "light"
+  },
+  "tabBar": {
+    "color": "#7B8496",
+    "selectedColor": "#2E4FD8",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/tournament/index",
+        "text": "赛事",
+        "iconPath": "images/icons/home.png",
+        "selectedIconPath": "images/icons/home-active.png"
+      },
+      {
+        "pagePath": "pages/rank/index",
+        "text": "积分",
+        "iconPath": "images/icons/business.png",
+        "selectedIconPath": "images/icons/business-active.png"
+      },
+      {
+        "pagePath": "pages/me/index",
+        "text": "我的",
+        "iconPath": "images/icons/usercenter.png",
+        "selectedIconPath": "images/icons/usercenter-active.png"
+      }
+    ]
+  },
+  "darkmode": false,
+  "sitemapLocation": "sitemap.json",
+  "style": "v2",
+  "lazyCodeLoading": "requiredComponents"
+}

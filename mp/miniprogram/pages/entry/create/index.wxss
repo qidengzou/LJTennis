@@ -1,0 +1,15 @@
+.page { padding: 24rpx; display: flex; flex-direction: column; gap: 18rpx; min-height: 100vh; }
+.banner { background: var(--c-surface-2); color: var(--c-ink-2); border-radius: var(--r-m); padding: 22rpx 26rpx; font-size: var(--t-caption); line-height: 1.7; white-space: pre-line; }
+.banner .b { color: var(--c-ink); font-weight: 600; }
+.list { padding: 8rpx 28rpx; }
+.prow { display: flex; align-items: center; gap: 22rpx; padding: 22rpx 0; border-bottom: 2rpx solid var(--c-line); }
+.prow:last-child { border-bottom: 0; }
+.prow.empty { justify-content: center; }
+.av { width: 72rpx; height: 72rpx; border-radius: var(--r-full); display: flex; align-items: center; justify-content: center; color: var(--c-on-av); font-size: 28rpx; font-weight: 600; flex: none; }
+.nm { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4rpx; }
+.nm-t { font-size: var(--t-h3); color: var(--c-ink); }
+.pick { flex: none; padding: 12rpx 28rpx; border-radius: var(--r-m); background: var(--c-surface-2); color: var(--c-ink); font-size: var(--t-caption); }
+.pick.on { background: var(--c-brand); color: var(--c-brand-ink); font-weight: 600; }
+.srch { display: flex; align-items: center; gap: 14rpx; background: var(--c-surface-2); border-radius: var(--r-m); padding: 22rpx 26rpx; }
+.center { text-align: center; }
+.dock { margin-top: auto; padding-top: 24rpx; display: flex; flex-direction: column; gap: 16rpx; }

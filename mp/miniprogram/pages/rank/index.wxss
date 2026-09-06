@@ -1,0 +1,7 @@
+.page { padding: 24rpx; }
+.ph { display: flex; flex-direction: column; gap: 16rpx; }
+.ph-t { font-size: var(--t-h1); font-weight: 600; color: var(--c-ink); }
+.tbd {
+  border: 2rpx dashed var(--c-live); color: var(--c-live);
+  border-radius: var(--r-m); padding: 20rpx 22rpx; font-size: var(--t-caption); line-height: 1.6;
+}

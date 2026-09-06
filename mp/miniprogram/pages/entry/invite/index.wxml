@@ -1,0 +1,25 @@
+<view class="page">
+  <view class="card hero">
+    <view class="av" style="background:var(--c-av-1)">{{inv.from.nickname[0]}}</view>
+    <text class="t">{{inv.from.nickname}} 邀请你组队</text>
+    <text class="k">{{inv.tournamentName}} · {{inv.eventName}}</text>
+  </view>
+
+  <view class="card kv">
+    <view class="row-between"><text class="k">报名费</text><text class="v">{{inv.feeText}}</text></view>
+    <view class="row-between"><text class="k">谁支付</text><text class="v pay">{{inv.payerName}}（发起人）</text></view>
+    <view class="row-between"><text class="k">比赛时间</text><text class="v">{{inv.date}}</text></view>
+  </view>
+
+  <view class="cd {{urgent ? 'urgent' : ''}}">
+    <text>邀请剩余时间 · 超时自动作废</text>
+    <text class="num">{{countdown}}</text>
+  </view>
+
+  <view class="dock">
+    <button class="btn btn-primary" bindtap="onAccept">接受邀请</button>
+    <button class="btn btn-outline" bindtap="onReject">拒绝</button>
+    <text class="k center">接受后需微信授权登录</text>
+  </view>
+  <view class="safe-bottom"></view>
+</view>

@@ -1,0 +1,98 @@
+<view class="page">
+  <!-- 赛制切换（演示用；真实场景由 event 决定，只会有一种） -->
+  <view class="seg demo">
+    <view class="seg-i {{fmt === 'knockout' ? 'on' : ''}}" data-v="knockout" bindtap="onFmt">淘汰赛</view>
+    <view class="seg-i {{fmt === 'group' ? 'on' : ''}}" data-v="group" bindtap="onFmt">小组循环</view>
+  </view>
+
+  <!-- ============ 淘汰赛：轮次分页（阶段 2 定的方案 B） ============ -->
+  <block wx:if="{{fmt === 'knockout'}}">
+    <scroll-view class="seg-scroll" scroll-x enable-flex>
+      <view class="seg">
+        <view class="seg-i {{curRound === item.roundOf ? 'on' : ''}}"
+              wx:for="{{rounds}}" wx:key="roundOf" data-v="{{item.roundOf}}" bindtap="onRound">{{item.label}}</view>
+      </view>
+    </scroll-view>
+
+    <view class="chips">
+      <view class="fchip {{!onlyMine ? 'on' : ''}}" bindtap="onAll">全部</view>
+      <view class="fchip {{onlyMine ? 'on' : ''}}" bindtap="onMine">我的路径</view>
+      <view class="fchip" bindtap="onOverview">全览图 ⤢</view>
+    </view>
+
+    <view class="empty" wx:if="{{cards.length === 0}}">
+      <view class="empty-ic">🔍</view>
+      <text class="empty-t">这一轮没有你的场次</text>
+      <text class="k">切回「全部」看完整签表</text>
+    </view>
+
+    <view class="mc {{item.mine ? 'mine' : ''}}" wx:for="{{cards}}" wx:key="id">
+      <view class="mc-h">
+        <text>场次 {{item.no}} · {{item.when}}</text>
+        <view class="chip {{item.chipCls}}">{{item.chipText}}</view>
+      </view>
+      <view class="mc-r {{item.a.lose ? 'lose' : ''}}">
+        <text class="nm" wx:if="{{!item.a.pending}}">{{item.a.name}}</text>
+        <text class="nm pend" wx:else>{{item.a.name}}</text>
+        <view class="sc" wx:if="{{item.hasScore}}">
+          <text class="num" wx:for="{{item.a.sets}}" wx:for-item="s" wx:key="index">{{s.v}}<text class="sup" wx:if="{{s.sup}}">{{s.sup}}</text></text>
+        </view>
+        <text class="dash" wx:else>—</text>
+      </view>
+      <view class="mc-r {{item.b.lose ? 'lose' : ''}}">
+        <text class="nm" wx:if="{{!item.b.pending}}">{{item.b.name}}</text>
+        <text class="nm pend" wx:else>{{item.b.name}}</text>
+        <view class="sc" wx:if="{{item.hasScore}}">
+          <text class="num" wx:for="{{item.b.sets}}" wx:for-item="s" wx:key="index">{{s.v}}<text class="sup" wx:if="{{s.sup}}">{{s.sup}}</text></text>
+        </view>
+        <text class="dash" wx:else>—</text>
+      </view>
+      <button class="btn btn-primary mt12" wx:if="{{item.canScore}}" data-id="{{item.id}}" bindtap="onScore">进入记分</button>
+    </view>
+  </block>
+
+  <!-- ============ 小组循环 ============ -->
+  <block wx:else>
+    <view class="seg">
+      <view class="seg-i {{curGroup === item.id ? 'on' : ''}}"
+            wx:for="{{groups}}" wx:key="id" data-v="{{item.id}}" bindtap="onGroup">{{item.name}}</view>
+    </view>
+
+    <view class="card">
+      <view class="gt-h">
+        <text class="c-r"></text><text class="c-n">组合</text><text class="c-v">胜负</text><text class="c-v">净局</text>
+      </view>
+      <view class="gt-row {{item.qualified ? 'q' : ''}}" wx:for="{{standings}}" wx:key="entryId">
+        <text class="c-r">{{item.rank}}</text>
+        <text class="c-n">{{item.name}}</text>
+        <text class="c-v num">{{item.wl}}</text>
+        <text class="c-v num">{{item.diff}}</text>
+      </view>
+      <text class="k gt-note">前 {{qualifyCount}} 名出线 · 同分看净胜局</text>
+    </view>
+
+    <view class="k sec">组内赛程</view>
+    <view class="mc {{item.mine ? 'mine' : ''}}" wx:for="{{groupCards}}" wx:key="id">
+      <view class="mc-h">
+        <text>场次 {{item.no}} · {{item.when}}</text>
+        <view class="chip {{item.chipCls}}">{{item.chipText}}</view>
+      </view>
+      <view class="mc-r {{item.a.lose ? 'lose' : ''}}">
+        <text class="nm">{{item.a.name}}</text>
+        <view class="sc" wx:if="{{item.hasScore}}">
+          <text class="num" wx:for="{{item.a.sets}}" wx:for-item="s" wx:key="index">{{s.v}}<text class="sup" wx:if="{{s.sup}}">{{s.sup}}</text></text>
+        </view>
+        <text class="dash" wx:else>—</text>
+      </view>
+      <view class="mc-r {{item.b.lose ? 'lose' : ''}}">
+        <text class="nm">{{item.b.name}}</text>
+        <view class="sc" wx:if="{{item.hasScore}}">
+          <text class="num" wx:for="{{item.b.sets}}" wx:for-item="s" wx:key="index">{{s.v}}<text class="sup" wx:if="{{s.sup}}">{{s.sup}}</text></text>
+        </view>
+        <text class="dash" wx:else>—</text>
+      </view>
+    </view>
+  </block>
+
+  <view class="safe-bottom"></view>
+</view>

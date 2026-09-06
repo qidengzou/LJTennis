@@ -1,0 +1,22 @@
+<view class="page">
+  <view class="card en {{item.hero ? 'hero' : ''}} {{item.faded ? 'faded' : ''}}"
+        wx:for="{{list}}" wx:key="id">
+    <view class="row-between">
+      <view class="chip {{item.view.cls}}">
+        <view class="dot" wx:if="{{item.view.dot}}"></view>{{item.view.text}}
+      </view>
+      <text class="{{item.urgent ? 'cd-u' : 'k'}}">{{item.right}}</text>
+    </view>
+    <text class="t">{{item.tournamentName}} · {{item.eventName}}</text>
+    <text class="k">{{item.sub}}</text>
+    <button class="btn {{item.btnCls}} mt12" wx:if="{{item.view.action}}"
+            data-id="{{item.id}}" data-status="{{item.status}}" bindtap="onAction">{{item.view.action}}</button>
+  </view>
+
+  <view class="empty" wx:if="{{list.length === 0}}">
+    <text class="empty-ic">📋</text>
+    <text class="empty-t">还没有报名记录</text>
+    <text class="k">去赛事列表看看有哪些比赛</text>
+  </view>
+  <view class="safe-bottom"></view>
+</view>

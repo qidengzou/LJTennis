@@ -1,0 +1,11 @@
+.page { padding: 24rpx; display: flex; flex-direction: column; gap: 20rpx; min-height: 100vh; }
+.title { display: block; margin: 16rpx 0 10rpx; font-size: 38rpx; font-weight: 600; color: var(--c-ink); line-height: 1.35; }
+.sec { margin-top: 12rpx; }
+.ev { display: flex; flex-direction: column; gap: 16rpx; }
+.ev-n { font-size: var(--t-h3); color: var(--c-ink); }
+.full { font-size: var(--t-caption); color: var(--c-live); }
+.bar { height: 10rpx; background: var(--c-surface-2); border-radius: var(--r-full); overflow: hidden; }
+.bar-i { height: 100%; background: var(--c-brand); border-radius: var(--r-full); }
+.bar-i.f { background: var(--c-live); }
+.dock { margin-top: auto; padding-top: 24rpx; display: flex; flex-direction: column; gap: 16rpx; }
+.center { text-align: center; }

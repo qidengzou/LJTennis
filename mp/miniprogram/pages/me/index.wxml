@@ -1,0 +1,59 @@
+<view class="page">
+  <!-- 未注册：不做硬跳转，用未注册态页面。tab 页硬跳会把人困住 -->
+  <block wx:if="{{loaded && !registered}}">
+    <view class="card anon">
+      <view class="av-ph">👤</view>
+      <view class="anon-txt">
+        <text class="anon-t">还没注册</text>
+        <text class="k">注册后可以报名赛事、现场记分{{'\n'}}并查看自己的参赛记录</text>
+      </view>
+      <button class="btn btn-wx" bindtap="onRegister">微信一键注册</button>
+    </view>
+
+    <text class="k">不需要注册也能看</text>
+    <view class="card list">
+      <view class="prow"><view class="nm"><text class="nm-t">赛制与退款规则</text></view><text class="ar">›</text></view>
+      <view class="prow"><view class="nm"><text class="nm-t">设置</text></view><text class="ar">›</text></view>
+    </view>
+  </block>
+
+  <!-- 已注册 -->
+  <block wx:elif="{{loaded}}">
+    <view class="card">
+      <view class="hd">
+        <view class="av" style="background:var(--c-av-{{(user.avatarColorIndex || 0) + 1}})">{{user.nickname[0]}}</view>
+        <view class="hd-n">
+          <text class="hd-t">{{user.nickname}}</text>
+          <text class="k">{{genderText}}{{user.city ? ' · ' + user.city : ''}}{{user.phoneMasked ? ' · ' + user.phoneMasked : ''}}</text>
+        </view>
+        <view class="chip" bindtap="onProfile">编辑</view>
+      </view>
+      <view class="hr"></view>
+      <view class="stats">
+        <view class="st"><text class="st-v num">{{stats.registered}}</text><text class="k">报名</text></view>
+        <view class="st"><text class="st-v num">{{stats.completed}}</text><text class="k">完赛</text></view>
+        <view class="st"><text class="st-v num">{{stats.wins}}<text class="st-s">-{{stats.losses}}</text></text><text class="k">胜负</text></view>
+      </view>
+    </view>
+
+    <view class="card list">
+      <view class="prow" bindtap="onEntries">
+        <view class="nm"><text class="nm-t">我的报名</text><text class="k">{{pendingText}}</text></view>
+        <text class="ar">›</text>
+      </view>
+      <view class="prow"><view class="nm"><text class="nm-t">我的战绩</text><text class="k">{{stats.completed}} 场</text></view><text class="ar">›</text></view>
+      <view class="prow" wx:if="{{topPartner}}">
+        <view class="av sm" style="background:var(--c-av-2)">{{topPartner.nickname[0]}}</view>
+        <view class="nm"><text class="nm-t">常搭档</text><text class="k">{{topPartner.nickname}} · 同队 {{topPartner.together}} 场</text></view>
+        <text class="ar">›</text>
+      </view>
+    </view>
+
+    <view class="card list">
+      <view class="prow"><view class="nm"><text class="nm-t">赛制与退款规则</text></view><text class="ar">›</text></view>
+      <view class="prow"><view class="nm"><text class="nm-t">设置</text></view><text class="ar">›</text></view>
+    </view>
+  </block>
+
+  <view class="safe-bottom"></view>
+</view>

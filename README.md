@@ -42,11 +42,26 @@ design/ia-v2.html                信息架构
 design/wireframes.html           第一版线框 11 屏（已被 stage2 取代大半）
 ```
 
-## 这里没有的
+## 小程序工程
 
-小程序工程代码不在本仓库。设计令牌的权威副本在那边
-（`mp/miniprogram/styles/tokens.wxss`，v0.4），本仓库
-[设计定稿0.md §12](设计定稿0.md) 有完整摘录。
+```
+mp/
+  miniprogram/   14 个页面 · 设计令牌 tokens.wxss（v0.4，权威副本）
+  cloudfunctions/api/   24 条路由
+  test/          165 项单测
+  scripts/       7 个检查脚本
+```
+
+```bash
+cd mp && npm run verify     # 7 项检查 + 165 项单测
+```
+
+`config/env.js` 的 `useMock` 现在是 `true` —— 阶段 5–8 搁置期间走本地
+假数据，小程序独立可跑，不需要云环境。
+
+> ⚠️ **代码里还有三处与定稿不符**，见 [设计定稿0.md](设计定稿0.md) 里标
+> **待修**的地方：名额判定只数 `confirmed`（会超发）、19 处引用已废弃的
+> `pending_payment`、记分引擎不支持金球。恢复后端工作时一并处理。
 
 ## 改画布
 

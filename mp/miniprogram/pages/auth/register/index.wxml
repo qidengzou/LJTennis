@@ -1,0 +1,76 @@
+<view class="root">
+  <image class="bg" src="/images/register-bg.jpg" mode="aspectFill" />
+  <view class="scrim"></view>
+
+  <view class="nav" style="padding-top: {{statusBar}}px; padding-right: {{navRight}}px">
+    <view class="back" bindtap="onBack" hover-class="back-on">
+      <text class="back-i">‹</text>
+    </view>
+  </view>
+
+  <view class="hero">
+    <text class="hero-k">LJTENNIS</text>
+    <text class="hero-t">上场之前</text>
+    <text class="hero-s" wx:if="{{ctx}}">{{ctx.title}}</text>
+  </view>
+
+  <scroll-view class="sheet-wrap" scroll-y enhanced show-scrollbar="{{false}}">
+  <view class="sheet">
+    <view class="fld">
+      <text class="lbl">昵称</text>
+      <input class="inp" type="nickname" value="{{nickname}}" maxlength="20"
+             placeholder="会出现在签表上" placeholder-class="ph"
+             bindinput="onNick" confirm-type="next" />
+    </view>
+
+    <view class="fld">
+      <text class="lbl">手机号</text>
+      <!-- 已授权：掩码 + 更换 -->
+      <view wx:if="{{phoneFrom === 'wx'}}" class="phone-row">
+        <view class="filled grow">
+          <view class="ok"></view>{{phoneShown}}
+          <text wx:if="{{mock}}" class="tag">假数据</text>
+        </view>
+        <button class="reset-btn" bindtap="onPhoneReset">更换</button>
+      </view>
+      <!-- 未授权：整行按钮。getPhoneNumber 必须由真实点击触发 -->
+      <button wx:else class="wx-btn full" open-type="{{mock ? '' : 'getPhoneNumber'}}"
+              bindgetphonenumber="onWxPhone" bindtap="onWxPhoneMock">快捷填写</button>
+    </view>
+
+    <view class="fld">
+      <text class="lbl">性别</text>
+      <view class="seg">
+        <view class="seg-i {{gender === 'M' ? 'on' : ''}}" data-v="M" bindtap="onGender">男</view>
+        <view class="seg-i {{gender === 'F' ? 'on' : ''}}" data-v="F" bindtap="onGender">女</view>
+      </view>
+    </view>
+
+    <view class="fld">
+      <view class="fld-h">
+        <text class="lbl">水平</text>
+        <text class="lbl">NTRP</text>
+      </view>
+      <!-- 可拖：7 档摊在 330px 里每格只有 47rpx，靠点点不准 -->
+      <view class="slider" id="lvTrack"
+            catchtouchstart="onLvStart" catchtouchmove="onLvMove"
+            catchtouchend="onLvEnd" catchtouchcancel="onLvEnd">
+        <view class="rail"></view>
+        <view class="rail fill" style="width: {{fillW}}"></view>
+        <view class="ticks">
+          <view class="tick" wx:for="{{levels}}" wx:key="v">
+            <view class="dot" style="background: {{item.dot}}"></view>
+            <text class="tv" style="color: {{item.fg}}; font-weight: {{item.fw}}">{{item.v}}</text>
+          </view>
+        </view>
+        <view class="thumb" style="left: {{thumbL}}"></view>
+      </view>
+    </view>
+  </view>
+  </scroll-view>
+
+  <view class="dock">
+    <button class="serve {{canSubmit ? '' : 'off'}}" bindtap="onSubmit">SERVE!!</button>
+    <text class="legal">继续即表示同意《用户协议》和《隐私政策》</text>
+  </view>
+</view>

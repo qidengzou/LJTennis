@@ -1,0 +1,10 @@
+{
+  "name": "ljtennis-mp",
+  "private": true,
+  "scripts": {
+    "test": "node test/tennis.test.js && node test/integration.test.js && node test/draw.test.js && node test/entry.test.js && node test/cloud.test.js",
+    "check": "node scripts/check-shared.js && node scripts/check-routes.js && node scripts/check-wxml.js && node scripts/check-bindings.js && node scripts/check-theme.js && node scripts/check-images.js",
+    "sync-shared": "node scripts/sync-shared.js",
+    "verify": "npm run check && npm test"
+  }
+}

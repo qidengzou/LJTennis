@@ -1,0 +1,22 @@
+<view class="page">
+  <view class="cd {{urgent ? 'urgent' : ''}}">
+    <text>{{cdLabel}}</text>
+    <text class="num">{{countdown}}</text>
+  </view>
+
+  <view class="card kv">
+    <view class="row-between"><text class="k">赛事</text><text class="v">{{en.tournamentName}}</text></view>
+    <view class="row-between"><text class="k">项目</text><text class="v">{{en.eventName}}</text></view>
+    <view class="row-between"><text class="k">组合</text><text class="v">{{en.partners[0]}} / {{en.partners[1]}}</text></view>
+    <view class="hr"></view>
+    <view class="row-between"><text class="k">报名费</text><text class="fee num">¥{{en.fee}}</text></view>
+  </view>
+
+  <!-- 退款规则放在支付按钮之前，不是之后 -->
+  <view class="banner">赛前 7 天以上取消可全额退款，3–7 天退 50%，3 天内不退。</view>
+
+  <view class="dock">
+    <button class="btn btn-wx" bindtap="onPay">微信支付 ¥{{en.fee}}</button>
+  </view>
+  <view class="safe-bottom"></view>
+</view>

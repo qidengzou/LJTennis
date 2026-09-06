@@ -1,0 +1,157 @@
+/* LJTennis 设计令牌 v0.4 — 赛事双打版
+ * 用法：在 app.wxss 顶部 @import "styles/tokens.wxss";
+ * 单位约定：设计稿宽 750rpx，1 设计稿 px = 1rpx
+ * 深色模式：**全站不做**。app.json 的 darkmode 为 false，样式里也没有
+ *   prefers-color-scheme 分支 —— 注册页压在固定底图上，翻色会让浅色卡片
+ *   嵌深色控件。npm run check 会守住这条。
+ *
+ * v0.4 变更：
+ *  - 积分回到第一版，榜单行与积分/水平双数值卡组件重新启用
+ *  - 新增 --c-on-live（待办角标）、--h-control / --h-cta（控件高度）
+ *  - 新增 --c-danger / --c-on-danger（破坏性操作，与比分语义的 loss 分开）
+ *  - 赛事等级 A/B/C 用主色三档强度表达，不新开色相（见下方配方）
+ *
+ * v0.3 变更：
+ *  - 新增 --c-wx 微信绿，只用于微信原生能力入口
+ *
+ * v0.2 变更：
+ *  - --t-score 120 → 96rpx（双打记分器上下堆叠，每块要容纳两个名字，大分字号下调）
+ *  - --c-serve 语义扩展：双打里指向四人中的当前发球者
+ *  - 新增 --t-set 与 --c-void
+ */
+
+page {
+  /* ---- 中性 ---- */
+  --c-ground:      #F4F5F7;  /* 页面底色，冷灰偏主色 */
+  --c-surface:     #FFFFFF;  /* 卡片 */
+  --c-surface-2:   #EBEDF2;  /* 卡内分区、输入框底 */
+  --c-ink:         #141821;  /* 主文字 */
+  --c-ink-2:       #4C5567;  /* 次要文字 */
+  --c-ink-3:       #7B8496;  /* 弱化文字、占位符 */
+  --c-line:        #DFE2E9;  /* 分割线、描边 */
+
+  /* ---- 品牌 ---- */
+  --c-brand:       #2E4FD8;  /* 硬地场蓝。主按钮、选中态、链接 */
+  --c-brand-ink:   #FFFFFF;  /* 主色上的文字 */
+  --c-brand-weak:  #E7EBFC;  /* 主色浅底：选中背景、标签 */
+
+  /* ---- 语义（记分专用，不可挪作装饰）---- */
+  --c-win:         #0E9F6E;  /* 赢 / 已完成 / 破发成功 */
+  --c-loss:        #E0294B;  /* 输 / 双误 / 失分 */
+  --c-live:        #F5A524;  /* 进行中 / 待确认 */
+  --c-on-live:     #FFFFFF;  /* 待办角标：橙底白字 */
+  --c-serve:       #D9E64B;  /* 网球黄。仅用于发球方指示点（双打=四人中的当前发球者），别处禁用 */
+  --c-danger:      #E0294B;  /* 破坏性/撤销操作。与 loss 同色但语义独立 —— loss 是比分语义，别混用 */
+  --c-on-danger:   #FFFFFF;  /* danger 上的文字 */
+  --c-void:        #7B8496;  /* 作废 / 已退款 / 未开始，等同 ink-3 但语义独立 */
+
+  --c-wx:          #07C160;  /* 微信绿。只用于微信原生能力入口（支付、手机号授权），别处禁用 */
+  --c-on-wx:       #FFFFFF;  /* 微信绿上的文字，深浅模式都是白 */
+
+  /* ---- 头像色块（按用户 id 取模选色，配白字）----
+   * 刻意是一组冷色，不含绿/红/橙 —— 否则会和记分语义色冲突 */
+  --c-av-1: #2E4FD8;  --c-av-2: #5B6EA8;  --c-av-3: #7A5EA8;
+  --c-av-4: #3F6E7F;  --c-av-5: #5A6470;
+  --c-on-av: #FFFFFF;   /* 头像色块上的首字，深浅模式都是白 */
+  --c-on-photo: #FFFFFF; /* 压在照片/深色遮罩上的文字，不随深浅模式变 */
+
+  /* 网球的高光与暗部，由 --c-serve 派生。仅用于绘制球体 */
+  --c-serve-hi: #F4F86A;
+  --c-serve-lo: #B8C428;
+
+  /* ---- 间距（8 的倍数）---- */
+  --s-1: 8rpx;  --s-2: 16rpx; --s-3: 24rpx;
+  --s-4: 32rpx; --s-5: 48rpx; --s-6: 64rpx;
+
+  /* ---- 圆角 ---- */
+  --r-s: 8rpx;  --r-m: 16rpx; --r-l: 24rpx; --r-full: 999rpx;
+  /* ---- 控件高度 ----
+   * 88rpx = 44pt，iOS 最小点击区。输入框、分段、副按钮统一到这个高度，
+   * 授权前后右侧那一格才不会跳。球场边用的所有可点元素同样不得低于它。 */
+  --h-control: 88rpx;
+  --h-cta:     96rpx;   /* 主按钮 */
+
+  /* ---- 字号 ---- */
+  --t-score:    96rpx; /* 记分器当前分（双打上下堆叠后下调） */
+  --t-set:      34rpx; /* 已完成盘的分数 */
+  --t-display:  64rpx; /* 评分数值 */
+  --t-h1:       44rpx;
+  --t-h2:       36rpx;
+  --t-h3:       32rpx;
+  --t-body:     28rpx; /* 基准 */
+  --t-caption:  24rpx;
+  --t-micro:    20rpx;
+
+  /* ---- 阴影 ---- */
+  --e-1: 0 2rpx 8rpx rgba(20, 24, 33, .06);
+  --e-2: 0 8rpx 32rpx rgba(20, 24, 33, .12);
+
+  /* ---- 字体栈 ---- */
+  --f-sans: -apple-system, "PingFang SC", "HarmonyOS Sans SC", "Source Han Sans CN", sans-serif;
+  --f-num:  "LJNum", var(--f-sans); /* wx.loadFontFace 加载的子集化数字字体 */
+}
+
+
+/* 全局基线 */
+page {
+  background: var(--c-ground);
+  color: var(--c-ink);
+  font-family: var(--f-sans);
+  font-size: var(--t-body);
+  line-height: 1.5;
+}
+
+/* 所有出现数字对齐的地方（比分表、榜单、评分）必须加这个 */
+.num {
+  font-family: var(--f-num);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* 底部安全区，所有固定在底部的元素都要带 */
+.safe-bottom { padding-bottom: calc(var(--s-3) + constant(safe-area-inset-bottom)); padding-bottom: calc(var(--s-3) + env(safe-area-inset-bottom)); }
+
+/* ---- 报名状态 → 颜色的固定映射（不可临时改） ----
+ * 待搭档确认  live   橙
+ * 待支付      live   橙 + 倒计时
+ * 候补        live   橙（弱化）
+ * 已确认      win    绿
+ * 退款中      live   橙
+ * 已退款/作废  void   灰
+ */
+
+/* 双打组合名：宽容器一行，窄容器两行，绝不只截断其中一个 */
+.pair { display: flex; gap: 8rpx; align-items: baseline; min-width: 0; }
+.pair .n { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pair .sep { color: var(--c-ink-3); flex: none; }
+.pair.stack { flex-direction: column; gap: 2rpx; }
+.pair.stack .sep { display: none; }
+
+/* 赛事等级 A/B/C —— 用主色三档强度，不新开色相。
+ * A/B/C 是有序的不是并列的：三个色相只能表达「三种」，表达不了「三档」。
+ * 色轮上也没有空位了（绿=赢+微信、红=输/危险、橙=进行中、黄=发球、紫青=头像）。 */
+.tier {
+  display: inline-block;
+  padding: 2rpx 12rpx;
+  border-radius: var(--r-full);
+  font-size: var(--t-micro);
+  font-weight: 600;
+  border: 2rpx solid transparent;
+}
+.tier.a { background: var(--c-brand);      color: var(--c-brand-ink); }
+.tier.b { background: var(--c-brand-weak); color: var(--c-brand); }
+.tier.c { background: transparent; border-color: var(--c-line); color: var(--c-ink-3); }
+
+/* 待办角标。语义与 --c-live 一致（有事待处理），不新增颜色 */
+.badge-todo {
+  min-width: 34rpx; height: 34rpx; padding: 0 10rpx;
+  border-radius: var(--r-full);
+  background: var(--c-live); color: var(--c-on-live);
+  font-size: var(--t-micro); font-weight: 600;
+  display: inline-grid; place-items: center;
+}
+
+/* 空值。**必须与加载态形态不同**：空值是实心「—」，加载是骨架条。
+ * 字号与真值一致，否则数字出来那一刻整块会跳。
+ * 用 ink-3 而不是更淡的色 —— 再淡就真的像没加载完。 */
+.empty-val { color: var(--c-ink-3); }

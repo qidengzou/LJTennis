@@ -1,0 +1,11 @@
+<view class="wrap">
+  <canvas type="2d" id="bracket" class="cv"
+          bindtouchstart="onStart" bindtouchmove="onMove" bindtouchend="onEnd"></canvas>
+  <view class="bar">
+    <view class="hint">单指拖动 · 双指缩放</view>
+    <view class="btns">
+      <view class="mini" bindtap="onFit">适应屏幕</view>
+      <view class="mini {{onlyMine ? 'on' : ''}}" bindtap="onToggleMine">我的路径</view>
+    </view>
+  </view>
+</view>

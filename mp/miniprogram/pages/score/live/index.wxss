@@ -1,0 +1,44 @@
+.scr {
+  display: flex; flex-direction: column; gap: 16rpx;
+  padding: 20rpx 24rpx; height: 100vh; box-sizing: border-box;
+}
+.scr-head {
+  display: flex; justify-content: space-between;
+  font-size: var(--t-caption); color: var(--c-ink-3); padding: 0 8rpx;
+}
+
+/* 整块可点，126pt ≈ 252rpx。拇指不用瞄准 */
+.tapz {
+  background: var(--c-surface);
+  border-radius: var(--r-l);
+  box-shadow: var(--e-1);
+  padding: 32rpx;
+  min-height: 252rpx;
+  display: flex; align-items: center; justify-content: space-between; gap: 24rpx;
+}
+.tapz-hit { background: var(--c-brand-weak); }
+.tapz.off { opacity: .55; }
+.tz-names { display: flex; flex-direction: column; gap: 14rpx; min-width: 0; }
+.tz-n { display: flex; align-items: center; gap: 14rpx; font-size: 32rpx; color: var(--c-ink); }
+.dot { width: 18rpx; height: 18rpx; border-radius: 999rpx; background: transparent; flex: none; }
+.dot.on { background: var(--c-serve); }
+.tz-p { font-size: var(--t-score); line-height: .86; color: var(--c-ink); flex: none; }
+
+.scrbar {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--c-surface); border-radius: var(--r-m);
+  padding: 20rpx 26rpx; box-shadow: var(--e-1);
+}
+.sets { display: flex; align-items: baseline; gap: 26rpx; font-size: var(--t-caption); color: var(--c-ink-3); }
+.sets .v { font-size: var(--t-set); color: var(--c-ink); font-weight: 600; margin-left: 8rpx; }
+.done { display: flex; align-items: baseline; gap: 4rpx; color: var(--c-ink-3); font-size: var(--t-caption); }
+.done .sep { margin-right: 12rpx; }
+.sup { font-size: 18rpx; vertical-align: super; }
+.undo {
+  border: 2rpx solid var(--c-line); color: var(--c-ink-2);
+  border-radius: var(--r-full); padding: 10rpx 26rpx; font-size: var(--t-caption);
+}
+.undo.dis { opacity: .35; }
+
+.sync { text-align: center; font-size: var(--t-caption); color: var(--c-live); }
+.foot { margin-top: auto; }

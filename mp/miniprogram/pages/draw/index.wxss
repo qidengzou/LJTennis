@@ -1,0 +1,58 @@
+.page { padding: 24rpx; display: flex; flex-direction: column; gap: 20rpx; }
+
+.seg { display: flex; background: var(--c-surface-2); border-radius: var(--r-m); padding: 6rpx; gap: 4rpx; }
+.seg.demo { opacity: .9; }
+.seg-i {
+  flex: 1; text-align: center; padding: 16rpx 8rpx; border-radius: 12rpx;
+  font-size: 26rpx; color: var(--c-ink-2); white-space: nowrap;
+}
+.seg-i.on { background: var(--c-surface); color: var(--c-ink); font-weight: 600; box-shadow: var(--e-1); }
+.seg-scroll { width: 100%; }
+.seg-scroll .seg { display: inline-flex; min-width: 100%; }
+
+.chips { display: flex; gap: 12rpx; flex-wrap: wrap; }
+.fchip {
+  border: 2rpx solid var(--c-line); border-radius: var(--r-full);
+  padding: 8rpx 22rpx; font-size: var(--t-caption); color: var(--c-ink-2);
+}
+.fchip.on { background: var(--c-brand-weak); border-color: var(--c-brand); color: var(--c-brand); font-weight: 600; }
+
+/* 场次卡：每场占满整行宽度，双打两个名字用正常字号排得下（方案 B 的核心） */
+.mc {
+  background: var(--c-surface); border-radius: var(--r-l);
+  padding: 24rpx 28rpx; box-shadow: var(--e-1);
+  display: flex; flex-direction: column; gap: 16rpx;
+}
+.mc.mine { outline: 4rpx solid var(--c-brand); outline-offset: -4rpx; }
+.mc-h {
+  display: flex; justify-content: space-between; align-items: center; gap: 16rpx;
+  font-size: var(--t-caption); color: var(--c-ink-3);
+}
+.mc-r { display: flex; justify-content: space-between; align-items: center; gap: 20rpx; font-size: var(--t-h3); }
+.mc-r.lose { color: var(--c-ink-3); }
+/* 一行超过可用宽度时自动折行 —— 长英文名对靠这条兜底，绝不只截断其中一个 */
+.nm { flex: 1; min-width: 0; color: inherit; word-break: break-word; }
+.nm.pend { color: var(--c-ink-3); }
+.sc { display: flex; gap: 20rpx; flex: none; }
+.sc .num { min-width: 30rpx; text-align: center; font-size: var(--t-set); font-weight: 600; }
+.sup { font-size: 18rpx; vertical-align: super; margin-left: 2rpx; }
+.dash { color: var(--c-ink-3); flex: none; }
+.mt12 { margin-top: 8rpx; }
+.sec { margin-top: 16rpx; }
+
+/* 小组积分表 */
+.gt-h, .gt-row {
+  display: flex; align-items: center; gap: 12rpx;
+  padding: 18rpx 8rpx; border-bottom: 2rpx solid var(--c-line);
+}
+.gt-h { font-size: var(--t-micro); color: var(--c-ink-3); padding-bottom: 14rpx; }
+.gt-row:last-of-type { border-bottom: 0; }
+.gt-row.q { background: rgba(14, 159, 110, .08); }
+.c-r { width: 44rpx; text-align: center; color: var(--c-ink-3); font-size: var(--t-caption); }
+.c-n { flex: 1; min-width: 0; font-size: var(--t-body); color: var(--c-ink); }
+.c-v { width: 96rpx; text-align: right; font-size: var(--t-h3); font-weight: 600; color: var(--c-ink); }
+.gt-note { display: block; margin-top: 16rpx; }
+
+.empty { text-align: center; padding: 72rpx 24rpx; display: flex; flex-direction: column; gap: 12rpx; }
+.empty-ic { font-size: 56rpx; }
+.empty-t { font-size: var(--t-h3); font-weight: 600; color: var(--c-ink); }

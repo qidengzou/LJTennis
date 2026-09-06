@@ -1,0 +1,12 @@
+.page { padding: 24rpx; display: flex; flex-direction: column; gap: 20rpx; min-height: 100vh; }
+.cd { display: flex; align-items: center; justify-content: space-between; border-radius: var(--r-m); padding: 22rpx 26rpx; font-size: var(--t-caption); background: rgba(245,165,36,.12); color: var(--c-live); }
+.cd.urgent { background: rgba(224,41,75,.12); color: var(--c-loss); }
+.cd .num { font-size: var(--t-set); font-weight: 600; }
+.kv { display: flex; flex-direction: column; gap: 20rpx; }
+.v { font-size: var(--t-h3); color: var(--c-ink); }
+.hr { height: 2rpx; background: var(--c-line); }
+.fee { font-size: 52rpx; font-weight: 600; color: var(--c-ink); }
+.banner { background: var(--c-surface-2); color: var(--c-ink-2); border-radius: var(--r-m); padding: 22rpx 26rpx; font-size: var(--t-caption); line-height: 1.6; }
+/* 微信绿：唯一允许的品牌外颜色，只用于微信原生能力入口 */
+.btn-wx { background: var(--c-wx); color: var(--c-on-wx); }
+.dock { margin-top: auto; padding-top: 24rpx; }

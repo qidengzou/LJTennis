@@ -1,0 +1,27 @@
+<view class="page">
+  <view class="card">
+    <view class="row-between">
+      <view class="chip chip-win">报名中</view>
+      <text class="k">{{t.deadline}}</text>
+    </view>
+    <text class="title">{{t.name}}</text>
+    <text class="k">{{t.date}} · {{t.venue}}</text>
+  </view>
+
+  <text class="k sec">项目</text>
+  <view class="card ev" wx:for="{{events}}" wx:key="id" data-id="{{item.id}}" bindtap="onEvent">
+    <view class="row-between">
+      <text class="ev-n">{{item.name}}</text>
+      <text class="{{item.full ? 'full' : 'k'}}">{{item.countText}}</text>
+    </view>
+    <view class="bar"><view class="bar-i {{item.full ? 'f' : ''}}" style="width:{{item.pct}}%"></view></view>
+  </view>
+
+  <text class="k">{{t.feeText}} · {{t.rules}}</text>
+
+  <view class="dock">
+    <button class="btn btn-primary" bindtap="onPick">选择项目报名</button>
+    <text class="k center">报名时需微信授权登录</text>
+  </view>
+  <view class="safe-bottom"></view>
+</view>
