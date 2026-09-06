@@ -12,3 +12,6 @@ miniprogram_npm/
 dist/
 # 设计画布的工作文件（画布本身发布在 Artifact 上）
 .design/
+
+# 本地云环境配置，不进版本库
+mp/miniprogram/config/env.local.js

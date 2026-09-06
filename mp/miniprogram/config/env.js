@@ -1,14 +1,19 @@
 /**
  * 云开发环境配置
  *
- * 环境 ID 不是密钥 —— 它随小程序包一起下发到每台手机，任何人都能看到，
- * 提交进版本库没有问题。真正要防的是 AppSecret / 商户密钥，那些一律不进代码。
+ * 真实的环境 ID 不进版本库 —— 放在同目录的 env.local.js 里（已 gitignore）。
+ * 首次克隆后复制一份：
  *
- * 换环境：改 cloudEnv。临时回本地假数据：useMock 改 true（不必清空 cloudEnv）。
+ *   cp config/env.local.example.js config/env.local.js
+ *
+ * 然后填入你自己的环境 ID（微信开发者工具 → 云开发 → 环境设置 → 环境 ID）。
+ * 没有 env.local.js 时自动走本地假数据，小程序照样能完整跑通。
  */
+let local = {};
+try { local = require('./env.local.js'); } catch (e) { /* 没配就走假数据 */ }
+
 module.exports = {
-  cloudEnv: '<你的云环境ID>',
-  useMock: true,           // 阶段 5–8 搁置期间一律走假数据。
-                           // 云函数还没上传，走真链路只会得到一堆 INTERNAL。
-                           // 恢复后端工作时改回 false。
+  cloudEnv: local.cloudEnv || '',
+  // 有环境 ID 时默认仍走假数据，要连真链路把这里改成 false
+  useMock: local.useMock !== undefined ? local.useMock : true,
 };
