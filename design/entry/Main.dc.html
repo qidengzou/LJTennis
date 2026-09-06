@@ -62,20 +62,17 @@
         <span class="chip" style="background:#EBEDF2;color:#4C5567">报名后不可改</span>
       </div>
       <div class="k" style="margin-top:10px;line-height:1.7;padding-top:10px;border-top:1px solid #DFE2E9">
-        <b style="color:#141821">现在只报你自己。</b>提交后进「待组队」，可以邀请队友；
-        到报名截止仍没组上，自动作废并全额退款。
+        <b style="color:#141821">现在只报你自己。</b>提交后进「待组队」，可以邀请队友。
       </div>
     </div>
 
     <!-- 费用：双打每人付自己那半，不做代付 -->
     <div class="card">
       <div class="k" style="margin-bottom:10px">费用</div>
-      <div class="row" style="margin-bottom:8px">
+      <div class="row" style="margin-bottom:4px">
         <span>报名费 · 每人</span><span class="num" style="font-size:15px">¥120</span>
       </div>
-      <div class="row" style="margin-bottom:10px">
-        <span class="k">双打两人各付各的，不代付</span><span class="k">×1</span>
-      </div>
+      <div class="k" style="margin-bottom:10px">双打两人各付各的，不代付</div>
       <div class="row" style="padding-top:10px;border-top:1px solid #DFE2E9">
         <span style="font-weight:600">{{payLabel}}</span>
         <span class="num" style="font-size:22px;font-weight:600;color:{{payFg}}">{{payAmount}}</span>
@@ -88,18 +85,19 @@
       <div style="display:flex;flex-direction:column;gap:9px;font-size:13px;line-height:1.6;color:#4C5567">
         <div style="display:flex;gap:8px"><b class="num" style="color:#2E4FD8">1</b><span><b style="color:#141821">报名即付款。</b>付完进「待组队」，不是「已确认」——组队由主办方在后台完成。</span></div>
         <div style="display:flex;gap:8px"><b class="num" style="color:#2E4FD8">2</b><span>报名截止仍未组上队，报名<b style="color:#141821">作废并全额退款</b>，不用自己申请。</span></div>
-        <div style="display:flex;gap:8px"><b class="num" style="color:#2E4FD8">3</b><span>已确认后想退，走「我的报名 → 申请退款」，由主办方处理。</span></div>
+        <div style="display:flex;gap:8px"><b class="num" style="color:#2E4FD8">3</b><span>已确认后想退，走「我的报名 → 申请退款」。</span></div>
       </div>
-    </div>
-
-    <div style="display:flex;align-items:center;gap:8px;padding:0 2px;font-size:12px;color:#4C5567">
-      <span style="width:16px;height:16px;border-radius:4px;background:#2E4FD8;color:#FFFFFF;display:flex;align-items:center;justify-content:center;font-size:11px">✓</span>
-      我已阅读并同意《赛事报名与退款规则》
     </div>
 
   </div>
 
-  <div style="flex: none; padding: 12px 16px 24px; background: #FFFFFF; border-top: 1px solid #DFE2E9">
+  <!-- 协议勾选放在 dock 里，跟着按钮一起常驻 —— 放在滚动区里会掉到折线以下，
+       而这是付钱前必须点的那一下 -->
+  <div style="flex: none; padding: 10px 16px 24px; background: #FFFFFF; border-top: 1px solid #DFE2E9">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:12px;color:#4C5567">
+      <span style="width:16px;height:16px;border-radius:4px;background:#2E4FD8;color:#FFFFFF;display:flex;align-items:center;justify-content:center;font-size:11px">✓</span>
+      我已阅读并同意《赛事报名与退款规则》
+    </div>
     <div style="height: 48px; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 16px; font-weight: 600; background: {{ctaBg}}; color: #FFFFFF">{{ctaText}}</div>
   </div>
 

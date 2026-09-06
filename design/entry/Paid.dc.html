@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&display=swap">
+  <style>
+    body { margin: 0; font-family: -apple-system, "PingFang SC", "Source Han Sans CN", sans-serif; }
+    .num { font-family: "Barlow Condensed", -apple-system, sans-serif; font-variant-numeric: tabular-nums; }
+    .card { background: #FFFFFF; border-radius: 12px; box-shadow: 0 1px 4px rgba(20,24,33,.06); padding: 13px 14px }
+    .k { font-size: 12px; color: #7B8496 }
+    .row { display: flex; align-items: center; justify-content: space-between }
+    .chip { height: 20px; padding: 0 8px; border-radius: 999px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center }
+    .btn { flex: 1; height: 44px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600 }
+  </style>
+</helmet>
+
+<!-- 付完钱回到赛事里的样子。定稿 §6：付完进「待组队」，不是「已确认」。
+     组队一律由主办方在后台手动完成 —— 这一屏没有任何「确认搭档」的动作。 -->
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: #F4F5F7; color: #141821; display: flex; flex-direction: column; font-size: 14px">
+
+  <div style="flex: none; height: 88px; padding-top: 44px; background: #FFFFFF; border-bottom: 1px solid #DFE2E9; display: flex; align-items: center; justify-content: center; position: relative; font-size: 17px; font-weight: 600">
+    <span style="position: absolute; left: 12px; font-size: 22px; font-weight: 400">‹</span>
+    春季公开赛
+    <span style="position: absolute; right: 10px; width: 87px; height: 30px; border: 1px solid #DFE2E9; border-radius: 15px; display: flex; align-items: center; justify-content: space-evenly; color: #4C5567; font-size: 11px">
+      <span>⋯</span><i style="width:1px;height:16px;background:#DFE2E9"></i><span>◉</span>
+    </span>
+  </div>
+
+  <div style="flex: 1; min-height: 0; padding: 14px 16px; display: flex; flex-direction: column; gap: 12px">
+
+    <!-- 我的这条 Entry 永远置顶。橙 = 还在等，绿 = 已确认 -->
+    <div class="card" style="border-left: 3px solid #F5A524">
+      <div class="row" style="margin-bottom: 10px">
+        <span style="font-weight: 600">我的报名</span>
+        <span class="chip" style="background:#FFF1D6;color:#8A5B00">待组队</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px">
+        <div style="width: 34px; height: 34px; border-radius: 999px; background: #2E4FD8; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600">李</div>
+        <div style="flex: 1">
+          <div style="font-weight: 600">李强 <span class="k" style="font-weight:400">· 男双</span></div>
+          <div class="k">已付 <span class="num">¥120</span> · 4月3日 09:10</div>
+        </div>
+      </div>
+      <div class="k" style="margin-top:10px;padding-top:10px;border-top:1px solid #DFE2E9;line-height:1.7">
+        <b style="color:#141821">搭档由主办方安排。</b>你可以叫人一起来，最终怎么配对以主办方为准。
+        到报名截止仍没组上，这条报名<b style="color:#141821">作废并全额退款</b>。
+      </div>
+    </div>
+
+    <!-- 两个按钮不是一件事：队友 = 同一队，朋友 = 只是来同一场赛事 -->
+    <div style="display: flex; gap: 10px">
+      <div class="btn" style="background:#2E4FD8;color:#FFFFFF">邀请队友</div>
+      <div class="btn" style="background:#FFFFFF;color:#2E4FD8;border:1px solid #2E4FD8">邀请朋友</div>
+    </div>
+    <div class="k" style="margin-top:-4px;line-height:1.7;padding:0 2px">
+      <b style="color:#4C5567">邀请队友</b>：想和你同队的人，接受后主办方优先按这个配。
+      <b style="color:#4C5567">邀请朋友</b>：只是叫人来打这场，不进同一队。
+    </div>
+
+    <div class="card">
+      <div class="row" style="margin-bottom: 8px">
+        <div style="font-size: 16px; font-weight: 600">男双</div>
+        <span class="chip" style="background:#E7EBFC;color:#2E4FD8">B 级</span>
+      </div>
+      <div class="k" style="line-height:1.8">
+        深圳网球会 · 4月12日（六）09:00<br>
+        深圳湾体育中心 3–6 号场 · 报名截止 4月9日 22:00
+      </div>
+      <div class="row" style="margin-top:12px;padding-top:12px;border-top:1px solid #DFE2E9">
+        <span class="k">已报名</span>
+        <span><span class="num" style="font-size:17px;font-weight:600">21</span><span class="k"> / 32 人 · 16 组</span></span>
+      </div>
+      <div style="margin-top:8px;height:6px;border-radius:3px;background:#EBEDF2;overflow:hidden">
+        <div style="width:66%;height:100%;background:#2E4FD8"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="k" style="margin-bottom:10px">已报名选手</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        <span class="chip" style="background:#EBEDF2;color:#4C5567">张伟 <span class="num" style="margin-left:4px">3.5</span></span>
+        <span class="chip" style="background:#EBEDF2;color:#4C5567">王磊 <span class="num" style="margin-left:4px">4.0</span></span>
+        <span class="chip" style="background:#EBEDF2;color:#4C5567">陈明 <span class="num" style="margin-left:4px">3.0</span></span>
+        <span class="chip" style="background:#EBEDF2;color:#4C5567">刘洋 <span class="num" style="margin-left:4px">3.5</span></span>
+        <span class="chip" style="background:#EBEDF2;color:#4C5567">赵鹏 <span class="num" style="margin-left:4px">4.5</span></span>
+        <span class="chip" style="background:#EBEDF2;color:#7B8496">还有 16 人</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+</body>
+</html>
