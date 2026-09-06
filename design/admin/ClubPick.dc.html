@@ -26,9 +26,10 @@
     .side{width:216px;flex:none;background:var(--c-surface);border-right:1px solid var(--c-line);
       display:flex;flex-direction:column;padding:16px 0}
     .brand{padding:0 16px 16px;font-weight:700;font-size:16px;letter-spacing:-.01em}
-    .switch{margin:0 8px 10px;padding:9px 10px;border:1px solid var(--c-line);border-radius:var(--r-s);
-      display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;font-size:13.5px;font-weight:600}
-    .switch .mut{font-weight:400}
+    /* 不做切换器 —— 一个退回入口就够。俱乐部名在顶部面包屑里已经有了 */
+    .back{margin-top:auto;padding:10px 18px;font-size:13px;color:var(--c-ink-3);
+      text-decoration:none;display:block}
+    .back:hover{color:var(--c-ink-2)}
     .snav{display:flex;flex-direction:column;gap:2px;padding:0 8px}
     .snav a{display:flex;align-items:center;justify-content:space-between;gap:8px;
       padding:8px 10px;border-radius:var(--r-s);color:var(--c-ink-2);text-decoration:none;font-size:13.5px}
@@ -120,7 +121,7 @@
   <li><b>1</b><span>扫码登录后的<b>第一步</b>。一个管理员可能管多个俱乐部 —— 先确定上下文，后面每一屏都在这个俱乐部里。</span></li>
   <li><b>2</b><span><b>只有一个俱乐部时自动跳过这一屏</b>，直接进工作区。多数人是这种情况，不该为少数人多一次点击。</span></li>
   <li><b>3</b><span>待办角标聚合到俱乐部一级 —— 哪个俱乐部有事，在这一屏就看得见，不用逐个点进去。</span></li>
-  <li><b>4</b><span>进工作区后侧栏顶部有<b>切换器</b>，随时换俱乐部，不必退回这一屏。</span></li>
+  <li><b>4</b><span>进工作区后侧栏底部有<b>「← 返回俱乐部列表」</b>。不做切换器 —— 换俱乐部是低频动作，退回这一屏再选就够了。</span></li>
   <li><b>5</b><span>「创建俱乐部」在这里 —— 它是网页端的职责（赛前操作），小程序只指路不给按钮。</span></li>
 </ul>
 </x-dc>

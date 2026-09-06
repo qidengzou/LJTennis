@@ -60,37 +60,49 @@
       color:var(--ann);font-size:9px;display:grid;place-items:center;margin-top:2px;font-weight:400}
   </style>
 </helmet>
-<p class="utitle">积分榜 · rank</p>
-<p class="usub">改画 —— 筛选维度从「地区」换成「俱乐部」</p>
+<p class="utitle">赛事首页 · 平日形态</p>
+<p class="usub">今天没有场次 —— 全年多数日子</p>
 <div class="phone">
-  <div class="pnav"><span>积分</span><div class="cap">胶囊</div></div>
+  <div class="pnav"><span>赛事</span><div class="cap">胶囊</div></div>
   <div class="pbody">
-    <div class="chips"><span class="chip on">男双</span><span class="chip">女双</span><span class="chip">混双</span></div>
-    <div class="row">
-      <span class="mut">2025 春季 · 全部俱乐部</span>
-      <span class="chip">筛选 ⌄</span>
+    <div class="sect">我的报名 · 2</div>
+    <div class="card">
+      <div class="row"><span class="big">春季双打赛 · 男双</span><span class="mut">待组队</span></div>
+      <div class="row"><span class="mut">已付 ¥100 · 4月8日截止</span><span class="mut">邀请队友 ›</span></div>
     </div>
-    <div class="hbar"></div>
-    <div class="row"><span class="mut" style="width:26px">#</span><span class="mut" style="flex:1">选手</span><span class="mut" style="width:52px;text-align:right">积分</span><span class="mut" style="width:40px;text-align:right">场次</span></div>
-    <div class="row"><span style="width:26px">1</span><span style="flex:1">张伟</span><span style="width:52px;text-align:right">1240</span><span class="mut" style="width:40px;text-align:right">8</span></div>
-    <div class="row"><span style="width:26px">2</span><span style="flex:1">李强</span><span style="width:52px;text-align:right">1120</span><span class="mut" style="width:40px;text-align:right">7</span></div>
-    <div class="row"><span style="width:26px">3</span><span style="flex:1">陈明</span><span style="width:52px;text-align:right">980</span><span class="mut" style="width:40px;text-align:right">9</span></div>
-    <div class="row"><span style="width:26px">4</span><span style="flex:1">刘洋</span><span style="width:52px;text-align:right">860</span><span class="mut" style="width:40px;text-align:right">5</span></div>
-    <div class="row"><span style="width:26px">5</span><span style="flex:1">孙浩</span><span style="width:52px;text-align:right">720</span><span class="mut" style="width:40px;text-align:right">6</span></div>
-    <div class="hbar"></div>
-    <div class="card" style="background:var(--w-fill)">
-      <div class="row"><span>我 · 第 12 名</span><span>430</span></div>
-      <div class="row"><span class="mut">再赢一轮可进前 10</span><span class="mut">4 场</span></div>
+    <div class="card">
+      <div class="row"><span class="big">四月公开赛 · 混双</span><span class="mut">已确认</span></div>
+      <div class="row"><span class="mut">张伟 / 王芳 · 4月26日开赛</span><span class="mut">›</span></div>
     </div>
+
+    <div class="hbar"></div>
+
+    <div class="sect">赛事</div>
+    <div class="chips"><span class="chip on">全部</span><span class="chip">报名中</span><span class="chip">进行中</span></div>
+    <div class="card">
+      <div class="row"><span class="big">四月市级公开赛</span><span class="mut">A</span></div>
+      <div class="row"><span class="mut">深圳网球会 · 4月26–28日</span><span class="mut">报名中</span></div>
+      <div class="row"><span class="mut">五个比赛</span><span class="mut">18 / 64</span></div>
+    </div>
+    <div class="card">
+      <div class="row"><span class="big">五月混双积分赛</span><span class="mut">C</span></div>
+      <div class="row"><span class="mut">城北网球会 · 5月3日</span><span class="mut">报名中</span></div>
+      <div class="row"><span class="mut">混双</span><span class="mut">6 / 16</span></div>
+    </div>
+    <div class="card">
+      <div class="row"><span class="big">冬季团体赛</span><span class="mut">B</span></div>
+      <div class="row"><span class="mut">深圳网球会 · 1月20日</span><span class="mut">已结束</span></div>
+      <div class="row"><span class="mut">冠军 张伟 / 李强</span><span class="mut">›</span></div>
+    </div>
+    <div class="hint">下拉加载更多</div>
   </div>
-  <div class="ptab"><span>赛事</span><span class="on">积分</span><span>我的</span></div>
+  <div class="ptab"><span class="on">赛事</span><span>积分</span><span>我的</span></div>
 </div>
 <ul class="anns">
-  <li><b>1</b><span>比赛 chips 常驻 —— 高频切换，藏进抽屉会多两次点击。</span></li>
-  <li><b>2</b><span>赛季与俱乐部收进「筛选」抽屉 —— 低频，平铺三个维度会吃掉半屏。</span></li>
-  <li><b>3</b><span>榜单行不显示俱乐部。「按俱乐部筛选」筛的是<b>赛事</b>不是人 —— 选手可加入 0 个或多个俱乐部，归属是社区层，与积分无关。</span></li>
-  <li><b>4</b><span>参赛场次必须显示，否则「打得多分就高」会让榜单显得不公。</span></li>
-  <li><b>5</b><span>「我」的位置吸底常驻，不用滚到第 12 名去找。</span></li>
+  <li><b>1</b><span><b>今日赛程区整块消失</b>，不留空标题、不放空状态插画。全年多数日子是这个形态 —— 常态不该长得像「缺了点什么」。</span></li>
+  <li><b>2</b><span>顶上换成<b>「我的报名」</b>：待组队的带「邀请队友」入口，已确认的显示搭档和开赛日。这是平日最需要的信息 —— 我报了什么、还差什么。</span></li>
+  <li><b>3</b><span>没有报名时这块也消失，赛事列表直接顶上来。<b>三种形态用的是同一套区块，按有无出现或消失</b>，不做三套布局。</span></li>
+  <li><b>4</b><span>已结束的赛事显示<b>冠军</b>而不是日期 —— 日期对结束的赛事没信息量。</span></li>
 </ul>
 </x-dc>
 </body>

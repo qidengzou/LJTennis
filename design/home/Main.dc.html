@@ -1,0 +1,156 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    :root{
+      --c-ground:#F4F5F7;--c-surface:#FFFFFF;--c-surface-2:#EBEDF2;
+      --c-ink:#141821;--c-ink-2:#4C5567;--c-ink-3:#7B8496;--c-line:#DFE2E9;
+      --c-brand:#2E4FD8;--c-brand-ink:#FFFFFF;--c-brand-weak:#E7EBFC;
+      --c-win:#0E9F6E;--c-live:#F5A524;--c-on-live:#FFFFFF;--c-void:#7B8496;
+      --c-av-1:#2E4FD8;--c-av-2:#5B6EA8;--c-av-3:#7A5EA8;--c-av-4:#3F6E7F;--c-av-5:#5A6470;
+      --c-on-photo:#FFFFFF;
+      --r-s:4px;--r-m:8px;--r-l:12px;--r-full:999px;
+      --e-1:0 1px 4px rgba(20,24,33,.06);--e-2:0 4px 16px rgba(20,24,33,.12);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;padding:18px;background:#E9EBEF;color:var(--c-ink);font-size:14px;line-height:1.5;
+      font-family:-apple-system,"PingFang SC","HarmonyOS Sans SC","Source Han Sans CN",system-ui,sans-serif}
+    a{color:var(--c-brand)}a:hover{color:#243FAD}
+    .cap{font-size:12px;color:var(--c-ink-3);margin:0 0 10px}
+    .phone{width:375px;background:var(--c-ground);border-radius:28px;overflow:hidden;box-shadow:0 10px 40px rgba(20,24,33,.18)}
+    .nav{height:44px;background:var(--c-surface);display:flex;align-items:center;justify-content:center;position:relative;
+      font-size:17px;font-weight:600;border-bottom:1px solid var(--c-line)}
+    .nav .capsule{position:absolute;right:10px;top:7px;width:87px;height:30px;border:1px solid var(--c-line);border-radius:15px;
+      display:flex;align-items:center;justify-content:space-evenly;color:var(--c-ink-2);font-size:11px}
+    .nav .capsule i{width:1px;height:16px;background:var(--c-line)}
+    .body{padding:14px 16px 20px;display:flex;flex-direction:column;gap:12px}
+    .sec{display:flex;align-items:baseline;justify-content:space-between;margin-top:4px}
+    .sec b{font-size:16px;font-weight:600}
+    .sec span{font-size:12px;color:var(--c-ink-3)}
+    .chips{display:flex;gap:8px}
+    .chip{height:30px;padding:0 13px;border-radius:var(--r-full);border:1px solid var(--c-line);background:var(--c-surface);
+      font-size:13px;color:var(--c-ink-2);display:inline-flex;align-items:center}
+    .chip.on{background:var(--c-brand);border-color:var(--c-brand);color:var(--c-brand-ink);font-weight:600}
+
+    /* 我的报名 · 紧凑行 */
+    .row{background:var(--c-surface);border-radius:var(--r-l);padding:12px 14px;box-shadow:var(--e-1);display:flex;align-items:center;gap:12px}
+    .row .t{font-weight:600;font-size:14px}
+    .row .m{font-size:12px;color:var(--c-ink-3);margin-top:2px}
+    .st{font-size:11px;font-weight:600;padding:2px 8px;border-radius:var(--r-full);flex:none}
+    .st.live{background:#FDF0DC;color:#B87508}
+    .st.win{background:#E4F6EE;color:var(--c-win)}
+    .st.void{background:var(--c-surface-2);color:var(--c-void)}
+    .lnk{font-size:13px;color:var(--c-brand);font-weight:600;flex:none}
+
+    /* 赛事 · 照片卡 */
+    .pc{position:relative;height:240px;border-radius:var(--r-l);overflow:hidden;box-shadow:var(--e-2);color:var(--c-on-photo);background:#1a2540}
+    .pc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:62% 40%}
+    .pc .grad{position:absolute;inset:0;background:linear-gradient(180deg,rgba(16,26,52,.46) 0%,rgba(16,26,52,.10) 30%,rgba(16,26,52,.22) 55%,rgba(12,22,46,.82) 100%)}
+    .pc .in{position:absolute;inset:0;padding:12px 14px 14px;display:flex;flex-direction:column}
+    .pc .top{display:flex;align-items:center;gap:6px}
+    .pc .sp{flex:1}
+    .tier{font-size:10px;font-weight:700;line-height:18px;padding:0 8px;border-radius:var(--r-full);border:1px solid transparent}
+    .tier.a{background:var(--c-brand);color:var(--c-brand-ink)}
+    .tier.b{background:var(--c-brand-weak);color:var(--c-brand)}
+    .tier.c{border-color:rgba(255,255,255,.55);color:var(--c-on-photo)}
+    .tag{font-size:10.5px;font-weight:600;line-height:18px;padding:0 8px;border-radius:var(--r-full);
+      background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);backdrop-filter:blur(8px)}
+    .tag.hot{background:var(--c-live);border-color:var(--c-live);color:var(--c-on-live)}
+    .pc .ttl{font-size:20px;font-weight:700;line-height:1.25;letter-spacing:-.01em;text-shadow:0 1px 8px rgba(0,0,0,.35);margin-top:auto}
+    .pc .meta{font-size:12px;color:rgba(255,255,255,.88);margin-top:4px;display:flex;align-items:center;gap:5px;text-shadow:0 1px 6px rgba(0,0,0,.35)}
+    .pc .meta svg{width:12px;height:12px;flex:none}
+    .glass{margin-top:10px;display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:var(--r-full);
+      background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.26);backdrop-filter:blur(12px);font-size:12.5px}
+    .glass b{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+    .foot{margin-top:10px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .avs{display:flex;align-items:center}
+    .av{width:28px;height:28px;border-radius:var(--r-full);border:2px solid rgba(255,255,255,.95);margin-left:-8px;
+      display:grid;place-items:center;font-size:12px;font-weight:600;color:#fff}
+    .av:first-child{margin-left:0}
+    .av.more{background:rgba(255,255,255,.22);backdrop-filter:blur(8px);font-size:11px;border-color:rgba(255,255,255,.45)}
+    .cta{height:40px;padding:0 20px;border-radius:var(--r-full);background:var(--c-brand);color:var(--c-brand-ink);font-size:14px;font-weight:600;
+      display:inline-flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(46,79,216,.38);white-space:nowrap}
+    .cta.wait{background:var(--c-live);color:var(--c-on-live);box-shadow:0 6px 16px rgba(245,165,36,.38)}
+    .cta.ghost{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.4);backdrop-filter:blur(12px);box-shadow:none}
+    .pc.nocover{background:linear-gradient(135deg,#2E4FD8 0%,#1B2E86 60%,#141C3C 100%)}
+    .pc.nocover .grad{background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(12,22,46,.55) 100%)}
+    .pc.nocover .wm{position:absolute;right:-14px;top:-10px;font-size:150px;font-weight:800;color:rgba(255,255,255,.06);line-height:1;letter-spacing:-.05em}
+
+    /* 已结束 · 紧凑行 */
+    .done{background:var(--c-surface);border-radius:var(--r-l);padding:12px 14px;box-shadow:var(--e-1);display:flex;align-items:center;gap:12px;opacity:.9}
+    .done .t{font-weight:600;font-size:14px;color:var(--c-ink-2)}
+    .done .m{font-size:12px;color:var(--c-ink-3);margin-top:2px}
+
+    /* tabBar */
+    .tabbar{height:50px;background:var(--c-surface);border-top:1px solid var(--c-line);display:flex}
+    .tabbar div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:10px;color:var(--c-ink-3)}
+    .tabbar div.on{color:var(--c-brand)}
+    .tabbar svg{width:22px;height:22px}
+
+    /* 状态版面 */
+    .grid{display:grid;grid-template-columns:repeat(2,343px);gap:22px 26px;align-items:start}
+    .grid .lab{font-size:12px;color:var(--c-ink-3);margin:0 0 8px;font-weight:600}
+    .anns{margin:18px 0 0;padding:0;list-style:none;display:grid;gap:6px;max-width:740px}
+    .anns li{font-size:12px;color:var(--c-ink-2);display:flex;gap:8px;align-items:flex-start}
+    .anns li > b{flex:none;width:16px;height:16px;border-radius:999px;border:1px solid #B03A2E;color:#B03A2E;font-size:9.5px;display:grid;place-items:center;margin-top:2px;font-weight:400}
+  </style>
+</helmet>
+<p class="cap">赛事首页 · 高保真 · 平日形态</p>
+<div class="phone">
+  <div class="nav">赛事<div class="capsule"><span>•••</span><i></i><span>◎</span></div></div>
+  <div class="body">
+    <div class="sec"><b>我的报名</b><span>2</span></div>
+    <div class="row"><div style="flex:1"><div class="t">春季双打赛 · 男双</div><div class="m">已付 ¥100 · 4月8日截止组队</div></div><span class="st live">待组队</span><span class="lnk">邀请队友</span></div>
+    <div class="row"><div style="flex:1"><div class="t">四月公开赛 · 混双</div><div class="m">张伟 / 王芳 · 4月26日开赛</div></div><span class="st win">已确认</span></div>
+
+    <div class="sec"><b>赛事</b><span>深圳 · 12 场</span></div>
+    <div class="chips"><span class="chip on">全部</span><span class="chip">报名中</span><span class="chip">进行中</span></div>
+
+    <div class="pc"><img src="cover.jpg" alt=""><div class="grad"></div>
+  <div class="in"><div class="top"><span class="tier a">A</span><span class="tag hot">报名中</span><span class="sp"></span><span class="tag">4月26–28日</span></div>
+      <div class="ttl">四月市级公开赛</div>
+      <div class="meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6-5.3-6-10a6 6 0 0 1 12 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2.2"/></svg> 深圳网球会 · 龙岗体育中心</div>
+      <div class="meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg> 男双 女双 混双 男单 女单</div>
+      <div class="glass"><span>报名费 / 人</span><b>¥100</b></div>
+      <div class="foot">
+        <div class="avs"><span class="av" style="background:var(--c-av-1)">张</span><span class="av" style="background:var(--c-av-3)">王</span><span class="av" style="background:var(--c-av-4)">陈</span><span class="av more">+15</span></div>
+        <span class="cta">报名</span>
+      </div>
+    </div></div>
+
+    <div class="pc nocover"><div class="wm">春</div><div class="grad"></div>
+  <div class="in"><div class="top"><span class="tier b">B</span><span class="tag">进行中</span><span class="sp"></span><span class="tag">4月12–14日</span></div>
+      <div class="ttl">春季双打赛</div>
+      <div class="meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6-5.3-6-10a6 6 0 0 1 12 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2.2"/></svg> 深圳网球会 · 龙岗体育中心</div>
+      <div class="meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg> 男双 女双 混双 · 32 组已满</div>
+      <div class="foot">
+        <div class="avs"><span class="av" style="background:var(--c-av-2)">李</span><span class="av" style="background:var(--c-av-5)">赵</span><span class="av" style="background:var(--c-av-1)">孙</span><span class="av more">+61</span></div>
+        <span class="cta ghost">看签表</span>
+      </div>
+    </div></div>
+
+    <div class="done"><div style="flex:1"><div class="t">冬季团体赛</div><div class="m">1月20日 · 冠军 张伟 / 李强</div></div><span class="st void">已结束</span></div>
+  </div>
+  <div class="tabbar">
+    <div class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4a3 3 0 0 0 3 5M17 6h3a3 3 0 0 1-3 5"/></svg>赛事</div>
+    <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>积分</div>
+    <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>我的</div>
+  </div>
+</div>
+<ul class="anns">
+  <li><b>1</b><span><b>大图卡只给报名中 / 进行中的赛事。</b>已结束的用紧凑行 —— 它不需要吸引你，只需要能查到。三种赛事在一屏里的视觉重量因此是递减的。</span></li>
+  <li><b>2</b><span>照片上压一层与注册页同款的渐变（顶 .46 → 底 .82），白字和主色按钮才站得住。<b>主按钮仍是硬地场蓝</b>，不为了照片改成白色 —— 底部遮罩够重，蓝在近黑的带子上一样跳。</span></li>
+  <li><b>3</b><span><b>报名费按「人」标</b>，不是按组 —— 每人付自己的，卡上就得这么写，否则到支付页发现只付一半会疑惑。</span></li>
+  <li><b>4</b><span>头像堆是<b>色块首字</b>，不是照片 —— 第一版没有头像上传。五个冷色轮换，白描边让它们在照片上分得开。</span></li>
+  <li><b>5</b><span>「我的报名」在赛事列表上方：平日打开这一屏最想知道的是我报了什么、还差什么。待组队的行直接带「邀请队友」。</span></li>
+  <li><b>6</b><span><b>「报名」是导航不是动作</b> —— 点了进赛事详情选比赛，再进比赛详情看费用，不直接跳付款。</span></li>
+</ul>
+</x-dc>
+</body>
+</html>

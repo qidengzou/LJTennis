@@ -26,6 +26,10 @@
     .side{width:216px;flex:none;background:var(--c-surface);border-right:1px solid var(--c-line);
       display:flex;flex-direction:column;padding:16px 0}
     .brand{padding:0 16px 16px;font-weight:700;font-size:16px;letter-spacing:-.01em}
+    /* 不做切换器 —— 一个退回入口就够。俱乐部名在顶部面包屑里已经有了 */
+    .back{margin-top:auto;padding:10px 18px;font-size:13px;color:var(--c-ink-3);
+      text-decoration:none;display:block}
+    .back:hover{color:var(--c-ink-2)}
     .snav{display:flex;flex-direction:column;gap:2px;padding:0 8px}
     .snav a{display:flex;align-items:center;justify-content:space-between;gap:8px;
       padding:8px 10px;border-radius:var(--r-s);color:var(--c-ink-2);text-decoration:none;font-size:13.5px}
@@ -77,11 +81,7 @@
       <div class="snav"><a href="#">赛事<span class="badge">3</span></a><a href="#">成员 128</a><a href="#">俱乐部资料</a></div>
       <div class="sgrp">春季双打赛</div>
       <div class="snav"><a class="on" href="#">报名名单</a><a href="#">抽签</a><a href="#">排程</a><a href="#">场次与比分</a></div>
-    <div class="switch">
-        <div class="logo">深</div>
-        <div class="nm"><b>深圳网球会</b><span>3 个赛事 · 128 成员</span></div>
-        <div class="car">切换 ⌄</div>
-      </div>
+    <a class="back" href="#">← 返回俱乐部列表</a>
     </div>
     <div class="main">
     <div class="top"><div class="crumb">春季双打赛 › <b>报名名单</b></div>
@@ -96,7 +96,7 @@
       </div>
       <div class="card" style="flex:1;min-height:0;overflow:auto">
         <table>
-          <tr><th style="width:28px"></th><th>参赛</th><th>项目</th><th>手机号</th><th>状态</th><th>报名时间</th><th>费用</th><th></th></tr>
+          <tr><th style="width:28px"></th><th>参赛</th><th>比赛</th><th>手机号</th><th>状态</th><th>报名时间</th><th>费用</th><th></th></tr>
           <tr><td class="mut">☑</td><td><b>张伟 / 李强</b></td><td>男双</td><td>138****6421</td><td><span class="st ok">已确认</span></td><td class="mut">4月2日 10:22</td><td>¥200</td><td class="mut">⋯</td></tr>
           <tr><td class="mut">☑</td><td><b>王芳 / 赵敏</b></td><td>混双</td><td>185****9029</td><td><span class="st wait">待付款 · 剩 18h</span></td><td class="mut">4月3日 09:10</td><td>¥200</td><td class="mut">⋯</td></tr>
           <tr><td class="mut">☐</td><td><b>张伟 / 李强</b></td><td>男双</td><td>138****6421</td><td><span class="st wait">待搭档确认 · 26h</span></td><td class="mut">4月3日 09:10</td><td class="mut">未付</td><td class="mut">代为确认</td></tr>

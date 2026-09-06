@@ -26,6 +26,10 @@
     .side{width:216px;flex:none;background:var(--c-surface);border-right:1px solid var(--c-line);
       display:flex;flex-direction:column;padding:16px 0}
     .brand{padding:0 16px 16px;font-weight:700;font-size:16px;letter-spacing:-.01em}
+    /* 不做切换器 —— 一个退回入口就够。俱乐部名在顶部面包屑里已经有了 */
+    .back{margin-top:auto;padding:10px 18px;font-size:13px;color:var(--c-ink-3);
+      text-decoration:none;display:block}
+    .back:hover{color:var(--c-ink-2)}
     .snav{display:flex;flex-direction:column;gap:2px;padding:0 8px}
     .snav a{display:flex;align-items:center;justify-content:space-between;gap:8px;
       padding:8px 10px;border-radius:var(--r-s);color:var(--c-ink-2);text-decoration:none;font-size:13.5px}

@@ -26,6 +26,10 @@
     .side{width:216px;flex:none;background:var(--c-surface);border-right:1px solid var(--c-line);
       display:flex;flex-direction:column;padding:16px 0}
     .brand{padding:0 16px 16px;font-weight:700;font-size:16px;letter-spacing:-.01em}
+    /* 不做切换器 —— 一个退回入口就够。俱乐部名在顶部面包屑里已经有了 */
+    .back{margin-top:auto;padding:10px 18px;font-size:13px;color:var(--c-ink-3);
+      text-decoration:none;display:block}
+    .back:hover{color:var(--c-ink-2)}
     .snav{display:flex;flex-direction:column;gap:2px;padding:0 8px}
     .snav a{display:flex;align-items:center;justify-content:space-between;gap:8px;
       padding:8px 10px;border-radius:var(--r-s);color:var(--c-ink-2);text-decoration:none;font-size:13.5px}
@@ -77,11 +81,7 @@
       <div class="snav"><a href="#">赛事<span class="badge">3</span></a><a href="#">成员 128</a><a href="#">俱乐部资料</a></div>
       <div class="sgrp">春季双打赛</div>
       <div class="snav"><a href="#">报名名单</a><a class="on" href="#">抽签</a><a href="#">排程</a><a href="#">场次与比分</a></div>
-    <div class="switch">
-        <div class="logo">深</div>
-        <div class="nm"><b>深圳网球会</b><span>3 个赛事 · 128 成员</span></div>
-        <div class="car">切换 ⌄</div>
-      </div>
+    <a class="back" href="#">← 返回俱乐部列表</a>
     </div>
     <div class="main">
     <div class="top"><div class="crumb">春季双打赛 › <b>抽签</b> · 男双</div>

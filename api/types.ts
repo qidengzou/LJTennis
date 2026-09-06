@@ -11,7 +11,7 @@
 // 枚举
 // ============================================================
 
-/** 项目类型。单双打都上 —— 模型按「赛事→项目→Entry」三层设计，Entry 是 1~2 人 */
+/** 比赛类型。单双打都上 —— 模型按「赛事→比赛→Entry」三层设计，Entry 是 1~2 人 */
 export type EventType =
   | 'MD'   // 男双
   | 'WD'   // 女双
@@ -45,7 +45,7 @@ export type TournamentStatus =
   | 'done'
   | 'cancelled';
 
-/** 项目状态 */
+/** 比赛状态 */
 export type EventStatus =
   | 'open'       // 可报名
   | 'full'       // 名额满，可加候补（注意：满员不是错误态）
@@ -57,13 +57,17 @@ export type EventStatus =
 /**
  * 报名状态机。三个「等待态」各有超时出口，见 Entry 上的 *DeadlineAt 字段。
  * 状态色映射固定（design-system-v2 §01）：
- *   pending_partner / pending_payment / waitlisted / promoted → live 橙
+ *   seeking_partner / waitlisted / promoted → live 橙
  *   confirmed → win 绿
  *   cancelled / refunded → void 灰
  */
 export type EntryStatus =
-  | 'pending_partner'   // 等待态①：已邀请搭档，等对方接受
-  | 'pending_payment'   // 等待态②：组合成立，等发起人付款
+  /**
+   * 等待态①：**待组队**。报名即付款，付完就落在这里。
+   * 双打只有这一条路径：接受邀请、扫码报名、朋友推荐进来的完全一样，
+   * 区别只是 invitedBy 填没填。组队一律由主办方在后台手动完成。
+   */
+  | 'seeking_partner'
   | 'waitlisted'        // 候补中，不预付
   | 'promoted'          // 等待态③：候补转正，24h 内须付款
   | 'confirmed'         // 已确认参赛，进签表
@@ -98,7 +102,7 @@ export interface User {
   nickname: string;
 
   /**
-   * 性别。必填，决定能参加哪些项目：
+   * 性别。必填，决定能参加哪些比赛：
    *   MD → 双方均为 M；WD → 双方均为 F；XD → 一 M 一 F
    * 有 active entry 时不可修改（资料编辑页显示锁定态并说明何时解锁）
    */
@@ -141,7 +145,7 @@ export interface Partnership {
 }
 
 // ============================================================
-// 赛事 → 项目
+// 赛事 → 比赛
 // ============================================================
 
 export interface Tournament {
@@ -184,7 +188,7 @@ export interface Event {
 
 /**
  * 参赛主体。单打时 playerIds 长度为 1，双打为 2。
- * 签表、赛程、比赛全部挂在 Entry 上 —— 这样单双打共用一套结构。
+ * 签表、赛程、场次全部挂在 Entry 上 —— 这样单双打共用一套结构。
  */
 export interface Entry {
   id: string;
@@ -235,7 +239,7 @@ export interface Order {
 }
 
 // ============================================================
-// 签表与比赛
+// 签表与场次
 // ============================================================
 
 /** 小组（仅 group_knockout） */
@@ -270,7 +274,7 @@ export interface SetScore {
 }
 
 /**
- * 一场比赛的完整比分。
+ * 一个场次的完整比分。
  *
  * 注意：**第一版不上传逐分数据**。逐分只存在小程序本地（用于撤销、断网续记、
  * 杀进程恢复），上传时只传 sets + serveOrder。

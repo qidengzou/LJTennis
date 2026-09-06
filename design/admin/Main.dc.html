@@ -26,6 +26,10 @@
     .side{width:216px;flex:none;background:var(--c-surface);border-right:1px solid var(--c-line);
       display:flex;flex-direction:column;padding:16px 0}
     .brand{padding:0 16px 16px;font-weight:700;font-size:16px;letter-spacing:-.01em}
+    /* 不做切换器 —— 一个退回入口就够。俱乐部名在顶部面包屑里已经有了 */
+    .back{margin-top:auto;padding:10px 18px;font-size:13px;color:var(--c-ink-3);
+      text-decoration:none;display:block}
+    .back:hover{color:var(--c-ink-2)}
     .snav{display:flex;flex-direction:column;gap:2px;padding:0 8px}
     .snav a{display:flex;align-items:center;justify-content:space-between;gap:8px;
       padding:8px 10px;border-radius:var(--r-s);color:var(--c-ink-2);text-decoration:none;font-size:13.5px}
@@ -76,11 +80,7 @@
       <div class="brand">LJTennis 后台</div>
       <div class="snav"><a class="on" href="#">赛事<span class="badge">3</span></a><a href="#">成员 128</a><a href="#">俱乐部资料</a></div>
       
-    <div class="switch">
-        <div class="logo">深</div>
-        <div class="nm"><b>深圳网球会</b><span>3 个赛事 · 128 成员</span></div>
-        <div class="car">切换 ⌄</div>
-      </div>
+    <a class="back" href="#">← 返回俱乐部列表</a>
     </div>
     <div class="main">
     <div class="top">
@@ -90,13 +90,16 @@
     <div class="body">
       <div class="card">
         <table>
-          <tr><th style="width:34%">赛事</th><th>等级</th><th>项目</th><th>报名</th><th>状态</th><th>待处理</th><th></th></tr>
+          <tr><th style="width:34%">赛事</th><th>等级</th><th>比赛</th><th>报名</th><th>状态</th><th>待处理</th><th></th></tr>
           <tr><td><b>春季双打赛</b><div class="mut">4月12–14日</div></td>
               <td><span class="tag tier-b">B</span></td><td>男双 女双 混双</td>
               <td>32 / 32<div class="mut">候补 5</div></td>
               <td><span class="st ok">进行中</span></td>
               <td><span class="badge">3</span></td>
               <td class="mut">管理 ›</td></tr>
+          <tr><td><b>四月市级公开赛</b><div class="mut">4月26–28日</div></td>
+              <td><span class="tag tier-a">A</span></td><td>男双 女双 混双 男单 女单</td>
+              <td>18 / 64</td><td><span class="st wait">报名中</span></td><td></td><td class="mut">管理 ›</td></tr>
           <tr><td><b>五月混双积分赛</b><div class="mut">5月3日</div></td>
               <td><span class="tag tier-c">C</span></td><td>混双</td>
               <td>6 / 16</td><td><span class="st wait">报名中</span></td><td></td><td class="mut">管理 ›</td></tr>
@@ -109,10 +112,9 @@
   </div>
 </div>
 <ul class="anns">
-  <li><b>1</b><span>侧栏顶部是<b>工作区切换器</b>，不是普通导航项 —— 它是整个后台的上下文，一切操作都发生在某个俱乐部里，所以做成侧栏最重的一块。</span></li>
+  <li><b>1</b><span>当前俱乐部由<b>顶部面包屑</b>标明，侧栏只留一个「← 返回俱乐部列表」。换俱乐部是低频动作，不值得占一块常驻的重视觉。</span></li>
   <li><b>2</b><span>待办角标沿用小程序的橙色 <code>--c-live</code>，同一个数字两端对得上。</span></li>
-  <li><b>3</b><span>等级标签用主色三档强度（A 实心 / B 浅底 / C 描边），与小程序同一套配方。</span></li>
-  <li><b>4</b><span><b>已删掉「CSV 导入」。</b>它是阶段 0 的遗物 —— 当时没有组织者界面，导表是唯一能建赛事和录报名的办法。现在这两件事都有了页面，它替代的空缺已经被填上。</span></li>
+  <li><b>3</b><span>等级标签用主色三档强度，与小程序同一套配方。三档在这一屏<b>全部出现过</b> —— A 实心最重、B 浅底、C 描边最轻。</span></li>
 </ul>
 </x-dc>
 </body>
