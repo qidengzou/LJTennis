@@ -3,17 +3,12 @@
   <block wx:if="{{loaded && !registered}}">
     <view class="card anon">
       <view class="av-ph">👤</view>
-      <view class="anon-txt">
-        <text class="anon-t">还没注册</text>
-        <text class="k">注册后可以报名赛事、现场记分{{'\n'}}并查看自己的参赛记录</text>
-      </view>
       <button class="btn btn-wx" bindtap="onRegister">微信一键注册</button>
     </view>
 
     <text class="k">不需要注册也能看</text>
     <view class="card list">
       <view class="prow"><view class="nm"><text class="nm-t">赛制与退款规则</text></view><text class="ar">›</text></view>
-      <view class="prow"><view class="nm"><text class="nm-t">设置</text></view><text class="ar">›</text></view>
     </view>
   </block>
 
@@ -24,7 +19,6 @@
         <view class="av" style="background:var(--c-av-{{(user.avatarColorIndex || 0) + 1}})">{{user.nickname[0]}}</view>
         <view class="hd-n">
           <text class="hd-t">{{user.nickname}}</text>
-          <text class="k">{{genderText}}{{user.city ? ' · ' + user.city : ''}}{{user.phoneMasked ? ' · ' + user.phoneMasked : ''}}</text>
         </view>
         <view class="chip" bindtap="onProfile">编辑</view>
       </view>
@@ -42,16 +36,10 @@
         <text class="ar">›</text>
       </view>
       <view class="prow"><view class="nm"><text class="nm-t">我的战绩</text><text class="k">{{stats.completed}} 场</text></view><text class="ar">›</text></view>
-      <view class="prow" wx:if="{{topPartner}}">
-        <view class="av sm" style="background:var(--c-av-2)">{{topPartner.nickname[0]}}</view>
-        <view class="nm"><text class="nm-t">常搭档</text><text class="k">{{topPartner.nickname}} · 同队 {{topPartner.together}} 场</text></view>
-        <text class="ar">›</text>
-      </view>
     </view>
 
     <view class="card list">
       <view class="prow"><view class="nm"><text class="nm-t">赛制与退款规则</text></view><text class="ar">›</text></view>
-      <view class="prow"><view class="nm"><text class="nm-t">设置</text></view><text class="ar">›</text></view>
     </view>
   </block>
 

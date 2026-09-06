@@ -4,8 +4,8 @@ const store = require('../../utils/store');
 Page({
   data: {
     loaded: false, registered: false, user: null,
-    genderText: '', stats: { registered: 0, completed: 0, wins: 0, losses: 0 },
-    pendingText: '', topPartner: null,
+    stats: { registered: 0, completed: 0, wins: 0, losses: 0 },
+    pendingText: '',
   },
 
   // tab 页只 onLoad 一次，注册完回来必须靠 onShow 刷新
@@ -18,10 +18,7 @@ Page({
         self.setData({ loaded: true, registered: false, user: null });
         return;
       }
-      self.setData({
-        loaded: true, registered: true, user: r.user,
-        genderText: r.user.gender === 'F' ? '女' : '男',
-      });
+      self.setData({ loaded: true, registered: true, user: r.user });
       self.loadExtras();
     }).catch(function (err) {
       self.setData({ loaded: true, registered: false });
@@ -42,10 +39,6 @@ Page({
         stats: { registered: list.length, completed: done, wins: 0, losses: 0 },
       });
     }).catch(function () { /* 次要数据，失败不打断 */ });
-
-    cloud.call('user.partners').then(function (r) {
-      self.setData({ topPartner: (r.partners || [])[0] || null });
-    }).catch(function () { /* 没有搭档时整行隐藏 */ });
   },
 
   onRegister() {
