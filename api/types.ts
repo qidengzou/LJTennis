@@ -263,10 +263,9 @@ export interface Tournament {
 }
 
 /**
- * 俱乐部。**「谁能办赛」这个悬空问题的答案** —— 你是某俱乐部的管理员，
- * 所以能以俱乐部名义办赛，平台不必维护一份全局组织者白名单。
+ * 俱乐部。俱乐部的管理员能办比赛，
  *
- * **只能在网页后台创建**，小程序不给入口（PRD.md §2）。
+ * **只能在网页后台创建**，小程序不给入口。
  */
 export interface Club {
   id: string;
@@ -277,6 +276,12 @@ export interface Club {
   province: string;   // 广东
   city: string;       // 深圳
   district?: string;  // 龙岗。可空 —— 小城市没有区这一级
+
+  /**
+   * 图标。**可选** —— 没传不是错误状态，用俱乐部名首字加主色块兜底。
+   * 出图规格见 `design/image-spec.md`。
+   */
+  logoUrl?: string;
 
   description?: string;
   createdAt: string;

@@ -14,6 +14,8 @@
       --c-brand:#2E4FD8; --c-brand-ink:#FFFFFF; --c-brand-weak:#E7EBFC;
       --c-win:#0E9F6E; --c-loss:#E0294B; --c-live:#F5A524; --c-on-live:#FFFFFF;
       --c-danger:#E0294B; --c-void:#7B8496; --c-serve:#D9E64B;
+      /* 头像色板：冷色，不含绿/红/橙 —— 免得和记分语义色撞。俱乐部图标兜底也用它 */
+      --c-av-1:#2E4FD8; --c-av-2:#5B6EA8; --c-av-3:#7A5EA8; --c-av-4:#3F6E7F; --c-av-5:#5A6470;
       /* 桌面控件 36px：88rpx(44pt) 是给手指的，鼠标不需要 */
       --h-ctl:36px; --r-s:4px; --r-m:8px; --r-l:12px; --r-full:999px;
       --e-1:0 1px 3px rgba(20,24,33,.06); --e-2:0 6px 20px rgba(20,24,33,.10);
@@ -81,8 +83,14 @@
     <div class="mut" style="margin-bottom:18px">你管理 3 个俱乐部</div>
     <div style="display:flex;flex-direction:column;gap:10px">
       <div class="card pad" style="display:flex;align-items:center;gap:14px;cursor:pointer">
-        <div style="width:44px;height:44px;border-radius:var(--r-s);background:var(--c-surface-2);
-                    display:grid;place-items:center;font-size:11px;color:var(--c-ink-3);flex:none">LOGO</div>
+        <!-- 上传过图标：方图按 4px 圆角渲染，不裁成圆 —— logo 常有文字 -->
+        <div style="width:44px;height:44px;border-radius:var(--r-s);flex:none;overflow:hidden;
+                    background:#0E3F73;display:grid;place-items:center">
+          <svg viewBox="0 0 44 44" width="44" height="44" aria-hidden="true">
+            <circle cx="22" cy="22" r="13" fill="none" stroke="#D9E64B" stroke-width="2.5"/>
+            <path d="M11 13 Q22 22 33 31 M33 13 Q22 22 11 31" stroke="#D9E64B" stroke-width="1.6" fill="none" opacity=".65"/>
+          </svg>
+        </div>
         <div style="flex:1">
           <div style="font-weight:600">深圳网球会</div>
           <div class="mut">深圳 · 龙岗 · 成员 128 · 赛事 3</div>
@@ -91,8 +99,9 @@
         <span class="mut">›</span>
       </div>
       <div class="card pad" style="display:flex;align-items:center;gap:14px;cursor:pointer">
-        <div style="width:44px;height:44px;border-radius:var(--r-s);background:var(--c-surface-2);
-                    display:grid;place-items:center;font-size:15px;color:var(--c-ink-3);flex:none">城</div>
+        <!-- 没传图标：首字 + 主色块兜底，和头像同一套。灰占位图会显得像坏了 -->
+        <div style="width:44px;height:44px;border-radius:var(--r-s);background:var(--c-av-2);color:#fff;
+                    display:grid;place-items:center;font-size:17px;font-weight:600;flex:none">城</div>
         <div style="flex:1">
           <div style="font-weight:600">城北网球会</div>
           <div class="mut">深圳 · 宝安 · 成员 34 · 赛事 1</div>
@@ -101,8 +110,8 @@
         <span class="mut">›</span>
       </div>
       <div class="card pad" style="display:flex;align-items:center;gap:14px;cursor:pointer">
-        <div style="width:44px;height:44px;border-radius:var(--r-s);background:var(--c-surface-2);
-                    display:grid;place-items:center;font-size:15px;color:var(--c-ink-3);flex:none">湾</div>
+        <div style="width:44px;height:44px;border-radius:var(--r-s);background:var(--c-av-4);color:#fff;
+                    display:grid;place-items:center;font-size:17px;font-weight:600;flex:none">湾</div>
         <div style="flex:1">
           <div style="font-weight:600">湾区网球联盟</div>
           <div class="mut">广州 · 天河 · 成员 61 · 赛事 0</div>
@@ -123,6 +132,8 @@
   <li><b>3</b><span>待办角标聚合到俱乐部一级 —— 哪个俱乐部有事，在这一屏就看得见，不用逐个点进去。</span></li>
   <li><b>4</b><span>进工作区后侧栏底部有<b>「← 返回俱乐部列表」</b>。不做切换器 —— 换俱乐部是低频动作，退回这一屏再选就够了。</span></li>
   <li><b>5</b><span>「创建俱乐部」在这里 —— 它是网页端的职责（赛前操作），小程序只指路不给按钮。</span></li>
+  <li><b>6</b><span><b>图标可传可不传。</b>第一个是传过的，后两个<b>用俱乐部名首字加主色块兜底</b> —— 和头像同一套，跟赛事封面「没传就用主色渐变」是同一条规则。灰色占位图会让那个俱乐部看起来像坏了。</span></li>
+  <li><b>7</b><span>图标按<b>方形 4px 圆角</b>渲染，不裁成圆 —— 俱乐部 logo 常带文字，裁圆会把字切掉。出图 240×240 PNG（logo 常有透明背景，JPEG 会糊上白底）。</span></li>
 </ul>
 </x-dc>
 </body>
