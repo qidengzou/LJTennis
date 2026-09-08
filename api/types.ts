@@ -39,17 +39,9 @@ export type DrawFormat =
  * 规则结算。
  */
 export interface MatchFormat {
-  /** 一盘打几局。**0 = 整场只打一个抢十**，不打局 */
-  gamesToWin: number;
-
-  /** 几平进抢七。通常等于 `gamesToWin`；4 局制常用 3-3 就进 */
-  tiebreakAt: number;
-
-  tiebreakTo: number;
+  // ── 盘 ────────────────────────────────────────────────
+  /** 几盘几胜 */
   setsToWin: number;
-
-  /** 金球：40-40 后不打占先，下一分定胜负。**与「短盘」是两个维度** */
-  noAd: boolean;
 
   /**
    * 决胜盘怎么打，仅 `setsToWin >= 2` 有意义。
@@ -57,6 +49,20 @@ export interface MatchFormat {
    * **和 `gamesToWin: 0` 的「整场一个抢十」不是一回事**。
    */
   decidingSet: 'full' | 'tb10';
+
+  // ── 局 ────────────────────────────────────────────────
+  /** 一盘打几局。**0 = 整场只打一个抢十**，不打局 */
+  gamesToWin: number;
+
+  /** 几平进抢七。默认等于 `gamesToWin`（6-6 进、4-4 进） */
+  tiebreakAt: number;
+
+  // ── 分 ────────────────────────────────────────────────
+  /** 抢七打到几分。**跟着局数走：4 局抢五、6 局抢七**（局数 + 1） */
+  tiebreakTo: number;
+
+  /** 金球：40-40 后不打占先，下一分定胜负。**与「短盘」是两个维度** */
+  noAd: boolean;
 }
 
 /** 赛事积分等级。组织者选等级，各轮次分值由平台固定 —— 见 PRD.md §7 */

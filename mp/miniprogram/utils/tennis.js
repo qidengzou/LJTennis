@@ -14,27 +14,34 @@ const POINT_LABELS = ['0', '15', '30', '40'];
  * 报名人数天天在变，任何固定清单都会漏掉别人正在用的那一种。
  * 这份代码已经因此错过两次：先漏了金球，再漏了决胜盘抢十。
  *
- * | 维度 | 字段 | 说明 |
+ * 字段按**盘 → 局 → 分**从大到小排，跟人说赛制的顺序一致：
+ *
+ * | | 维度 | 字段 |
  * |---|---|---|
- * | 一盘打几局 | `gamesToWin` | 6 / 4；**0 = 整场只打一个抢十**，不打局 |
- * | 几局几平进抢七 | `tiebreakAt` | 通常等于 gamesToWin；4 局制常用 3-3 进 |
- * | 抢七到几分 | `tiebreakTo` | 7 / 10 |
- * | 几盘几胜 | `setsToWin` | 1 / 2 |
- * | 平分怎么办 | `noAd` | true = 金球，不打占先。业余通行 |
- * | 决胜盘怎么打 | `decidingSet` | 'full' 打满 / 'tb10' 抢十。仅 setsToWin >= 2 有意义 |
+ * | 盘 | 几盘几胜 | `setsToWin` |
+ * | 盘 | 决胜盘怎么打 | `decidingSet` —— 'full' 打满 / 'tb10' 抢十 |
+ * | 局 | 一盘打几局 | `gamesToWin` —— **0 = 整场只打一个抢十** |
+ * | 局 | 几平进抢七 | `tiebreakAt` |
+ * | 分 | 抢七到几分 | `tiebreakTo` —— 默认跟着局数走：**4 局抢五、6 局抢七** |
+ * | 分 | 平分怎么办 | `noAd` —— true = 金球，不打占先 |
  *
  * 契约见 `api/types.ts` 的 `MatchFormat`。
  */
 
-/** 常用预设。**只是建赛表单的快捷方式**，主办方可以在此基础上改任意一项 */
+/**
+ * 常用预设。**只是建赛表单的快捷方式**，主办方可以在此基础上改任意一项。
+ * 字段按**盘 → 局 → 分**从大到小排，跟人说赛制的顺序一致。
+ */
 const PRESETS = {
+  //              ── 盘 ──────────────────────  ── 局 ──────────────────  ── 分 ──
   // 两盘 + 决胜抢十 —— 业余双打最主流：省时间、场地周转快
-  sets2_st10_gp: { gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  setsToWin: 2, noAd: true,  decidingSet: 'tb10' },
-  sets3_gp:      { gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  setsToWin: 2, noAd: true,  decidingSet: 'full' },
-  sets3_ad:      { gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  setsToWin: 2, noAd: false, decidingSet: 'full' },
-  short4_gp:     { gamesToWin: 4, tiebreakAt: 4, tiebreakTo: 7,  setsToWin: 2, noAd: true,  decidingSet: 'tb10' },
-  set1_gp:       { gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  setsToWin: 1, noAd: true,  decidingSet: 'full' },
-  tb10:          { gamesToWin: 0, tiebreakAt: 0, tiebreakTo: 10, setsToWin: 1, noAd: true,  decidingSet: 'full' },
+  sets2_st10_gp: { setsToWin: 2, decidingSet: 'tb10', gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  noAd: true  },
+  sets3_gp:      { setsToWin: 2, decidingSet: 'full', gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  noAd: true  },
+  sets3_ad:      { setsToWin: 2, decidingSet: 'full', gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  noAd: false },
+  // 4 局制配抢五 —— 抢分数跟着局数走：4 局抢五，6 局抢七
+  short4_gp:     { setsToWin: 2, decidingSet: 'tb10', gamesToWin: 4, tiebreakAt: 4, tiebreakTo: 5,  noAd: true  },
+  set1_gp:       { setsToWin: 1, decidingSet: 'full', gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  noAd: true  },
+  tb10:          { setsToWin: 1, decidingSet: 'full', gamesToWin: 0, tiebreakAt: 0, tiebreakTo: 10, noAd: true  },
 };
 
 const DEFAULT_FORMAT = PRESETS.sets2_st10_gp;
@@ -49,23 +56,27 @@ function resolveFormat(f) {
   if (typeof f.gamesToWin !== 'number' || typeof f.setsToWin !== 'number') {
     throw new Error('赛制配置缺字段: 需要 gamesToWin 与 setsToWin');
   }
-  return Object.assign({ tiebreakTo: 7, noAd: true, decidingSet: 'full' }, f);
+  // 抢几分默认跟着局数走：4 局抢五、6 局抢七（局数 + 1）。
+  // gamesToWin 为 0 是「整场一个抢十」，没有局可跟，兜底成 10。
+  const auto = f.gamesToWin > 0 ? f.gamesToWin + 1 : 10;
+  return Object.assign({ tiebreakTo: auto, tiebreakAt: f.gamesToWin, noAd: true, decidingSet: 'full' }, f);
 }
 
 /**
  * 由配置**推导**显示文案。不能存 label ——
  * 主办方改过任意一项之后，存下来的那句话就是错的。
  */
-const CN_NUM = { 7: '七', 10: '十' };
-function tbName(n) { return '抢' + (CN_NUM[n] || n); }
+const CN_NUM = ['零','一','二','三','四','五','六','七','八','九','十'];
+function tbName(n) { return '抢' + (CN_NUM[n] !== undefined ? CN_NUM[n] : n); }
 
+/** 文案顺序与字段顺序一致：**盘 → 局 → 分** */
 function formatLabel(f) {
   const c = resolveFormat(f);
   if (c.gamesToWin === 0) return tbName(c.tiebreakTo);
-  const parts = [c.gamesToWin + '局' + (c.noAd ? '金球' : '短盘'), tbName(c.tiebreakTo)];
-  if (c.setsToWin >= 2) parts.push(c.decidingSet === 'tb10' ? '两盘 + 决胜抢十' : '三盘两胜');
-  else parts.push('单盘');
-  return parts.join(' · ');
+  const sets = c.setsToWin >= 2
+    ? (c.decidingSet === 'tb10' ? '两盘 + 决胜抢十' : '三盘两胜')
+    : '单盘';
+  return [sets, c.gamesToWin + '局' + (c.noAd ? '金球' : '短盘'), tbName(c.tiebreakTo)].join(' · ');
 }
 
 /**
