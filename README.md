@@ -23,11 +23,12 @@
 
 ## 设计稿怎么看
 
-六张画布**直接用浏览器打开本地文件**即可，不需要装任何东西：
+七张画布**直接用浏览器打开本地文件**即可，不需要装任何东西：
 
 ```
 design/skeleton/ljtennis-miniprogram-skeleton.html   26 页结构图 · 五条关键路径
 design/home/ljtennis-tournament-home.html            赛事首页 + 赛事卡六种状态
+design/tournament/ljtennis-tournament-event.html     赛事详情 + 比赛详情 · 2 屏
 design/register/ljtennis-register.html               注册页 · 2 屏
 design/entry/ljtennis-entry-signup.html              报名确认 + 付完之后 · 2 屏
 design/me/ljtennis-me.html                           「我的」tab · 2 屏

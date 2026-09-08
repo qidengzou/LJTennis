@@ -1,0 +1,210 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    :root{
+      --c-ground:#F4F5F7;--c-surface:#FFFFFF;--c-surface-2:#EBEDF2;
+      --c-ink:#141821;--c-ink-2:#4C5567;--c-ink-3:#7B8496;--c-line:#DFE2E9;
+      --c-brand:#2E4FD8;--c-brand-ink:#FFFFFF;--c-brand-weak:#E7EBFC;
+      --c-win:#0E9F6E;--c-live:#F5A524;--c-on-live:#FFFFFF;--c-void:#7B8496;
+      --c-av-1:#2E4FD8;--c-av-2:#5B6EA8;--c-av-3:#7A5EA8;--c-av-4:#3F6E7F;--c-av-5:#5A6470;
+      --c-on-photo:#FFFFFF;
+      --r-s:4px;--r-m:8px;--r-l:12px;--r-full:999px;
+      --e-1:0 1px 4px rgba(20,24,33,.06);--e-2:0 4px 16px rgba(20,24,33,.12);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;padding:18px;background:#E9EBEF;color:var(--c-ink);font-size:14px;line-height:1.5;
+      font-family:-apple-system,"PingFang SC","HarmonyOS Sans SC","Source Han Sans CN",system-ui,sans-serif}
+    a{color:var(--c-brand)}a:hover{color:#243FAD}
+    .cap{font-size:12px;color:var(--c-ink-3);margin:0 0 10px}
+    .phone{width:375px;background:var(--c-ground);border-radius:28px;overflow:hidden;box-shadow:0 10px 40px rgba(20,24,33,.18)}
+    .nav{height:44px;background:var(--c-surface);display:flex;align-items:center;justify-content:center;position:relative;
+      font-size:17px;font-weight:600;border-bottom:1px solid var(--c-line)}
+    .nav .capsule{position:absolute;right:10px;top:7px;width:87px;height:30px;border:1px solid var(--c-line);border-radius:15px;
+      display:flex;align-items:center;justify-content:space-evenly;color:var(--c-ink-2);font-size:11px}
+    .nav .capsule i{width:1px;height:16px;background:var(--c-line)}
+    .body{padding:14px 16px 20px;display:flex;flex-direction:column;gap:12px}
+    .sec{display:flex;align-items:baseline;justify-content:space-between;margin-top:4px}
+    .sec b{font-size:16px;font-weight:600}
+    .sec span{font-size:12px;color:var(--c-ink-3)}
+    .chips{display:flex;gap:8px}
+    .chip{height:30px;padding:0 13px;border-radius:var(--r-full);border:1px solid var(--c-line);background:var(--c-surface);
+      font-size:13px;color:var(--c-ink-2);display:inline-flex;align-items:center}
+    .chip.on{background:var(--c-brand);border-color:var(--c-brand);color:var(--c-brand-ink);font-weight:600}
+
+    /* 我的报名 · 紧凑行 */
+    .row{background:var(--c-surface);border-radius:var(--r-l);padding:12px 14px;box-shadow:var(--e-1);display:flex;align-items:center;gap:12px}
+    .row .t{font-weight:600;font-size:14px}
+    .row .m{font-size:12px;color:var(--c-ink-3);margin-top:2px}
+    .st{font-size:11px;font-weight:600;padding:2px 8px;border-radius:var(--r-full);flex:none}
+    .st.live{background:#FDF0DC;color:#B87508}
+    .st.win{background:#E4F6EE;color:var(--c-win)}
+    .st.void{background:var(--c-surface-2);color:var(--c-void)}
+    .lnk{font-size:13px;color:var(--c-brand);font-weight:600;flex:none}
+
+    /* 赛事 · 照片卡 */
+    .pc{position:relative;height:240px;border-radius:var(--r-l);overflow:hidden;box-shadow:var(--e-2);color:var(--c-on-photo);background:#1a2540}
+    .pc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:62% 40%}
+    .pc .grad{position:absolute;inset:0;background:linear-gradient(180deg,rgba(16,26,52,.46) 0%,rgba(16,26,52,.10) 30%,rgba(16,26,52,.22) 55%,rgba(12,22,46,.82) 100%)}
+    .pc .in{position:absolute;inset:0;padding:12px 14px 14px;display:flex;flex-direction:column}
+    .pc .top{display:flex;align-items:center;gap:6px}
+    .pc .sp{flex:1}
+    .tier{font-size:10px;font-weight:700;line-height:18px;padding:0 8px;border-radius:var(--r-full);border:1px solid transparent}
+    .tier.a{background:var(--c-brand);color:var(--c-brand-ink)}
+    .tier.b{background:var(--c-brand-weak);color:var(--c-brand)}
+    .tier.c{border-color:rgba(255,255,255,.55);color:var(--c-on-photo)}
+    .tag{font-size:10.5px;font-weight:600;line-height:18px;padding:0 8px;border-radius:var(--r-full);
+      background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);backdrop-filter:blur(8px)}
+    .tag.hot{background:var(--c-live);border-color:var(--c-live);color:var(--c-on-live)}
+    .pc .ttl{font-size:20px;font-weight:700;line-height:1.25;letter-spacing:-.01em;text-shadow:0 1px 8px rgba(0,0,0,.35);margin-top:auto}
+    .pc .meta{font-size:12px;color:rgba(255,255,255,.88);margin-top:4px;display:flex;align-items:center;gap:5px;text-shadow:0 1px 6px rgba(0,0,0,.35)}
+    .pc .meta svg{width:12px;height:12px;flex:none}
+    .glass{margin-top:10px;display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:var(--r-full);
+      background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.26);backdrop-filter:blur(12px);font-size:12.5px}
+    .glass b{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+    .foot{margin-top:10px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .avs{display:flex;align-items:center}
+    .av{width:28px;height:28px;border-radius:var(--r-full);border:2px solid rgba(255,255,255,.95);margin-left:-8px;
+      display:grid;place-items:center;font-size:12px;font-weight:600;color:#fff}
+    .av:first-child{margin-left:0}
+    .av.more{background:rgba(255,255,255,.22);backdrop-filter:blur(8px);font-size:11px;border-color:rgba(255,255,255,.45)}
+    .cta{height:40px;padding:0 20px;border-radius:var(--r-full);background:var(--c-brand);color:var(--c-brand-ink);font-size:14px;font-weight:600;
+      display:inline-flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(46,79,216,.38);white-space:nowrap}
+    .cta.wait{background:var(--c-live);color:var(--c-on-live);box-shadow:0 6px 16px rgba(245,165,36,.38)}
+    .cta.ghost{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.4);backdrop-filter:blur(12px);box-shadow:none}
+    .pc.nocover{background:linear-gradient(135deg,#2E4FD8 0%,#1B2E86 60%,#141C3C 100%)}
+    .pc.nocover .grad{background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(12,22,46,.55) 100%)}
+    .pc.nocover .wm{position:absolute;right:-14px;top:-10px;font-size:150px;font-weight:800;color:rgba(255,255,255,.06);line-height:1;letter-spacing:-.05em}
+
+    /* 已结束 · 紧凑行 */
+    .done{background:var(--c-surface);border-radius:var(--r-l);padding:12px 14px;box-shadow:var(--e-1);display:flex;align-items:center;gap:12px;opacity:.9}
+    .done .t{font-weight:600;font-size:14px;color:var(--c-ink-2)}
+    .done .m{font-size:12px;color:var(--c-ink-3);margin-top:2px}
+
+
+    /* 详情页专用 */
+    .k{font-size:12px;color:var(--c-ink-3)}
+    .hero{position:relative;height:200px;color:var(--c-on-photo);background:#1a2540}
+    .hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:62% 40%}
+    .hero .grad{position:absolute;inset:0;background:linear-gradient(180deg,rgba(16,26,52,.52) 0%,rgba(16,26,52,.12) 34%,rgba(12,22,46,.86) 100%)}
+    .hero .in{position:absolute;inset:0;padding:44px 16px 14px;display:flex;flex-direction:column}
+    .hero .bk{position:absolute;left:10px;top:48px;width:30px;height:30px;border-radius:999px;background:rgba(255,255,255,.22);
+      backdrop-filter:blur(8px);display:grid;place-items:center;font-size:19px;line-height:1;padding-bottom:3px}
+    .ev{background:var(--c-surface);border-radius:var(--r-l);padding:13px 14px;box-shadow:var(--e-1);display:flex;flex-direction:column;gap:9px}
+    .ev-h{display:flex;align-items:center;gap:8px}
+    .ev-n{font-size:15px;font-weight:600}
+    .bar{height:5px;border-radius:3px;background:var(--c-surface-2);overflow:hidden}
+    .bar i{display:block;height:100%;background:var(--c-brand);border-radius:3px}
+    .bar i.f{background:var(--c-live)}
+    .num{font-variant-numeric:tabular-nums}
+    .arw{color:#C3C8D2;font-size:16px;flex:none}
+    .info{background:var(--c-surface);border-radius:var(--r-l);box-shadow:var(--e-1);padding:4px 14px}
+    .ir{display:flex;gap:12px;padding:10px 0;font-size:13px}
+    .ir + .ir{border-top:1px solid var(--c-surface-2)}
+    .ir .l{color:var(--c-ink-3);width:62px;flex:none}
+    .ir .v{flex:1}
+    .note{font-size:12px;color:var(--c-ink-3);line-height:1.7;padding:0 4px}
+    .banner{background:#FFF6E5;border-left:3px solid var(--c-live);border-radius:var(--r-m);padding:10px 12px;font-size:12.5px;line-height:1.6;color:var(--c-ink-2)}
+    .dock{background:var(--c-surface);border-top:1px solid var(--c-line);padding:10px 16px 18px;display:flex;flex-direction:column;gap:7px}
+    .btn{height:46px;border-radius:var(--r-m);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600}
+    .btn.pri{background:var(--c-brand);color:var(--c-brand-ink);box-shadow:0 6px 16px rgba(46,79,216,.32)}
+    .btn.wait{background:var(--c-live);color:var(--c-on-live);box-shadow:0 6px 16px rgba(245,165,36,.32)}
+    .plist{background:var(--c-surface);border-radius:var(--r-l);box-shadow:var(--e-1);overflow:hidden}
+    .pr{display:flex;align-items:center;gap:10px;padding:10px 14px}
+    .pr + .pr{border-top:1px solid var(--c-surface-2)}
+    .pr .a{width:28px;height:28px;border-radius:999px;color:#fff;display:grid;place-items:center;font-size:12px;font-weight:600;flex:none}
+
+    /* tabBar */
+    .tabbar{height:50px;background:var(--c-surface);border-top:1px solid var(--c-line);display:flex}
+    .tabbar div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:10px;color:var(--c-ink-3)}
+    .tabbar div.on{color:var(--c-brand)}
+    .tabbar svg{width:22px;height:22px}
+
+    /* 状态版面 */
+    .grid{display:grid;grid-template-columns:repeat(2,343px);gap:22px 26px;align-items:start}
+    .grid .lab{font-size:12px;color:var(--c-ink-3);margin:0 0 8px;font-weight:600}
+    .anns{margin:18px 0 0;padding:0;list-style:none;display:grid;gap:6px;max-width:740px}
+    .anns li{font-size:12px;color:var(--c-ink-2);display:flex;gap:8px;align-items:flex-start}
+    .anns li > b{flex:none;width:16px;height:16px;border-radius:999px;border:1px solid #B03A2E;color:#B03A2E;font-size:9.5px;display:grid;place-items:center;margin-top:2px;font-weight:400}
+  </style>
+</helmet>
+<p class="cap">赛事详情 · tournament/detail · 从首页赛事卡的「报名」点进来</p>
+<div class="phone">
+  <div class="hero">
+    <img src="cover.jpg" alt=""><div class="grad"></div>
+    <div class="bk">‹</div>
+    <div class="in">
+      <div class="top" style="display:flex;align-items:center;gap:6px">
+        <span class="tier a">A</span><span class="tag hot">报名中</span>
+        <span class="sp" style="flex:1"></span><span class="tag">4月26–28日</span>
+      </div>
+      <div class="ttl" style="font-size:20px;font-weight:700;line-height:1.25;margin-top:auto;text-shadow:0 1px 8px rgba(0,0,0,.35)">四月市级公开赛</div>
+      <div class="meta" style="font-size:12px;color:rgba(255,255,255,.88);margin-top:4px;text-shadow:0 1px 6px rgba(0,0,0,.35)">深圳网球会 · 龙岗体育中心</div>
+    </div>
+  </div>
+
+  <div class="body">
+    <div class="sec"><b>比赛</b><span>挑一个报名</span></div>
+
+    <div class="ev">
+      <div class="ev-h"><span class="ev-n">男双</span><span class="sp" style="flex:1"></span>
+        <span class="k num">12 / 16 队</span><span class="arw">›</span></div>
+      <div class="bar"><i style="width:75%"></i></div>
+    </div>
+
+    <div class="ev">
+      <div class="ev-h"><span class="ev-n">女双</span><span class="st live">满员 · 候补 2</span><span class="sp" style="flex:1"></span>
+        <span class="k num">8 / 8 队</span><span class="arw">›</span></div>
+      <div class="bar"><i class="f" style="width:100%"></i></div>
+    </div>
+
+    <div class="ev">
+      <div class="ev-h"><span class="ev-n">混双</span><span class="sp" style="flex:1"></span>
+        <span class="k num">5 / 8 队</span><span class="arw">›</span></div>
+      <div class="bar"><i style="width:62%"></i></div>
+    </div>
+
+    <div class="ev">
+      <div class="ev-h"><span class="ev-n">男单</span><span class="sp" style="flex:1"></span>
+        <span class="k num">9 / 16 人</span><span class="arw">›</span></div>
+      <div class="bar"><i style="width:56%"></i></div>
+    </div>
+
+    <div class="ev">
+      <div class="ev-h"><span class="ev-n">女单</span><span class="sp" style="flex:1"></span>
+        <span class="k num">3 / 8 人</span><span class="arw">›</span></div>
+      <div class="bar"><i style="width:38%"></i></div>
+    </div>
+
+    <div class="sec"><b>赛事信息</b></div>
+    <div class="info">
+      <div class="ir"><span class="l">报名费</span><span class="v">每人 <b class="num">¥100</b>　<span class="k">双打两人各付各的，不代付</span></span></div>
+      <div class="ir"><span class="l">报名截止</span><span class="v"><span class="num">4月23日 22:00</span>　<span class="k">还剩 6 天</span></span></div>
+      <div class="ir"><span class="l">比赛格式</span><span class="v"><span class="num">6</span> 局金球 · 抢七 · 三盘两胜</span></div>
+      <div class="ir"><span class="l">积分等级</span><span class="v">A 级 · 市级以上公开赛</span></div>
+      <div class="ir"><span class="l">退款</span><span class="v">赛前 <span class="num">7</span> 天以上全额退 · <span class="num">3–7</span> 天退半 · <span class="num">3</span> 天内不退</span></div>
+    </div>
+
+    <div class="note">从群里点进来不需要登录，看完再决定要不要报。<br>点某个比赛进详情，那里才有「报名」。</div>
+  </div>
+</div>
+
+<ul class="anns">
+  <li><b>1</b><span><b>首页赛事卡上的「报名」是导航不是动作。</b>点了到这一屏，先看这场赛事开了哪几个比赛、各自还剩多少名额，挑一个再往下走 —— <b>不直接跳付款</b>。</span></li>
+  <li><b>2</b><span><b>一个赛事挂多个比赛。</b>男双女双混双同时办是常态，不拆成三个赛事 —— 它们共享场地、日期、俱乐部和这张封面。各比赛之间完全独立：<b>女双满员不影响男双</b>，签表也不会混。</span></li>
+  <li><b>3</b><span><b>名额单位跟着比赛走</b>：双打是「队」，单打是「人」。<code>Entry</code>（1~2 人）这个抽象让这一列只换单位、不换渲染逻辑。<b>「组」这个词留给小组循环的小组</b>。</span></li>
+  <li><b>4</b><span><b>满员不是错误状态</b> —— 用橙不用红，行不灰掉也不禁用，点进去还能加候补。女双那行就是这个样子。</span></li>
+  <li><b>5</b><span><b>没有底部大按钮。</b>每一行比赛就是一个入口，再放个「选择比赛报名」等于问第二次「选哪个」。旧稿有这个按钮，是多余的。</span></li>
+  <li><b>6</b><span><b>这一屏全程免登录</b> —— 它是分享落地页，从微信群点进来的人不需要授权就能看完。登录墙放在「报名」之后，<b>提前弹授权会劝退一半人</b>。</span></li>
+  <li><b>7</b><span>退款规则写在这里而不是藏进协议 —— <b>它是决定要不要报名的信息</b>，不是事后才需要查的条款。</span></li>
+  <li><b>8</b><span>封面由组织者建赛时上传（1125×630）。<b>没传不是错误状态</b>，用主色渐变加赛事名首字水印兜底 —— 灰色占位图会让那场赛事看起来像坏了。</span></li>
+</ul>
+</x-dc>
+</body>
+</html>
