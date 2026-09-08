@@ -245,8 +245,16 @@ export interface User {
    */
   platformRole: PlatformRole;
 
-  /** 头像色板索引 0-4，由 id 取模得出。冷色系，不含绿/红/橙（避免与记分语义色冲突） */
-  avatarColorIndex: number;
+  /**
+   * 头像。平台备一组图片，注册时按 `openid` 取模分配，**用户第一版改不了**。
+   *
+   * **可选** —— 图还没备好、旧数据、以及**图加载失败**（球场信号差）
+   * 三种情况都会没有。兜底是昵称首字加色块，色由 id 在客户端算，不存字段。
+   * 出图规格见 `design/image-spec.md`。
+   *
+   * 存完整 https 链接，不存 `cloud://` —— 后台是网页，只有小程序认那个协议。
+   */
+  avatarUrl?: string;
 
   createdAt: string;
 }
@@ -636,7 +644,7 @@ export interface RankRow {
   tied: boolean;
   userId: string;
   nickname: string;
-  avatarColorIndex: number;
+  avatarUrl?: string;
   points: number;
   /** 参赛场次 */
   eventCount: number;

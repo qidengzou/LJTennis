@@ -156,7 +156,7 @@ async function releaseSlot(db, eventId) {
 
 function publicUser(u) {
   if (!u) return null;
-  return { _id: u._id, nickname: u.nickname, gender: u.gender, city: u.city, avatarColorIndex: u.avatarColorIndex };
+  return { _id: u._id, nickname: u.nickname, gender: u.gender, city: u.city, avatarUrl: u.avatarUrl || null };
 }
 
 module.exports.releaseSlot = releaseSlot;

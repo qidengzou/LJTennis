@@ -8,7 +8,7 @@
 .btn-wx { background: var(--c-wx); color: var(--c-on-wx); max-width: 440rpx; }
 
 .hd { display: flex; align-items: center; gap: 24rpx; }
-.av { width: 96rpx; height: 96rpx; border-radius: var(--r-full); display: flex; align-items: center; justify-content: center; color: var(--c-on-av); font-size: 36rpx; font-weight: 600; flex: none; }
+.av { width: 96rpx; height: 96rpx; border-radius: var(--r-full); display: flex; align-items: center; justify-content: center; color: var(--c-on-av); font-size: 36rpx; font-weight: 600; flex: none; overflow: hidden; }
 .av.sm { width: 64rpx; height: 64rpx; font-size: 26rpx; }
 .hd-n { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6rpx; }
 .hd-t { font-size: 36rpx; font-weight: 600; color: var(--c-ink); }

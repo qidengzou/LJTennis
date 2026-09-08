@@ -1,9 +1,10 @@
 const cloud = require('../../utils/cloud');
 const store = require('../../utils/store');
+const avatar = require('../../utils/avatar');
 
 Page({
   data: {
-    loaded: false, registered: false, user: null,
+    loaded: false, registered: false, user: null, avFailed: false,
     stats: { registered: 0, completed: 0, wins: 0, losses: 0 },
     pendingText: '',
   },
@@ -18,13 +19,16 @@ Page({
         self.setData({ loaded: true, registered: false, user: null });
         return;
       }
-      self.setData({ loaded: true, registered: true, user: r.user });
+      self.setData({ loaded: true, registered: true, user: avatar.decorate(r.user), avFailed: false });
       self.loadExtras();
     }).catch(function (err) {
       self.setData({ loaded: true, registered: false });
       cloud.toast(err);
     });
   },
+
+  // 图挂了就切回首字色块，别留一个破图框
+  onAvError() { this.setData({ avFailed: true }); },
 
   loadExtras() {
     const self = this;

@@ -16,7 +16,10 @@
   <block wx:elif="{{loaded}}">
     <view class="card">
       <view class="hd">
-        <view class="av" style="background:var(--c-av-{{(user.avatarColorIndex || 0) + 1}})">{{user.nickname[0]}}</view>
+        <!-- binderror 兜底不是可选的：球场信号差时图拉不下来最常发生 -->
+        <image wx:if="{{user.avatarUrl && !avFailed}}" class="av" src="{{user.avatarUrl}}"
+               mode="aspectFill" binderror="onAvError"></image>
+        <view wx:else class="av" style="background:var(--c-av-{{user.avColor}})">{{user.avText}}</view>
         <view class="hd-n">
           <text class="hd-t">{{user.nickname}}</text>
         </view>

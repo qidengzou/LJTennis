@@ -31,7 +31,7 @@ function mockFor(action, payload) {
         gender: payload.gender,
         selfRatedLevel: payload.level || null,
         phoneMasked: payload.phone ? ('138****' + String(payload.phone).slice(-4)) : null,
-        avatarColorIndex: 0,
+        avatarUrl: null,
       };
       try { wx.setStorageSync('lj:mockUser', u); } catch (e) { /* noop */ }
       return { user: u };

@@ -75,7 +75,9 @@ module.exports = function (db, openapi) {
       city: ev.city || null,
       selfRatedLevel: ev.level || null,     // 自评，只做初始分组
       systemRatedLevel: null,               // 算法第一版不做，见 PRD §11
-      avatarColorIndex: Math.abs(hash(ctx.openid)) % 5,
+      // 平台那组头像还没备好，先留空 —— 前端一律有首字色块兜底，
+      // 所以空不是错误态。图备好后这里按 openid 取模分配。
+      avatarUrl: null,
       createdAt: Date.now(),
     };
     const id = await db.add(C.USERS, u);
@@ -113,7 +115,7 @@ module.exports = function (db, openapi) {
     const u = await db.get(C.USERS, ev.userId);
     if (!u) return fail('NOT_FOUND', '选手不存在');
     return ok({ user: { _id: u._id, nickname: u.nickname, gender: u.gender, city: u.city,
-                        avatarColorIndex: u.avatarColorIndex } });
+                        avatarUrl: u.avatarUrl || null } });
   }
 
   /** 常搭档 —— 双打复购的核心，也是唯一不需要输入就能选到人的入口 */
@@ -132,7 +134,7 @@ module.exports = function (db, openapi) {
     return ok({
       partners: users.filter(Boolean).map(function (p) {
         return { _id: p._id, nickname: p.nickname, gender: p.gender,
-                 avatarColorIndex: p.avatarColorIndex, together: count[p._id] };
+                 avatarUrl: p.avatarUrl || null, together: count[p._id] };
       }),
     });
   }
@@ -147,13 +149,8 @@ function safeSelf(u) {
     province: u.province || null, city: u.city || null,
     selfRatedLevel: u.selfRatedLevel || null,
     systemRatedLevel: u.systemRatedLevel != null ? u.systemRatedLevel : null,  // 没算出来 → 「—」，绝不用自评顶替
-    avatarColorIndex: u.avatarColorIndex,
+    avatarUrl: u.avatarUrl || null,
     phoneMasked: mask(u.phoneEncrypted) || null,   // 前缀取真号，别写死成 138
     createdAt: u.createdAt,
   };
-}
-function hash(s) {
-  let h = 0;
-  for (let i = 0; i < String(s).length; i++) h = ((h << 5) - h + String(s).charCodeAt(i)) | 0;
-  return h;
 }
