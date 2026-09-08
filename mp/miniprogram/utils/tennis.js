@@ -19,7 +19,7 @@ const POINT_LABELS = ['0', '15', '30', '40'];
  * | | 维度 | 字段 |
  * |---|---|---|
  * | 盘 | **先赢**几盘算赢（不是总共打几盘） | `setsToWin` |
- * | 盘 | 决胜盘怎么打 | `decidingSet` —— 'full' 打满 / 'tb10' 抢十 |
+ * | 盘 | 决胜盘抢到几分 | `decidingTiebreakTo` —— **0 = 打满一盘** |
  * | 局 | 一盘打几局 | `gamesToWin` —— **0 = 整场只打一个抢十** |
  * | 局 | 几平进抢七 | `tiebreakAt` |
  * | 分 | 抢七到几分 | `tiebreakTo` —— 默认跟着局数走：**4 局抢五、6 局抢七** |
@@ -35,13 +35,13 @@ const POINT_LABELS = ['0', '15', '30', '40'];
 const PRESETS = {
   //              ── 盘 ──────────────────────  ── 局 ──────────────────  ── 分 ──
   // 两盘 + 决胜抢十 —— 业余双打最主流：省时间、场地周转快
-  sets2_st10_gp: { setsToWin: 2, decidingSet: 'tb10', gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  noAd: true  },
-  sets3_gp:      { setsToWin: 2, decidingSet: 'full', gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  noAd: true  },
-  sets3_ad:      { setsToWin: 2, decidingSet: 'full', gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  noAd: false },
+  sets2_st10_gp: { setsToWin: 2, decidingTiebreakTo: 10, gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  noAd: true  },
+  sets3_gp:      { setsToWin: 2, decidingTiebreakTo: 0,  gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  noAd: true  },
+  sets3_ad:      { setsToWin: 2, decidingTiebreakTo: 0,  gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  noAd: false },
   // 4 局制配抢五 —— 抢分数跟着局数走：4 局抢五，6 局抢七
-  short4_gp:     { setsToWin: 2, decidingSet: 'tb10', gamesToWin: 4, tiebreakAt: 4, tiebreakTo: 5,  noAd: true  },
-  set1_gp:       { setsToWin: 1, decidingSet: 'full', gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  noAd: true  },
-  tb10:          { setsToWin: 1, decidingSet: 'full', gamesToWin: 0, tiebreakAt: 0, tiebreakTo: 10, noAd: true  },
+  short4_gp:     { setsToWin: 2, decidingTiebreakTo: 10, gamesToWin: 4, tiebreakAt: 4, tiebreakTo: 5,  noAd: true  },
+  set1_gp:       { setsToWin: 1, decidingTiebreakTo: 0,  gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  noAd: true  },
+  tb10:          { setsToWin: 1, decidingTiebreakTo: 0,  gamesToWin: 0, tiebreakAt: 0, tiebreakTo: 10, noAd: true  },
 };
 
 const DEFAULT_FORMAT = PRESETS.sets2_st10_gp;
@@ -59,7 +59,7 @@ function resolveFormat(f) {
   // 抢几分默认跟着局数走：4 局抢五、6 局抢七（局数 + 1）。
   // gamesToWin 为 0 是「整场一个抢十」，没有局可跟，兜底成 10。
   const auto = f.gamesToWin > 0 ? f.gamesToWin + 1 : 10;
-  return Object.assign({ tiebreakTo: auto, tiebreakAt: f.gamesToWin, noAd: true, decidingSet: 'full' }, f);
+  return Object.assign({ tiebreakTo: auto, tiebreakAt: f.gamesToWin, noAd: true, decidingTiebreakTo: 0 }, f);
 }
 
 /**
@@ -74,7 +74,7 @@ function formatLabel(f) {
   const c = resolveFormat(f);
   if (c.gamesToWin === 0) return tbName(c.tiebreakTo);
   const sets = c.setsToWin >= 2
-    ? (c.decidingSet === 'tb10' ? '两盘 + 决胜抢十' : '三盘两胜')
+    ? (c.decidingTiebreakTo > 0 ? '两盘 + 决胜抢' + (CN_NUM[c.decidingTiebreakTo] || c.decidingTiebreakTo) : '三盘两胜')
     : '单盘';
   return [sets, c.gamesToWin + '局' + (c.noAd ? '金球' : '短盘'), tbName(c.tiebreakTo)].join(' · ');
 }
@@ -167,7 +167,7 @@ function finishCheck(n, cfg) {
   // 决胜盘抢十：两边各拿一盘，第三盘不打满，直接进一个抢十。
   // 这是业余双打最主流的赛制，而旧的扁平枚举根本表达不了它 ——
   // setsToWin:2 是「第三盘打满」，tb10 是「整场只有一个抢十」，都不是这个。
-  if (cfg.decidingSet === 'tb10' && isDecidingSet(n, cfg)) {
+  if (cfg.decidingTiebreakTo > 0 && isDecidingSet(n, cfg)) {
     n.tiebreak = true;
   }
 }
@@ -190,13 +190,13 @@ function scorePoint(m, side) {
 
   if (n.tiebreak) {
     // 决胜盘抢十打到 10，普通盘的 6-6 抢七打到 tiebreakTo
-    const target = (cfg.decidingSet === 'tb10' && isDecidingSet(n, cfg) && cfg.gamesToWin > 0)
-      ? 10 : cfg.tiebreakTo;
+    const target = (cfg.decidingTiebreakTo > 0 && isDecidingSet(n, cfg) && cfg.gamesToWin > 0)
+      ? cfg.decidingTiebreakTo : cfg.tiebreakTo;
     if (n.points[side] >= target && n.points[side] - n.points[o] >= 2) {
       const tb = { a: n.points[0], b: n.points[1] };
       n.points = [0, 0];
       // 整场一个抢十，或决胜盘抢十 —— 两种都没有局分，记成 1-0
-      if (cfg.gamesToWin === 0 || (cfg.decidingSet === 'tb10' && isDecidingSet(n, cfg))) {
+      if (cfg.gamesToWin === 0 || (cfg.decidingTiebreakTo > 0 && isDecidingSet(n, cfg))) {
         n.sets.push({ a: side === 0 ? 1 : 0, b: side === 1 ? 1 : 0, tiebreak: tb });
       } else {
         n.games[side] += 1;                       // 7-6

@@ -116,7 +116,7 @@ eq(s2, ['甲', '乙', '甲'], '单打每局换发');
 // tb10 是整场只有一个抢十，都不是这个 —— 而它是业余双打最主流的赛制。
 console.log('\n[10b] 决胜盘抢十（默认赛制）');
 m = T.createMatch({ serveOrder: ORDER });
-eq([m.format.setsToWin, m.format.decidingSet], [2, 'tb10'], '默认就是两盘 + 决胜抢十');
+eq([m.format.setsToWin, m.format.decidingTiebreakTo], [2, 10], '默认就是两盘 + 决胜抢十');
 for (let i = 0; i < 6; i++) m = game(m, 0);      // A 拿下第一盘
 for (let i = 0; i < 6; i++) m = game(m, 1);      // B 拿下第二盘
 eq([m.setWins, m.tiebreak], [[1, 1], true], '1-1 之后自动进抢十，不再打满一盘');
@@ -126,7 +126,7 @@ m = win(m, 0, 2);
 eq(m.finished, true, '11-9 结束');
 eq(m.sets[2], { a: 1, b: 0, tiebreak: { a: 11, b: 9 } }, '决胜抢十记成一盘 1-0，不产生局分');
 
-console.log('\n[10c] decidingSet: full 时第三盘照常打满');
+console.log('\n[10c] decidingTiebreakTo: 0 时第三盘照常打满');
 m = T.createMatch({ serveOrder: ORDER, format: 'sets3_gp' });
 for (let i = 0; i < 6; i++) m = game(m, 0);
 for (let i = 0; i < 6; i++) m = game(m, 1);
@@ -144,6 +144,16 @@ eq(T.resolveFormat({ setsToWin: 2, gamesToWin: 6 }).tiebreakTo, 7, '6 局默认�
 eq(T.resolveFormat({ setsToWin: 2, gamesToWin: 4 }).tiebreakAt, 4, '几平进抢七默认等于局数');
 eq(T.resolveFormat({ setsToWin: 1, gamesToWin: 0 }).tiebreakTo, 10, '整场一个抢十没有局可跟，兜底成 10');
 eq(T.resolveFormat({ setsToWin: 2, gamesToWin: 4, tiebreakTo: 7 }).tiebreakTo, 7, '显式传了就不推导');
+eq(T.resolveFormat({ setsToWin: 2, gamesToWin: 6 }).decidingTiebreakTo, 0, '决胜盘默认打满，不抢');
+
+// 决胜抢七（不是抢十）—— 换成 union 就表达不了，number 才行
+m = T.createMatch({ serveOrder: ORDER, format: { setsToWin: 2, gamesToWin: 6, decidingTiebreakTo: 7 } });
+eq(T.formatLabel(m.format), '两盘 + 决胜抢七 · 6局金球 · 抢七', '决胜抢几分是自由的，文案跟着变');
+for (let i = 0; i < 6; i++) m = game(m, 0);
+for (let i = 0; i < 6; i++) m = game(m, 1);
+eq(m.tiebreak, true, '1-1 进决胜抢七');
+m = win(m, 0, 7);
+eq([m.finished, m.sets[2].tiebreak], [true, { a: 7, b: 0 }], '抢到 7 分就结束，不是 10');
 
 console.log('\n[10e] 4 局制走通');
 m = T.createMatch({ serveOrder: ORDER, format: 'short4_gp' });
