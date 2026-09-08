@@ -12,15 +12,15 @@
 | 颜色、字号、控件高度、图片规格 | `design/DESIGN.md` |
 | 实体与状态机的**真身** | `api/types.ts`（过 `tsc --strict`） |
 | 接口、鉴权、幂等、定时任务 | `api/endpoints.md` |
-| 为什么这么定（含被推翻的方案） | `设计流程.md` |
 
 > **一个事实只定义一处，别处只引用。** 冲突时的优先级：
 > 类型和状态以 `api/types.ts` 为准，接口以 `api/endpoints.md` 为准，
 > 产品规则以 `PRD.md` 为准，页面结构以 `SPEC.md` 为准，
 > 视觉以 `mp/miniprogram/styles/tokens.wxss` 为准。
 >
-> 这三份由原 `设计定稿0.md` 拆成，内容没删。要看拆之前的样子：
-> `git show 368fb56:设计定稿0.md`
+> 这三份由原 `设计定稿0.md` 拆成，内容没删。
+> 拆之前的样子：`git show 368fb56:设计定稿0.md`；
+> 更早的决策日志（含被推翻的方案）：`git show 7448efd:设计流程.md`
 
 ---
 

@@ -72,7 +72,7 @@ function sortEntries(list) {
 }
 
 /**
- * 退款金额。规则见 设计流程.md 阶段 0：
+ * 退款金额。规则见 PRD.md §4「退款规则」：
  *   赛前 ≥7 天全额 · 3–7 天退 50% · <3 天不退 · 组织者取消全额
  */
 function refundFor(feeCents, daysUntilStart, opt) {

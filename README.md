@@ -13,14 +13,13 @@
 | 3 | **[design/DESIGN.md](design/DESIGN.md)** | 颜色、字号、控件、图片、画布索引 | 业务规则 |
 | 4 | [api/types.ts](api/types.ts) | 实体与状态机的**真身**，过 `tsc --strict` | |
 | 5 | [api/endpoints.md](api/endpoints.md) | 24 条接口 · 鉴权 · 幂等 · 定时任务 | |
-| — | [设计流程.md](设计流程.md) | **过程日志，不是规范。** 为什么这么定，含被推翻的方案 | |
 
 > **一个事实只定义一处，别处只引用。** 冲突时：类型和状态以 `api/types.ts`
 > 为准，接口以 `api/endpoints.md` 为准，产品规则以 `PRD.md` 为准，页面结构以
 > `SPEC.md` 为准，视觉以 `mp/miniprogram/styles/tokens.wxss` 为准。
 >
-> 规范与流程日志冲突时**以规范为准**。流程日志保留了作废的结论是故意的 ——
-> 它记录的是决策过程。
+> 早期那份 `设计流程.md`（决策日志，含被推翻的方案）已从工作区移除，
+> 只留在历史里：`git show 7448efd:设计流程.md`。
 
 ## 设计稿怎么看
 
