@@ -19,7 +19,7 @@ const POINT_LABELS = ['0', '15', '30', '40'];
  * | | 维度 | 字段 |
  * |---|---|---|
  * | 盘 | **先赢**几盘算赢（不是总共打几盘） | `setsToWin` |
- * | 盘 | 决胜盘抢到几分 | `decidingTiebreakTo` —— **不填 = 打满一盘** |
+ * | 盘 | 决胜盘抢到几分 | `decidingTiebreakTo` —— 必填，**0 = 打满一盘** |
  * | 局 | 一盘打几局 | `gamesToWin` —— 常见 6 / 8 / 4 |
  * | 局 | 几平进抢七 | `tiebreakAt` —— **0 = 一开局就进，整场就是一个抢七/抢十** |
  * | 分 | 抢七到几分 | `tiebreakTo` —— 默认：**4 局抢五；6 局、8 局都抢七** |
@@ -36,17 +36,17 @@ const PRESETS = {
   //              ── 盘 ──────────────────────  ── 局 ──────────────────  ── 分 ──
   // 两盘 + 决胜抢十 —— 业余双打最主流：省时间、场地周转快
   sets2_st10_gp: { setsToWin: 2, decidingTiebreakTo: 10, gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  noAd: true  },
-  sets3_gp:      { setsToWin: 2,                        gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  noAd: true  },
-  sets3_ad:      { setsToWin: 2,                        gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  noAd: false },
+  sets3_gp:      { setsToWin: 2, decidingTiebreakTo: 0,  gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  noAd: true  },
+  sets3_ad:      { setsToWin: 2, decidingTiebreakTo: 0,  gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  noAd: false },
   // 4 局制配抢五 —— 抢分数跟着局数走：4 局抢五，6 局抢七
   short4_gp:     { setsToWin: 2, decidingTiebreakTo: 10, gamesToWin: 4, tiebreakAt: 4, tiebreakTo: 5,  noAd: true  },
-  set1_gp:       { setsToWin: 1,                        gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  noAd: true  },
+  set1_gp:       { setsToWin: 1, decidingTiebreakTo: 0,  gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  noAd: true  },
   // 八局制（pro set）：单盘打到 8 局，8-8 抢七。国内业余双打常用 ——
   // 六局有时嫌短、三盘两胜又太长，八局定胜负正好卡在中间
-  proset8_gp:    { setsToWin: 1,                        gamesToWin: 8, tiebreakAt: 8, tiebreakTo: 7,  noAd: true  },
+  proset8_gp:    { setsToWin: 1, decidingTiebreakTo: 0,  gamesToWin: 8, tiebreakAt: 8, tiebreakTo: 7,  noAd: true  },
   // 整场一个抢十：**0 平就进抢七**，也就是一开局就进；抢到 10 分赢下
   // 这 1 局，也就赢下这一盘。不需要「gamesToWin: 0」那种哨兵值
-  tb10:          { setsToWin: 1,                        gamesToWin: 1, tiebreakAt: 0, tiebreakTo: 10, noAd: true  },
+  tb10:          { setsToWin: 1, decidingTiebreakTo: 0,  gamesToWin: 1, tiebreakAt: 0, tiebreakTo: 10, noAd: true  },
 };
 
 const DEFAULT_FORMAT = PRESETS.sets2_st10_gp;
@@ -68,7 +68,7 @@ function resolveFormat(f) {
   // 8 局制（pro set）仍然是 8-8 抢七，按 +1 会推成「抢九」，是错的。
   const at = f.tiebreakAt !== undefined ? f.tiebreakAt : f.gamesToWin;
   const auto = at === 0 ? 10 : (f.gamesToWin <= 4 ? 5 : 7);
-  return Object.assign({ tiebreakTo: auto, tiebreakAt: at, noAd: true }, f);
+  return Object.assign({ tiebreakTo: auto, tiebreakAt: at, noAd: true, decidingTiebreakTo: 0 }, f);
 }
 
 /**

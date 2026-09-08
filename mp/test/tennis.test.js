@@ -146,8 +146,8 @@ eq(T.resolveFormat({ setsToWin: 1, gamesToWin: 8 }).tiebreakTo, 7, '8 局默认�
 eq(T.resolveFormat({ setsToWin: 2, gamesToWin: 4 }).tiebreakAt, 4, '几平进抢七默认等于局数');
 eq(T.resolveFormat({ setsToWin: 1, gamesToWin: 1, tiebreakAt: 0 }).tiebreakTo, 10,
    'tiebreakAt: 0（一开局就进）默认抢十');
-eq(T.resolveFormat({ setsToWin: 2, gamesToWin: 6 }).decidingTiebreakTo, undefined,
-   '决胜盘不填就是打满，没有 0 这个哨兵值');
+eq(T.resolveFormat({ setsToWin: 2, gamesToWin: 6 }).decidingTiebreakTo, 0,
+   'resolveFormat 补齐成 0 —— 契约里这一项必填，0 就是打满一盘');
 try { T.resolveFormat({ setsToWin: 1, gamesToWin: 0 }); eq('无异常', '应抛错', 'gamesToWin: 0 应报错'); }
 catch (e) { eq(true, true, 'gamesToWin: 0 被拒 —— 整场抢十要用 tiebreakAt: 0 表达'); }
 eq(T.resolveFormat({ setsToWin: 2, gamesToWin: 4, tiebreakTo: 7 }).tiebreakTo, 7, '显式传了就不推导');
