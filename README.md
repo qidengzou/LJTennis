@@ -23,21 +23,26 @@
 
 ## 设计稿怎么看
 
-四张画布**直接用浏览器打开本地文件**即可，不需要装任何东西：
+六张画布**直接用浏览器打开本地文件**即可，不需要装任何东西：
 
 ```
-design/skeleton/ljtennis-miniprogram-skeleton.html   26 页结构图
-design/home/ljtennis-tournament-home.html            赛事首页 · 线框与高保真
-design/stage2/ljtennis-stage2-wireframes.html        阶段 2 线框 · 7 屏
-design/admin/ljtennis-admin-backend.html             组织者网页后台 · 8 屏
+design/skeleton/ljtennis-miniprogram-skeleton.html   26 页结构图 · 五条关键路径
+design/home/ljtennis-tournament-home.html            赛事首页 + 赛事卡六种状态
+design/register/ljtennis-register.html               注册页 · 2 屏
+design/entry/ljtennis-entry-signup.html              报名确认 + 付完之后 · 2 屏
+design/me/ljtennis-me.html                           「我的」tab · 2 屏
+design/admin/ljtennis-admin-backend.html             组织者网页后台 · 9 屏
 ```
 
-画布按**一屏一张**组织：结构图只放结构图，单屏的线框与高保真各自独立成张。
+画布按**一屏一张**组织。可以缩放、平移、导出 PNG/PDF。
+每屏下方的红色编号是**设计批注** —— 那里写的是「为什么这么放」，比图本身信息量大。
 
-可以缩放、平移、导出 PNG/PDF。每屏下方的红色编号是**设计批注** ——
-那里写的是「为什么这么放」，比图本身信息量大。
+> **只画高保真，不画线框。** 设计系统已定稿，套令牌画和画灰盒子一样快，
+> 两套稿只会各自漂移。结构先在 `PRD.md` 里用文字定，定完直接出高保真。
+> 原来的线框（`design/stage2/`、`design/wireframes.html`、赛事首页那三张）
+> 已删除，需要时从历史里取：`git show e2df422:design/wireframes.html`
 
-高保真稿（阶段 4，小程序侧）：
+早期高保真稿（阶段 1–2，**已过时，只作参考**）：
 
 ```
 design/hifi-matchday.html        比赛日全链路 13 屏
@@ -45,9 +50,11 @@ design/hifi-registration.html    报名链路 12 屏
 design/hifi-account.html         注册与个人
 design/hifi-rank.html            积分榜
 design/design-system-v2.html     设计系统（记分器是可运行原型）
-design/ia-v2.html                信息架构
-design/wireframes.html           第一版线框 11 屏（已被 stage2 取代大半）
+design/ia-v2.html                信息架构（20 页版，已被 skeleton 取代）
 ```
+
+> 这几份还写着「项目」「待支付」「待搭档确认」「发起人一人付清」这些
+> **已经废掉的说法**。要看现在的模型，只看 `PRD.md` 和上面那六张画布。
 
 ## 小程序工程
 
