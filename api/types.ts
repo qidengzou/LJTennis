@@ -46,10 +46,10 @@ export interface MatchFormat {
    *   `2` + `decidingSet:'tb10'` = 两盘 + 决胜抢十
    *   `1` = 单盘
    */
-  sets: number;
+  setsToWin: number;
 
   /**
-   * 决胜盘怎么打，仅 `sets >= 2` 有意义。
+   * 决胜盘怎么打，仅 `setsToWin >= 2` 有意义。
    * `'tb10'`（1-1 后打一个抢十）是业余双打主流 ——
    * **和 `gamesToWin: 0` 的「整场一个抢十」不是一回事**。
    */

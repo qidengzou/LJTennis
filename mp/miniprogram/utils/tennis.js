@@ -18,7 +18,7 @@ const POINT_LABELS = ['0', '15', '30', '40'];
  *
  * | | 维度 | 字段 |
  * |---|---|---|
- * | 盘 | **先赢**几盘算赢（不是总共打几盘） | `sets` |
+ * | 盘 | **先赢**几盘算赢（不是总共打几盘） | `setsToWin` |
  * | 盘 | 决胜盘怎么打 | `decidingSet` —— 'full' 打满 / 'tb10' 抢十 |
  * | 局 | 一盘打几局 | `gamesToWin` —— **0 = 整场只打一个抢十** |
  * | 局 | 几平进抢七 | `tiebreakAt` |
@@ -35,13 +35,13 @@ const POINT_LABELS = ['0', '15', '30', '40'];
 const PRESETS = {
   //              ── 盘 ──────────────────────  ── 局 ──────────────────  ── 分 ──
   // 两盘 + 决胜抢十 —— 业余双打最主流：省时间、场地周转快
-  sets2_st10_gp: { sets: 2, decidingSet: 'tb10', gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  noAd: true  },
-  sets3_gp:      { sets: 2, decidingSet: 'full', gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  noAd: true  },
-  sets3_ad:      { sets: 2, decidingSet: 'full', gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  noAd: false },
+  sets2_st10_gp: { setsToWin: 2, decidingSet: 'tb10', gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  noAd: true  },
+  sets3_gp:      { setsToWin: 2, decidingSet: 'full', gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  noAd: true  },
+  sets3_ad:      { setsToWin: 2, decidingSet: 'full', gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  noAd: false },
   // 4 局制配抢五 —— 抢分数跟着局数走：4 局抢五，6 局抢七
-  short4_gp:     { sets: 2, decidingSet: 'tb10', gamesToWin: 4, tiebreakAt: 4, tiebreakTo: 5,  noAd: true  },
-  set1_gp:       { sets: 1, decidingSet: 'full', gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  noAd: true  },
-  tb10:          { sets: 1, decidingSet: 'full', gamesToWin: 0, tiebreakAt: 0, tiebreakTo: 10, noAd: true  },
+  short4_gp:     { setsToWin: 2, decidingSet: 'tb10', gamesToWin: 4, tiebreakAt: 4, tiebreakTo: 5,  noAd: true  },
+  set1_gp:       { setsToWin: 1, decidingSet: 'full', gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  noAd: true  },
+  tb10:          { setsToWin: 1, decidingSet: 'full', gamesToWin: 0, tiebreakAt: 0, tiebreakTo: 10, noAd: true  },
 };
 
 const DEFAULT_FORMAT = PRESETS.sets2_st10_gp;
@@ -53,8 +53,8 @@ function resolveFormat(f) {
     if (!PRESETS[f]) throw new Error('未知赛制预设: ' + f);
     return Object.assign({}, PRESETS[f]);
   }
-  if (typeof f.gamesToWin !== 'number' || typeof f.sets !== 'number') {
-    throw new Error('赛制配置缺字段: 需要 gamesToWin 与 sets');
+  if (typeof f.gamesToWin !== 'number' || typeof f.setsToWin !== 'number') {
+    throw new Error('赛制配置缺字段: 需要 gamesToWin 与 setsToWin');
   }
   // 抢几分默认跟着局数走：4 局抢五、6 局抢七（局数 + 1）。
   // gamesToWin 为 0 是「整场一个抢十」，没有局可跟，兜底成 10。
@@ -73,7 +73,7 @@ function tbName(n) { return '抢' + (CN_NUM[n] !== undefined ? CN_NUM[n] : n); }
 function formatLabel(f) {
   const c = resolveFormat(f);
   if (c.gamesToWin === 0) return tbName(c.tiebreakTo);
-  const sets = c.sets >= 2
+  const sets = c.setsToWin >= 2
     ? (c.decidingSet === 'tb10' ? '两盘 + 决胜抢十' : '三盘两胜')
     : '单盘';
   return [sets, c.gamesToWin + '局' + (c.noAd ? '金球' : '短盘'), tbName(c.tiebreakTo)].join(' · ');
@@ -158,7 +158,7 @@ function clone(m) {
 }
 
 function finishCheck(n, cfg) {
-  const side = n.setWins[0] >= cfg.sets ? 0 : (n.setWins[1] >= cfg.sets ? 1 : -1);
+  const side = n.setWins[0] >= cfg.setsToWin ? 0 : (n.setWins[1] >= cfg.setsToWin ? 1 : -1);
   if (side >= 0) {
     n.finished = true;
     n.winner = side;
@@ -166,7 +166,7 @@ function finishCheck(n, cfg) {
   }
   // 决胜盘抢十：两边各拿一盘，第三盘不打满，直接进一个抢十。
   // 这是业余双打最主流的赛制，而旧的扁平枚举根本表达不了它 ——
-  // sets:2 是「第三盘打满」，tb10 是「整场只有一个抢十」，都不是这个。
+  // setsToWin:2 是「第三盘打满」，tb10 是「整场只有一个抢十」，都不是这个。
   if (cfg.decidingSet === 'tb10' && isDecidingSet(n, cfg)) {
     n.tiebreak = true;
   }
@@ -174,7 +174,7 @@ function finishCheck(n, cfg) {
 
 /** 是不是到了决胜盘：双方都差最后一盘 */
 function isDecidingSet(n, cfg) {
-  return n.setWins[0] === cfg.sets - 1 && n.setWins[1] === cfg.sets - 1;
+  return n.setWins[0] === cfg.setsToWin - 1 && n.setWins[1] === cfg.setsToWin - 1;
 }
 
 /**
