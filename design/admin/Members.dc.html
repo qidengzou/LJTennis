@@ -1,0 +1,214 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    :root{
+      --c-ground:#F4F5F7; --c-surface:#FFFFFF; --c-surface-2:#EBEDF2;
+      --c-ink:#141821; --c-ink-2:#4C5567; --c-ink-3:#7B8496; --c-line:#DFE2E9;
+      --c-brand:#2E4FD8; --c-brand-ink:#FFFFFF; --c-brand-weak:#E7EBFC;
+      --c-win:#0E9F6E; --c-loss:#E0294B; --c-live:#F5A524; --c-on-live:#FFFFFF;
+      --c-danger:#E0294B; --c-void:#7B8496; --c-serve:#D9E64B;
+      /* 桌面控件 36px：88rpx(44pt) 是给手指的，鼠标不需要 */
+      --h-ctl:36px; --r-s:4px; --r-m:8px; --r-l:12px; --r-full:999px;
+      --e-1:0 1px 3px rgba(20,24,33,.06); --e-2:0 6px 20px rgba(20,24,33,.10);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--c-ground);color:var(--c-ink);font-size:14px;line-height:1.5;
+      font-family:-apple-system,"PingFang SC","Source Han Sans CN",system-ui,sans-serif}
+    a{color:var(--c-brand)}a:hover{color:#243FAD}
+    .app{display:flex;height:900px;overflow:hidden}
+    .side{width:216px;flex:none;background:var(--c-surface);border-right:1px solid var(--c-line);
+      display:flex;flex-direction:column;padding:16px 0}
+    .brand{padding:0 16px 16px;font-weight:700;font-size:16px;letter-spacing:-.01em}
+    /* 不做切换器 —— 一个退回入口就够。俱乐部名在顶部面包屑里已经有了 */
+    .back{margin-top:auto;padding:10px 18px;font-size:13px;color:var(--c-ink-3);
+      text-decoration:none;display:block}
+    .back:hover{color:var(--c-ink-2)}
+    .snav{display:flex;flex-direction:column;gap:2px;padding:0 8px}
+    .snav a{display:flex;align-items:center;justify-content:space-between;gap:8px;
+      padding:8px 10px;border-radius:var(--r-s);color:var(--c-ink-2);text-decoration:none;font-size:13.5px}
+    .snav a.on{background:var(--c-brand-weak);color:var(--c-brand);font-weight:600}
+    .sgrp{padding:14px 18px 6px;font-size:11px;color:var(--c-ink-3);letter-spacing:.08em}
+    .main{flex:1;min-width:0;display:flex;flex-direction:column}
+    .top{height:56px;flex:none;background:var(--c-surface);border-bottom:1px solid var(--c-line);
+      display:flex;align-items:center;justify-content:space-between;padding:0 20px;gap:16px}
+    .crumb{font-size:13px;color:var(--c-ink-3)}
+    .crumb b{color:var(--c-ink);font-weight:600}
+    .body{flex:1;min-height:0;overflow:hidden;padding:20px;display:flex;flex-direction:column;gap:14px}
+    .btn{height:var(--h-ctl);padding:0 16px;border-radius:var(--r-s);border:1px solid var(--c-line);
+      background:var(--c-surface);color:var(--c-ink-2);font-size:13.5px;display:inline-flex;
+      align-items:center;gap:6px;cursor:pointer}
+    .btn.pri{background:var(--c-brand);border-color:var(--c-brand);color:var(--c-brand-ink);font-weight:600}
+    .btn.dgr{border-color:var(--c-danger);color:var(--c-danger)}
+    .row{display:flex;align-items:center;gap:10px}
+    .sp{flex:1}
+    .card{background:var(--c-surface);border:1px solid var(--c-line);border-radius:var(--r-m)}
+    .pad{padding:16px}
+    .h2{font-size:18px;font-weight:600;letter-spacing:-.01em}
+    .h3{font-size:15px;font-weight:600}
+    .mut{color:var(--c-ink-3);font-size:12.5px}
+    .inp{height:var(--h-ctl);padding:0 10px;border:1px solid var(--c-line);border-radius:var(--r-s);
+      background:var(--c-surface);color:var(--c-ink-3);font-size:13.5px;display:flex;align-items:center}
+    table{width:100%;border-collapse:collapse;font-size:13.5px}
+    th{text-align:left;font-weight:500;color:var(--c-ink-3);font-size:12px;padding:8px 10px;
+      border-bottom:1px solid var(--c-line);white-space:nowrap}
+    td{padding:9px 10px;border-bottom:1px solid var(--c-surface-2)}
+    .tag{display:inline-block;padding:1px 8px;border-radius:var(--r-full);font-size:11px;font-weight:600}
+    .tier-a{background:var(--c-brand);color:var(--c-brand-ink)}
+    .tier-b{background:var(--c-brand-weak);color:var(--c-brand)}
+    .tier-c{border:1px solid var(--c-line);color:var(--c-ink-3)}
+    .st{font-size:12px;padding:1px 8px;border-radius:var(--r-full);display:inline-block}
+    .st.ok{background:#E4F6EE;color:var(--c-win)}
+    .st.wait{background:#FDF0DC;color:#B87508}
+    .st.gray{background:var(--c-surface-2);color:var(--c-void)}
+    .badge{min-width:18px;height:18px;padding:0 6px;border-radius:var(--r-full);background:var(--c-live);
+      color:var(--c-on-live);font-size:11px;font-weight:600;display:inline-grid;place-items:center}
+    /* 签表专用 */
+    .slot{padding:6px 9px;display:flex;align-items:center;gap:6px;min-height:31px}
+    .slot + .slot{border-top:1px solid var(--c-surface-2)}
+    .slot.empty{border:1px dashed var(--c-brand);background:var(--c-brand-weak);
+      color:var(--c-brand);font-size:12px;margin:-1px}
+    .slot.half{color:var(--c-ink)}
+    .slot.half i{font-style:normal;color:var(--c-brand);font-size:12px;
+      border:1px dashed var(--c-brand);border-radius:var(--r-s);padding:1px 7px;margin-left:auto}
+    .slot.bye{color:var(--c-ink-3);font-style:italic}
+    .lv{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;color:var(--c-ink-3)}
+    .pc{padding:7px 9px;cursor:grab;display:flex;align-items:center;gap:7px}
+    .av{width:22px;height:22px;border-radius:var(--r-full);background:var(--c-brand);color:#fff;
+      font-size:11px;display:grid;place-items:center;flex:none}
+    .av.b{background:#5B6EA8}.av.c{background:#7A5EA8}.av.d{background:#3F6E7F}.av.e{background:#5A6470}
+    .grp{font-size:11px;color:var(--c-ink-3);letter-spacing:.06em;padding:10px 12px 4px}
+    .anns{margin:0;padding:14px 20px 20px;list-style:none;display:grid;gap:6px;background:var(--c-ground)}
+    .anns li{font-size:12.5px;color:var(--c-ink-2);display:flex;gap:8px;align-items:flex-start}
+    .anns li > b{flex:none;width:16px;height:16px;border-radius:999px;border:1px solid #B03A2E;
+      color:#B03A2E;font-size:9.5px;display:grid;place-items:center;margin-top:2px;font-weight:400}
+  </style>
+</helmet>
+<div class="app" style="height:820px">
+  <div class="side">
+    <div class="brand">LJTennis 后台</div>
+    <div class="snav"><a href="#">赛事<span class="badge">3</span></a><a href="#">成员 128</a><a class="on" href="#">入会申请<span class="badge">4</span></a><a href="#">俱乐部资料</a></div>
+    <a class="back" href="#">← 返回俱乐部列表</a>
+  </div>
+
+  <div class="main">
+    <div class="top">
+      <div class="crumb">深圳网球会 › <b>入会申请</b></div>
+      <div class="row"><div class="btn">导出成员 CSV</div></div>
+    </div>
+
+    <div class="body">
+
+      <!-- 这一屏最容易被误解的一条，直接写在屏上 -->
+      <div class="card" style="padding:11px 14px;border-left:3px solid var(--c-brand);display:flex;align-items:center;gap:10px">
+        <span class="tag tier-b" style="padding:1px 8px">规则</span>
+        <div style="font-size:13px;color:var(--c-ink-2)">
+          <b style="color:var(--c-ink)">入会审批只管入会，不管报名。</b>
+          批不批，这个人都能报名打你的赛事 —— 俱乐部对选手是社区层，不是门禁。
+        </div>
+      </div>
+
+      <div class="row">
+        <div style="display:flex;border:1px solid var(--c-line);border-radius:var(--r-s);overflow:hidden">
+          <sc-for list="{{tabs}}" as="t" hint-placeholder-count="4">
+            <div onClick="{{ t.pick }}" style="height:var(--h-ctl);padding:0 14px;display:flex;align-items:center;gap:6px;
+                 font-size:13.5px;cursor:pointer;background:{{t.bg}};color:{{t.fg}};font-weight:{{t.fw}};
+                 border-right:1px solid var(--c-line)">{{t.label}}<span class="mut" style="color:inherit;opacity:.7">{{t.n}}</span></div>
+          </sc-for>
+        </div>
+        <div class="inp" style="width:220px">搜昵称 / 手机号</div>
+        <div class="sp"></div>
+        <div class="mut">{{selText}}</div>
+        <div class="btn" style="display:{{bulkShow}}">批量通过</div>
+        <div class="btn dgr" style="display:{{bulkShow}}">批量拒绝</div>
+        <div class="btn dgr" style="display:{{removeShow}}">批量移除</div>
+      </div>
+
+      <div class="card" style="flex:1;min-height:0;overflow:auto">
+        <table>
+          <tr>
+            <th style="width:28px"></th><th>昵称</th><th style="width:96px">性别 · 水平</th>
+            <th style="width:112px">手机号</th><th style="width:120px">{{timeCol}}</th>
+            <th style="width:150px">在本俱乐部参赛</th><th style="width:150px"></th>
+          </tr>
+          <sc-for list="{{rows}}" as="r" hint-placeholder-count="6">
+            <tr>
+              <td class="mut">{{r.ck}}</td>
+              <td><b>{{r.name}}</b></td>
+              <td class="mut">{{r.meta}}</td>
+              <td class="mut">{{r.phone}}</td>
+              <td class="mut">{{r.time}}</td>
+              <td>{{r.played}}</td>
+              <td class="mut">{{r.act}}</td>
+            </tr>
+          </sc-for>
+        </table>
+      </div>
+
+      <div class="row"><div class="mut">{{footer}}</div></div>
+    </div>
+  </div>
+</div>
+<ul class="anns">
+  <li><b>1</b><span><b>屏上那条规则不是装饰。</b>「审批」两个字天然让人以为不批就不能来打球 —— 实现上也很容易顺手在报名接口里加一句会员校验。加了，分享转发的报名链接就断了，而且<b>很难在测试里发现</b>（管理员自己测的时候本来就是会员）。所以写在屏上，也写在 <code>PRD.md</code> §2。</span></li>
+  <li><b>2</b><span><b>「在本俱乐部参赛」是审批唯一真正有用的一列。</b>打过 3 场的人你多半认识，一眼就能批。它同时也在证明上面那条规则 —— 他没入会，照样打过你三场。</span></li>
+  <li><b>3</b><span>批量通过 / 拒绝是<b>桌面端存在的理由</b>。一场比赛结束后常常一次涌进十几份申请，一条条点是折磨。</span></li>
+  <li><b>4</b><span><b>拒绝和移除都不是终点。</b>状态是「已拒绝」「已移除」，本人随时可以再申请 —— <b>不做黑名单</b>。业余俱乐部的拒绝多半是「这次人满了」，不是「永远不要你」。</span></li>
+  <li><b>5</b><span>手机号在后台<b>仍然只显示掩码</b>，与报名名单一致。真号存服务端，导出 CSV 时才带全号并记一条操作日志。</span></li>
+  <li><b>6</b><span><b>入会给的是归属，不是资格。</b>入会后多两件事：榜单能按俱乐部筛到他、主办方能在<b>签表上把他挑来补人</b>（第 6 屏）。后者是成员名单第一个真正的用处 —— 也是俱乐部愿意认真管成员的理由。</span></li>
+  <li><b>7</b><span>侧栏角标用橙色（<code>--c-live</code>，语义是「有事待处理」），与小程序「我的报名」的角标同一套，<b>不新开颜色</b>。</span></li>
+</ul>
+</x-dc>
+
+<script data-dc-script data-props='{"tab":{"editor":"enum","options":["申请中","已入会"],"default":"申请中","section":"标签页"}}'>
+const PEND = [
+  { ck:'☑', name:'周雨', meta:'女 · 3.0', phone:'139****0000', time:'4月5日 09:12', played:'打过 3 场', act:'通过 · 拒绝' },
+  { ck:'☑', name:'沈括', meta:'男 · 3.5', phone:'136****5678', time:'4月5日 10:40', played:'打过 1 场', act:'通过 · 拒绝' },
+  { ck:'☐', name:'白杨', meta:'男 · 2.5', phone:'150****3344', time:'4月6日 21:05', played:'未参加过',  act:'通过 · 拒绝' },
+  { ck:'☐', name:'邵斌', meta:'男 · 2.5', phone:'133****8899', time:'4月7日 08:30', played:'打过 1 场', act:'通过 · 拒绝' },
+];
+const MEMB = [
+  { ck:'☐', name:'张伟', meta:'男 · 3.5', phone:'138****6421', time:'2月11日', played:'打过 12 场', act:'移除' },
+  { ck:'☐', name:'李强', meta:'男 · 3.5', phone:'137****2211', time:'2月11日', played:'打过 12 场', act:'移除' },
+  { ck:'☐', name:'高翔', meta:'男 · 4.0', phone:'151****7788', time:'3月2日',  played:'打过 8 场',  act:'移除' },
+  { ck:'☐', name:'李娜', meta:'女 · 3.0', phone:'185****9029', time:'3月2日',  played:'打过 6 场',  act:'移除' },
+  { ck:'☐', name:'方正', meta:'男 · 2.5', phone:'155****1200', time:'3月18日', played:'未参加过',   act:'移除' },
+];
+
+class Component extends DCLogic {
+  renderVals() {
+    const self = this;
+    const pend = this.props.tab !== '已入会';
+    return {
+      tabs: [
+        { label:'申请中', n:'4',   on: pend },
+        { label:'已入会', n:'128', on: !pend },
+      ].map(function (t) {
+        return {
+          label: t.label, n: t.n,
+          bg: t.on ? 'var(--c-brand-weak)' : 'var(--c-surface)',
+          fg: t.on ? 'var(--c-brand)' : 'var(--c-ink-2)',
+          fw: t.on ? '600' : '400',
+          pick: function () { self.setProps({ tab: t.label }); },
+        };
+      }),
+      rows:       pend ? PEND : MEMB,
+      timeCol:    pend ? '申请时间' : '入会时间',
+      selText:    pend ? '已选 2 人' : '未选',
+      bulkShow:   pend ? 'inline-flex' : 'none',
+      removeShow: pend ? 'none' : 'inline-flex',
+      footer:     pend
+        ? '申请中 4 · 今天新增 2 · 已入会 128 · 已拒绝 3 · 已移除 1（都可再申请）'
+        : '已入会 128 人 · 其中 96 人在本俱乐部打过至少 1 场',
+    };
+  }
+}
+</script>
+</body>
+</html>
