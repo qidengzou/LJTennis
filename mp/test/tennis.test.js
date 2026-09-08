@@ -17,8 +17,9 @@ m = T.scorePoint(m, 0); eq(T.pointLabel(m, 0), '30', '30');
 m = T.scorePoint(m, 0); eq(T.pointLabel(m, 0), '40', '40');
 m = T.scorePoint(m, 0); eq(m.games, [1, 0], '拿下一局');
 
-console.log('\n[2] 平分 / 占先 / 扳平');
-m = T.createMatch({ serveOrder: ORDER });
+console.log('\n[2] 占先制：平分 / 占先 / 扳平（short6_tb）');
+// 这一组测的是**占先制**，必须显式指定 —— 默认赛制是金球，到不了 Ad
+m = T.createMatch({ serveOrder: ORDER, format: 'short6_tb' });
 m = win(m, 0, 3); m = win(m, 1, 3);
 eq([T.pointLabel(m, 0), T.pointLabel(m, 1)], ['40', '40'], '40-40 平分');
 m = T.scorePoint(m, 0);
@@ -27,6 +28,34 @@ m = T.scorePoint(m, 1);
 eq([T.pointLabel(m, 0), T.pointLabel(m, 1)], ['40', '40'], 'B 扳平回平分');
 m = T.scorePoint(m, 1); m = T.scorePoint(m, 1);
 eq(m.games, [0, 1], 'B 连得两分拿下');
+eq(T.isGoldenPoint(m), false, '占先制没有金球点');
+
+// ── SPEC §5.1 金球 ──────────────────────────────────────────────
+// 引擎原来只有 `points>=4 && 差>=2`，那是占先制；而默认赛制 short6_gp
+// 就是金球，于是每一场默认赛制的比赛都会在平分之后算错。
+console.log('\n[2b] 金球：平分后一分定胜负（short6_gp，默认）');
+eq(T.createMatch({ serveOrder: ORDER }).format, 'short6_gp', '默认赛制就是 6 局金球');
+m = T.createMatch({ serveOrder: ORDER });
+m = win(m, 0, 3); m = win(m, 1, 3);
+eq([T.pointLabel(m, 0), T.pointLabel(m, 1)], ['40', '40'], '40-40');
+eq(T.isGoldenPoint(m), true, '此刻是金球点');
+m = T.scorePoint(m, 0);
+eq([m.games, m.points], [[1, 0], [0, 0]], '下一分直接拿下这一局，不打占先');
+
+// 反过来：金球赛制**绝不能**出现「占先」
+m = T.createMatch({ serveOrder: ORDER });
+m = win(m, 0, 3); m = win(m, 1, 3); 
+eq(T.pointLabel(m, 0).indexOf('Ad'), -1, '金球赛制不出现 Ad');
+
+// 3-3 之前的判定与占先制一致，别把普通局也改坏
+m = T.createMatch({ serveOrder: ORDER });
+m = win(m, 0, 3);
+eq(m.games, [0, 0], '连得 3 分还没赢下这一局');
+m = T.scorePoint(m, 0);
+eq(m.games, [1, 0], '第 4 分才拿下（40-0 的正常局不受影响）');
+m = T.createMatch({ serveOrder: ORDER });
+m = win(m, 0, 3); m = win(m, 1, 2);
+eq(m.games, [0, 0], '40-30 还没结束');
 
 console.log('\n[3] 双打发球轮转 A1→B1→A2→B2');
 m = T.createMatch({ serveOrder: ORDER });

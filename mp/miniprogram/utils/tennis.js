@@ -7,8 +7,17 @@
 
 const POINT_LABELS = ['0', '15', '30', '40'];
 
+/**
+ * 赛制。`noAd`（金球）和「短盘」是**两个维度**：
+ * 短盘讲一盘打几局，金球讲平分之后怎么办 —— 别把它们并成一个开关。
+ *
+ * 金球 = no-ad：平分（40-40）后不打占先，**下一分定胜负**。
+ * 业余赛的通行做法，省时间。见 PRD.md §6。
+ */
 const FORMATS = {
-  // 6 局短盘，6-6 抢七，三盘两胜
+  // 6 局金球，6-6 抢七，三盘两胜 —— 默认赛制
+  short6_gp:  { gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  setsToWin: 2, noAd: true,  label: '6局金球 · 抢七' },
+  // 6 局短盘（占先制），6-6 抢七，三盘两胜
   short6_tb:  { gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  setsToWin: 2, label: '6局短盘 · 抢七' },
   // 单盘 6 局
   single6_tb: { gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  setsToWin: 1, label: '单盘6局 · 抢七' },
@@ -20,7 +29,7 @@ const FORMATS = {
  * @param {string[]} serveOrder 发球顺序。双打长度 4：[A1, B1, A2, B2]；单打长度 2
  * @param {string} format FORMATS 的 key
  */
-function createMatch({ serveOrder, format = 'short6_tb' }) {
+function createMatch({ serveOrder, format = 'short6_gp' }) {
   if (!FORMATS[format]) throw new Error('未知赛制: ' + format);
   if (![2, 4].includes(serveOrder.length)) throw new Error('发球顺序长度必须是 2 或 4');
   return {
@@ -51,16 +60,27 @@ function server(m) {
   return m.serveOrder[serverIndex(m)];
 }
 
-/** 某一方当前分的显示文本 */
+/**
+ * 某一方当前分的显示文本。
+ * **金球赛制不会出现「占先」** —— 40-40 之后下一分就结束了，
+ * 根本到不了 Ad 这一档，显示出来是错的。
+ */
 function pointLabel(m, side) {
   if (m.tiebreak) return String(m.points[side]);
+  const cfg = FORMATS[m.format] || {};
   const me = m.points[side];
   const opp = m.points[1 - side];
   if (me >= 3 && opp >= 3) {
-    if (me === opp) return '40';
+    if (cfg.noAd || me === opp) return '40';
     return me > opp ? 'Ad' : '-';
   }
   return POINT_LABELS[me];
+}
+
+/** 金球点：平分且是金球赛制，下一分定这一局。UI 要不要标由调用方决定 */
+function isGoldenPoint(m) {
+  const cfg = FORMATS[m.format] || {};
+  return !!cfg.noAd && !m.tiebreak && m.points[0] >= 3 && m.points[1] >= 3;
 }
 
 function clone(m) {
@@ -118,7 +138,10 @@ function scorePoint(m, side) {
     return n;
   }
 
-  if (n.points[side] >= 4 && n.points[side] - n.points[o] >= 2) {
+  // 金球：拿到第 4 分就赢下这一局，不要求净胜两分。
+  // 曾经这里只写 `差 >= 2`，那是占先制 —— 而默认赛制正是金球，
+  // 于是每一场默认赛制的比赛都会在平分之后算错。
+  if (n.points[side] >= 4 && (cfg.noAd || n.points[side] - n.points[o] >= 2)) {
     n.games[side] += 1;
     n.points = [0, 0];
     n.gameIndex += 1;
@@ -166,6 +189,7 @@ module.exports = {
   serverIndex,
   server,
   pointLabel,
+  isGoldenPoint,
   setsForDisplay,
   toMatchScore,
 };
