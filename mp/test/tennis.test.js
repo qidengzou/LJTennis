@@ -17,9 +17,9 @@ m = T.scorePoint(m, 0); eq(T.pointLabel(m, 0), '30', '30');
 m = T.scorePoint(m, 0); eq(T.pointLabel(m, 0), '40', '40');
 m = T.scorePoint(m, 0); eq(m.games, [1, 0], '拿下一局');
 
-console.log('\n[2] 占先制：平分 / 占先 / 扳平（short6_tb）');
+console.log('\n[2] 占先制：平分 / 占先 / 扳平（sets3_ad）');
 // 这一组测的是**占先制**，必须显式指定 —— 默认赛制是金球，到不了 Ad
-m = T.createMatch({ serveOrder: ORDER, format: 'short6_tb' });
+m = T.createMatch({ serveOrder: ORDER, format: 'sets3_ad' });
 m = win(m, 0, 3); m = win(m, 1, 3);
 eq([T.pointLabel(m, 0), T.pointLabel(m, 1)], ['40', '40'], '40-40 平分');
 m = T.scorePoint(m, 0);
@@ -33,8 +33,8 @@ eq(T.isGoldenPoint(m), false, '占先制没有金球点');
 // ── SPEC §5.1 金球 ──────────────────────────────────────────────
 // 引擎原来只有 `points>=4 && 差>=2`，那是占先制；而默认赛制 short6_gp
 // 就是金球，于是每一场默认赛制的比赛都会在平分之后算错。
-console.log('\n[2b] 金球：平分后一分定胜负（short6_gp，默认）');
-eq(T.createMatch({ serveOrder: ORDER }).format, 'short6_gp', '默认赛制就是 6 局金球');
+console.log('\n[2b] 金球：平分后一分定胜负（默认赛制自带金球）');
+eq(T.createMatch({ serveOrder: ORDER }).format.noAd, true, '默认赛制是金球');
 m = T.createMatch({ serveOrder: ORDER });
 m = win(m, 0, 3); m = win(m, 1, 3);
 eq([T.pointLabel(m, 0), T.pointLabel(m, 1)], ['40', '40'], '40-40');
@@ -105,11 +105,39 @@ m = win(m, 0, 2);
 eq([m.finished, T.setsForDisplay(m)], [true, [{ a: 1, b: 0, ta: 11, tb: 9 }]], '11-9 结束');
 
 console.log('\n[10] 单打（发球顺序长度 2）');
-m = T.createMatch({ serveOrder: ['甲', '乙'], format: 'single6_tb' });
+m = T.createMatch({ serveOrder: ['甲', '乙'], format: 'set1_gp' });
 const s2 = [T.server(m)];
 m = game(m, 0); s2.push(T.server(m));
 m = game(m, 1); s2.push(T.server(m));
 eq(s2, ['甲', '乙', '甲'], '单打每局换发');
+
+// ── 结构化格式 ──────────────────────────────────────────────
+// 旧的扁平枚举表达不了「两盘 + 决胜抢十」：setsToWin:2 是第三盘打满，
+// tb10 是整场只有一个抢十，都不是这个 —— 而它是业余双打最主流的赛制。
+console.log('\n[10b] 决胜盘抢十（默认赛制）');
+m = T.createMatch({ serveOrder: ORDER });
+eq([m.format.setsToWin, m.format.decidingSet], [2, 'tb10'], '默认就是两盘 + 决胜抢十');
+for (let i = 0; i < 6; i++) m = game(m, 0);      // A 拿下第一盘
+for (let i = 0; i < 6; i++) m = game(m, 1);      // B 拿下第二盘
+eq([m.setWins, m.tiebreak], [[1, 1], true], '1-1 之后自动进抢十，不再打满一盘');
+m = win(m, 0, 9); m = win(m, 1, 9);
+eq([m.points, m.finished], [[9, 9], false], '抢十打到 9-9 仍需净胜 2 分');
+m = win(m, 0, 2);
+eq(m.finished, true, '11-9 结束');
+eq(m.sets[2], { a: 1, b: 0, tiebreak: { a: 11, b: 9 } }, '决胜抢十记成一盘 1-0，不产生局分');
+
+console.log('\n[10c] decidingSet: full 时第三盘照常打满');
+m = T.createMatch({ serveOrder: ORDER, format: 'sets3_gp' });
+for (let i = 0; i < 6; i++) m = game(m, 0);
+for (let i = 0; i < 6; i++) m = game(m, 1);
+eq([m.setWins, m.tiebreak], [[1, 1], false], '1-1 之后仍是普通一盘');
+
+console.log('\n[10d] 格式是配置不是枚举');
+eq(T.formatLabel('sets2_st10_gp'), '6局金球 · 抢七 · 两盘 + 决胜抢十', '文案由配置推导');
+eq(T.formatLabel({ gamesToWin: 5, tiebreakAt: 5, setsToWin: 1 }),
+   '5局金球 · 抢七 · 单盘', '预设之外的自定义组合也能用，且文案自动对');
+eq(typeof T.createMatch({ serveOrder: ORDER }).format, 'object',
+   'match 存的是解析后的配置对象，不是预设名 —— 预设以后改了不会重新解释历史比分');
 
 console.log('\n[11] toMatchScore 只含 sets 与 serveOrder');
 m = T.createMatch({ serveOrder: ORDER });

@@ -8,39 +8,85 @@
 const POINT_LABELS = ['0', '15', '30', '40'];
 
 /**
- * 赛制。`noAd`（金球）和「短盘」是**两个维度**：
- * 短盘讲一盘打几局，金球讲平分之后怎么办 —— 别把它们并成一个开关。
+ * 比赛格式是一个**结构化配置**，不是一个写死的枚举。
  *
- * 金球 = no-ad：平分（40-40）后不打占先，**下一分定胜负**。
- * 业余赛的通行做法，省时间。见 PRD.md §6。
+ * 五个维度彼此独立，展开有十几种组合 —— 业余赛的格式因场地、天气、
+ * 报名人数天天在变，任何固定清单都会漏掉别人正在用的那一种。
+ * 这份代码已经因此错过两次：先漏了金球，再漏了决胜盘抢十。
+ *
+ * | 维度 | 字段 | 说明 |
+ * |---|---|---|
+ * | 一盘打几局 | `gamesToWin` | 6 / 4；**0 = 整场只打一个抢十**，不打局 |
+ * | 几局几平进抢七 | `tiebreakAt` | 通常等于 gamesToWin；4 局制常用 3-3 进 |
+ * | 抢七到几分 | `tiebreakTo` | 7 / 10 |
+ * | 几盘几胜 | `setsToWin` | 1 / 2 |
+ * | 平分怎么办 | `noAd` | true = 金球，不打占先。业余通行 |
+ * | 决胜盘怎么打 | `decidingSet` | 'full' 打满 / 'tb10' 抢十。仅 setsToWin >= 2 有意义 |
+ *
+ * 契约见 `api/types.ts` 的 `MatchFormat`。
  */
-const FORMATS = {
-  // 6 局金球，6-6 抢七，三盘两胜 —— 默认赛制
-  short6_gp:  { gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  setsToWin: 2, noAd: true,  label: '6局金球 · 抢七' },
-  // 6 局短盘（占先制），6-6 抢七，三盘两胜
-  short6_tb:  { gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  setsToWin: 2, label: '6局短盘 · 抢七' },
-  // 单盘 6 局
-  single6_tb: { gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  setsToWin: 1, label: '单盘6局 · 抢七' },
-  // 抢十：整场就是一个决胜局
-  tb10:       { gamesToWin: 0, tiebreakAt: 0, tiebreakTo: 10, setsToWin: 1, label: '抢十' },
+
+/** 常用预设。**只是建赛表单的快捷方式**，主办方可以在此基础上改任意一项 */
+const PRESETS = {
+  // 两盘 + 决胜抢十 —— 业余双打最主流：省时间、场地周转快
+  sets2_st10_gp: { gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  setsToWin: 2, noAd: true,  decidingSet: 'tb10' },
+  sets3_gp:      { gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  setsToWin: 2, noAd: true,  decidingSet: 'full' },
+  sets3_ad:      { gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  setsToWin: 2, noAd: false, decidingSet: 'full' },
+  short4_gp:     { gamesToWin: 4, tiebreakAt: 4, tiebreakTo: 7,  setsToWin: 2, noAd: true,  decidingSet: 'tb10' },
+  set1_gp:       { gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  setsToWin: 1, noAd: true,  decidingSet: 'full' },
+  tb10:          { gamesToWin: 0, tiebreakAt: 0, tiebreakTo: 10, setsToWin: 1, noAd: true,  decidingSet: 'full' },
 };
+
+const DEFAULT_FORMAT = PRESETS.sets2_st10_gp;
+
+/** 预设名或配置对象 → 配置对象。存进 match 的是**解析后的对象**，见 createMatch */
+function resolveFormat(f) {
+  if (!f) return Object.assign({}, DEFAULT_FORMAT);
+  if (typeof f === 'string') {
+    if (!PRESETS[f]) throw new Error('未知赛制预设: ' + f);
+    return Object.assign({}, PRESETS[f]);
+  }
+  if (typeof f.gamesToWin !== 'number' || typeof f.setsToWin !== 'number') {
+    throw new Error('赛制配置缺字段: 需要 gamesToWin 与 setsToWin');
+  }
+  return Object.assign({ tiebreakTo: 7, noAd: true, decidingSet: 'full' }, f);
+}
+
+/**
+ * 由配置**推导**显示文案。不能存 label ——
+ * 主办方改过任意一项之后，存下来的那句话就是错的。
+ */
+const CN_NUM = { 7: '七', 10: '十' };
+function tbName(n) { return '抢' + (CN_NUM[n] || n); }
+
+function formatLabel(f) {
+  const c = resolveFormat(f);
+  if (c.gamesToWin === 0) return tbName(c.tiebreakTo);
+  const parts = [c.gamesToWin + '局' + (c.noAd ? '金球' : '短盘'), tbName(c.tiebreakTo)];
+  if (c.setsToWin >= 2) parts.push(c.decidingSet === 'tb10' ? '两盘 + 决胜抢十' : '三盘两胜');
+  else parts.push('单盘');
+  return parts.join(' · ');
+}
 
 /**
  * @param {string[]} serveOrder 发球顺序。双打长度 4：[A1, B1, A2, B2]；单打长度 2
- * @param {string} format FORMATS 的 key
+ * @param {string|object} format 预设名或配置对象；不传用默认（两盘+决胜抢十·金球）
+ *
+ * **存进 match 的是解析后的配置对象，不是预设名。** 这样这场比赛永远
+ * 按开打那天的规则算 —— 预设定义以后改了，历史比分不会被重新解释。
  */
-function createMatch({ serveOrder, format = 'short6_gp' }) {
-  if (!FORMATS[format]) throw new Error('未知赛制: ' + format);
+function createMatch({ serveOrder, format }) {
+  const cfg = resolveFormat(format);
   if (![2, 4].includes(serveOrder.length)) throw new Error('发球顺序长度必须是 2 或 4');
   return {
-    format,
+    format: cfg,
     serveOrder: serveOrder.slice(),
     points: [0, 0],
     games: [0, 0],
     gameIndex: 0,          // 本盘已完成的局数，用于发球轮转
     sets: [],              // 已完成的盘 [{a, b, tiebreak?}]
     setWins: [0, 0],
-    tiebreak: format === 'tb10',
+    tiebreak: cfg.gamesToWin === 0,   // 整场就是一个抢十
     finished: false,
     winner: null,          // 0 | 1
   };
@@ -67,7 +113,7 @@ function server(m) {
  */
 function pointLabel(m, side) {
   if (m.tiebreak) return String(m.points[side]);
-  const cfg = FORMATS[m.format] || {};
+  const cfg = m.format || {};
   const me = m.points[side];
   const opp = m.points[1 - side];
   if (me >= 3 && opp >= 3) {
@@ -79,13 +125,13 @@ function pointLabel(m, side) {
 
 /** 金球点：平分且是金球赛制，下一分定这一局。UI 要不要标由调用方决定 */
 function isGoldenPoint(m) {
-  const cfg = FORMATS[m.format] || {};
+  const cfg = m.format || {};
   return !!cfg.noAd && !m.tiebreak && m.points[0] >= 3 && m.points[1] >= 3;
 }
 
 function clone(m) {
   return {
-    format: m.format,
+    format: Object.assign({}, m.format),
     serveOrder: m.serveOrder.slice(),
     points: m.points.slice(),
     games: m.games.slice(),
@@ -105,7 +151,19 @@ function finishCheck(n, cfg) {
   if (side >= 0) {
     n.finished = true;
     n.winner = side;
+    return;
   }
+  // 决胜盘抢十：两边各拿一盘，第三盘不打满，直接进一个抢十。
+  // 这是业余双打最主流的赛制，而旧的扁平枚举根本表达不了它 ——
+  // setsToWin:2 是「第三盘打满」，tb10 是「整场只有一个抢十」，都不是这个。
+  if (cfg.decidingSet === 'tb10' && isDecidingSet(n, cfg)) {
+    n.tiebreak = true;
+  }
+}
+
+/** 是不是到了决胜盘：双方都差最后一盘 */
+function isDecidingSet(n, cfg) {
+  return n.setWins[0] === cfg.setsToWin - 1 && n.setWins[1] === cfg.setsToWin - 1;
 }
 
 /**
@@ -114,16 +172,20 @@ function finishCheck(n, cfg) {
  */
 function scorePoint(m, side) {
   if (m.finished) return m;
-  const cfg = FORMATS[m.format];
+  const cfg = m.format;
   const n = clone(m);
   const o = 1 - side;
   n.points[side] += 1;
 
   if (n.tiebreak) {
-    if (n.points[side] >= cfg.tiebreakTo && n.points[side] - n.points[o] >= 2) {
+    // 决胜盘抢十打到 10，普通盘的 6-6 抢七打到 tiebreakTo
+    const target = (cfg.decidingSet === 'tb10' && isDecidingSet(n, cfg) && cfg.gamesToWin > 0)
+      ? 10 : cfg.tiebreakTo;
+    if (n.points[side] >= target && n.points[side] - n.points[o] >= 2) {
       const tb = { a: n.points[0], b: n.points[1] };
       n.points = [0, 0];
-      if (n.format === 'tb10') {
+      // 整场一个抢十，或决胜盘抢十 —— 两种都没有局分，记成 1-0
+      if (cfg.gamesToWin === 0 || (cfg.decidingSet === 'tb10' && isDecidingSet(n, cfg))) {
         n.sets.push({ a: side === 0 ? 1 : 0, b: side === 1 ? 1 : 0, tiebreak: tb });
       } else {
         n.games[side] += 1;                       // 7-6
@@ -183,7 +245,10 @@ function toMatchScore(m) {
 }
 
 module.exports = {
-  FORMATS,
+  PRESETS,
+  DEFAULT_FORMAT,
+  resolveFormat,
+  formatLabel,
   createMatch,
   scorePoint,
   serverIndex,

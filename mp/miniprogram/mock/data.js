@@ -7,7 +7,7 @@ const todayMatch = {
   matchNo: 12,
   court: '3 号场',
   time: '14:00',
-  format: 'short6_tb',
+  format: 'sets2_st10_gp',
   a: ['张伟', '李强'],   // 我方
   b: ['陈曦', '周涛'],   // 对方
 };

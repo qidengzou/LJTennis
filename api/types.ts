@@ -30,19 +30,48 @@ export type DrawFormat =
 /**
  * 比赛格式。由赛事设定，选手不可改（避免两边记的赛制不一致）。
  *
- * **与 `DrawFormat` 是两个维度**：DrawFormat 决定签表长什么样，
+ * **它是一个结构化配置，不是写死的枚举。** 五个维度彼此独立，展开有十几种
+ * 组合；业余赛的格式因场地、天气、报名人数天天在变，任何固定清单都会漏掉
+ * 别人正在用的那一种 —— 这份契约已经因此错过两次（先漏金球，再漏决胜抢十）。
+ *
+ * 与 `DrawFormat` 是两个维度：DrawFormat 决定签表长什么样，
  * MatchFormat 决定一分怎么算。
  *
- * **「短盘」和「金球」也是两个维度**：短盘讲一盘打几局，
- * 金球（no-ad）讲平分之后怎么办 —— 平分不打占先，下一分定胜负。
+ * **存进 `Match` 的是解析后的这个对象，不是预设名** —— 这样每场比赛永远按
+ * 开打那天的规则结算，预设定义以后改了也不会重新解释历史比分。
  *
- * 取值必须与 `mp/miniprogram/utils/tennis.js` 的 `FORMATS` 逐个对齐。
+ * 实现见 `mp/miniprogram/utils/tennis.js`；那里的 `PRESETS` 只是建赛表单的
+ * 快捷方式，主办方可以在预设基础上改任意一项。
  */
-export type MatchFormat =
-  | 'short6_gp'   // 6 局金球，6-6 抢七，三盘两胜 —— **默认**
-  | 'short6_tb'   // 6 局短盘（占先制），6-6 抢七，三盘两胜
-  | 'single6_tb'  // 单盘 6 局，抢七
-  | 'tb10';       // 抢十
+export interface MatchFormat {
+  /** 一盘打几局。**0 = 整场只打一个抢十**，不打局 */
+  gamesToWin: number;
+
+  /** 几局几平进抢七。通常等于 `gamesToWin`；4 局制常用 3-3 就进 */
+  tiebreakAt: number;
+
+  /** 抢七打到几分 */
+  tiebreakTo: number;
+
+  /** 几盘几胜 */
+  setsToWin: number;
+
+  /**
+   * 平分怎么办。`true` = **金球**（no-ad）：40-40 后不打占先，下一分定胜负。
+   * 业余赛通行做法。**与「短盘」是两个维度** —— 短盘讲一盘打几局，
+   * 金球讲平分怎么办。
+   */
+  noAd: boolean;
+
+  /**
+   * 决胜盘怎么打。仅 `setsToWin >= 2` 时有意义。
+   *   `'full'` 打满一盘 · `'tb10'` 直接打一个抢十
+   *
+   * `'tb10'` 是**业余双打最主流**的赛制（省时间、场地周转快）。
+   * 注意它和「整场一个抢十」（`gamesToWin: 0`）不是一回事。
+   */
+  decidingSet: 'full' | 'tb10';
+}
 
 /** 赛事积分等级。组织者选等级，各轮次分值由平台固定 —— 见 PRD.md §7 */
 export type TournamentTier = 'A' | 'B' | 'C';

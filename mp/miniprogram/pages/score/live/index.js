@@ -22,7 +22,7 @@ Page({
     this.match = saved.match;
     this.history = saved.history || [];
     this.serveSlots = saved.serveSlots || [];
-    this.setData({ id, meta: saved.meta, formatLabel: T.FORMATS[saved.match.format].label });
+    this.setData({ id, meta: saved.meta, formatLabel: T.formatLabel(saved.match.format) });
     this.render();
     // 记分中不锁屏 —— 换边间隙 90 秒，锁屏会打断
     wx.setKeepScreenOn({ keepScreenOn: true });

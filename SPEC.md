@@ -288,6 +288,7 @@ Entry 上，单双打共用一套结构。
 |---|---|
 | `Event.occupiedCount` | 派生字段仍叫 `confirmedCount`（判定逻辑已修，只剩名字） |
 | `Event.groupSize` / `qualifyCount` | 没有 |
+| `Event.matchFormat` 是结构化对象 | 云函数还没读它；建赛屏的「比赛格式」还是一行只读文字，要改成预设 + 可调 |
 | `Tournament.tier` / `clubId` / `coverUrl` | 没有 |
 | `Entry.invitedBy` / `referredBy` / `addedByOrganizer` | 没有 |
 | `Entry.partnerDeadlineAt` / `paymentDeadlineAt` | **契约里已删，代码还在读写** |

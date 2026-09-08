@@ -7,7 +7,7 @@ Page({
 
   onLoad(query) {
     const m = mock.todayMatch;            // TODO 云环境接好后按 query.id 拉取
-    this.setData({ m, formatLabel: T.FORMATS[m.format].label }, this.refresh);
+    this.setData({ m, formatLabel: T.formatLabel(m.format) }, this.refresh);
   },
 
   /**
