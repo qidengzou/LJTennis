@@ -104,7 +104,7 @@
     <div class="top">
       <div class="crumb">春季双打赛 › <b>签表</b> · 女双 · 小组循环</div>
       <div class="row">
-        <div class="mut">12 组 · 4 组 × 3 队</div>
+        <div class="mut">11 队 · 3 组 × 4 队 · 缺 1 队</div>
         <div class="btn">重新生成</div>
         <div class="btn pri">保存签表</div>
       </div>
@@ -112,13 +112,13 @@
 
     <div class="body">
 
-      <!-- 小组人数是建赛时设的，这里只读回显 -->
+      <!-- 每组队数是建赛时设的，这里只读回显 -->
       <div class="card pad" style="padding:12px 16px;display:flex;align-items:center;gap:14px">
-        <div><span class="mut">小组人数</span> <b style="margin-left:6px">3 人一组</b></div>
+        <div><span class="mut">每组队数</span> <b style="margin-left:6px">4 队一组</b></div>
         <div style="width:1px;height:20px;background:var(--c-line)"></div>
-        <div class="mut">建赛时设定，这里改不了 · 每队保底 <b style="color:var(--c-ink)">2</b> 场 · 小组赛共 <b style="color:var(--c-ink)">12</b> 场</div>
+        <div class="mut">建赛时设定，这里改不了 · 每队保底 <b style="color:var(--c-ink)">3</b> 场 · 小组赛共 <b style="color:var(--c-ink)">18</b> 场</div>
         <div class="sp"></div>
-        <div class="st ok">出线 8 队 · 正好填满 8 签位，不产生轮空</div>
+        <div class="st wait">出线 6 队 · 8 签位，2 个轮空</div>
       </div>
 
       <div style="display:flex;gap:16px;flex:1;min-height:0">
@@ -133,41 +133,33 @@
               <div style="padding:9px 12px;border-bottom:1px solid var(--c-line);background:var(--c-surface-2)"><b>A 组</b></div>
               <table>
                 <tr><th style="width:22px"></th><th>队伍</th><th style="width:52px">胜负</th><th style="width:56px">净胜盘</th></tr>
-                <tr><td class="mut">1</td><td><b>陈明 / 刘洋</b></td><td class="n">1-1</td><td style="color:var(--c-win)">+1</td></tr>
-                <tr><td class="mut">2</td><td><b>张伟 / 李强</b></td><td class="n">1-1</td><td>0</td></tr>
-                <tr style="background:#FCFCFD"><td class="mut">3</td><td class="mut">王磊 / 赵鹏</td><td class="mut n">1-1</td><td class="mut" style="color:var(--c-loss)">−1</td></tr>
+                <tr><td class="mut">1</td><td><b>陈明 / 刘洋</b></td><td class="mut n">2-1</td><td class="mut" style="color:var(--c-win)">+2</td></tr>
+                <tr><td class="mut">2</td><td><b>张伟 / 李强</b></td><td class="mut n">2-1</td><td class="mut" style="color:var(--c-ink-2)">+1</td></tr>
+                <tr style="background:#FCFCFD"><td class="mut">3</td><td class="mut">王磊 / 赵鹏</td><td class="mut n">2-1</td><td class="mut" style="color:var(--c-loss)">−1</td></tr>
+                <tr style="background:#FCFCFD"><td class="mut">4</td><td class="mut">高翔 / 黎明</td><td class="mut n">0-3</td><td class="mut" style="color:var(--c-loss)">−2</td></tr>
               </table>
-              <div style="padding:7px 12px;border-top:1px solid var(--c-surface-2)" class="mut">三方循环 · 按<b style="color:var(--c-ink-2)">净胜盘</b>分出名次</div>
+              <div style="padding:7px 12px;border-top:1px solid var(--c-surface-2)" class="mut">前三队<b style="color:var(--c-ink-2)">三方循环</b>，全是 2-1 —— 按<b style="color:var(--c-ink-2)">净胜盘</b>分出名次</div>
             </div>
 
             <div class="card" style="overflow:hidden">
               <div style="padding:9px 12px;border-bottom:1px solid var(--c-line);background:var(--c-surface-2)"><b>B 组</b></div>
               <table>
                 <tr><th style="width:22px"></th><th>队伍</th><th style="width:52px">胜负</th><th style="width:56px">净胜盘</th></tr>
-                <tr><td class="mut">1</td><td><b>高翔 / 黎明</b></td><td class="n">2-0</td><td style="color:var(--c-win)">+4</td></tr>
-                <tr><td class="mut">2</td><td><b>周雨 / 沈括</b></td><td class="n">1-1</td><td>0</td></tr>
-                <tr style="background:#FCFCFD"><td class="mut">3</td><td class="mut">方正 / 白杨</td><td class="mut n">0-2</td><td class="mut" style="color:var(--c-loss)">−4</td></tr>
+                <tr><td class="mut">1</td><td><b>周雨 / 沈括</b></td><td class="mut n">3-0</td><td class="mut" style="color:var(--c-win)">+6</td></tr>
+                <tr><td class="mut">2</td><td><b>方正 / 白杨</b></td><td class="mut n">2-1</td><td class="mut" style="color:var(--c-ink-2)">+1</td></tr>
+                <tr style="background:#FCFCFD"><td class="mut">3</td><td class="mut">马超 / 秦岭</td><td class="mut n">1-2</td><td class="mut" style="color:var(--c-loss)">−2</td></tr>
+                <tr style="background:#FCFCFD"><td class="mut">4</td><td class="mut">杜康 / 孙浩</td><td class="mut n">0-3</td><td class="mut" style="color:var(--c-loss)">−5</td></tr>
               </table>
               <div style="padding:7px 12px;border-top:1px solid var(--c-surface-2)" class="mut">胜场直接分出，不用往下比</div>
             </div>
 
-            <div class="card" style="overflow:hidden">
-              <div style="padding:9px 12px;border-bottom:1px solid var(--c-line);background:var(--c-surface-2)"><b>C 组</b></div>
-              <table>
-                <tr><th style="width:22px"></th><th>队伍</th><th style="width:52px">胜负</th><th style="width:56px">净胜盘</th></tr>
-                <tr><td class="mut">1</td><td><b>马超 / 秦岭</b></td><td class="mut">—</td><td class="mut">—</td></tr>
-                <tr><td class="mut">2</td><td><b>杜康 / 孙浩</b></td><td class="mut">—</td><td class="mut">—</td></tr>
-                <tr><td class="mut">3</td><td><b>吴迪 / 郑凯</b></td><td class="mut">—</td><td class="mut">—</td></tr>
-              </table>
-              <div style="padding:7px 12px;border-top:1px solid var(--c-surface-2)" class="mut">未开打 · 名次列显示「—」不显示 0</div>
-            </div>
-
             <div class="card" style="overflow:hidden;border-color:var(--c-brand-weak)">
-              <div style="padding:9px 12px;border-bottom:1px solid var(--c-line);background:var(--c-surface-2)"><b>D 组</b> <span class="st wait" style="margin-left:6px">缺 1 队</span></div>
+              <div style="padding:9px 12px;border-bottom:1px solid var(--c-line);background:var(--c-surface-2)"><b>C 组</b> <span class="st wait" style="margin-left:6px">缺 1 队</span></div>
               <table>
                 <tr><th style="width:22px"></th><th>队伍</th><th style="width:52px">胜负</th><th style="width:56px">净胜盘</th></tr>
-                <tr><td class="mut">1</td><td><b>冯磊 / 许涛</b></td><td class="mut">—</td><td class="mut">—</td></tr>
-                <tr><td class="mut">2</td><td><b>何平 / 邵斌</b></td><td class="mut">—</td><td class="mut">—</td></tr>
+                <tr><td class="mut">1</td><td><b>吴迪 / 郑凯</b></td><td class="mut">—</td><td class="mut">—</td></tr>
+                <tr><td class="mut">2</td><td><b>冯磊 / 许涛</b></td><td class="mut">—</td><td class="mut">—</td></tr>
+                <tr><td class="mut">3</td><td><b>何平 / 邵斌</b></td><td class="mut">—</td><td class="mut">—</td></tr>
               </table>
               <div class="slot empty" style="margin:8px 10px 10px;justify-content:center">拖一队到这里，或从俱乐部成员补人</div>
             </div>
@@ -184,22 +176,23 @@
           <div style="padding:11px;display:flex;flex-direction:column;gap:9px;overflow:auto">
             <div class="card" style="padding:0;overflow:hidden">
               <div class="slot"><b>A1</b><span class="mut">陈明 / 刘洋</span></div>
-              <div class="slot"><b>B2</b><span class="mut">周雨 / 沈括</span></div>
+              <div class="slot bye">轮空</div>
             </div>
             <div class="card" style="padding:0;overflow:hidden">
+              <div class="slot"><b>B2</b><span class="mut">方正 / 白杨</span></div>
               <div class="slot"><b>C1</b><span class="mut">待定</span></div>
-              <div class="slot"><b>D2</b><span class="mut">待定</span></div>
             </div>
             <div class="card" style="padding:0;overflow:hidden">
-              <div class="slot"><b>B1</b><span class="mut">高翔 / 黎明</span></div>
+              <div class="slot"><b>B1</b><span class="mut">周雨 / 沈括</span></div>
+              <div class="slot bye">轮空</div>
+            </div>
+            <div class="card" style="padding:0;overflow:hidden">
+              <div class="slot"><b>C2</b><span class="mut">待定</span></div>
               <div class="slot"><b>A2</b><span class="mut">张伟 / 李强</span></div>
             </div>
-            <div class="card" style="padding:0;overflow:hidden">
-              <div class="slot"><b>D1</b><span class="mut">待定</span></div>
-              <div class="slot"><b>C2</b><span class="mut">待定</span></div>
-            </div>
             <div class="mut" style="line-height:1.6;padding:4px 2px">
-              A 组第一碰 B 组第二 —— <b style="color:var(--c-ink-2)">同组的不会在第一轮再碰</b>，他们刚打过。
+              <b style="color:var(--c-ink-2)">同组的不会在第一轮再碰</b>，他们刚打过。<br>
+              3 组出线 6 队填不满 8 签位 —— 2 个轮空按均匀分散落在场次 1 和 3，<b style="color:var(--c-ink-2)">谁拿到是抽签的事</b>。
             </div>
           </div>
         </div>
@@ -209,13 +202,13 @@
   </div>
 </div>
 <ul class="anns">
-  <li><b>1</b><span><b>小组人数在建赛时设，这一屏只读回显。</b>它是建赛表单里唯一跟签表有关的可配项（另一个是报名截止），按<b>比赛</b>设 —— 男双和女双可以不一样。</span></li>
-  <li><b>2</b><span><b>3 人一组是默认</b>：12 组分 4×3，出线 8 队正好填满 8 签位、不产生轮空，赛程也最好排。想让人多打几场，用「小组赛打短盘」比「加人」划算 —— 加一人是多 6 场。</span></li>
+  <li><b>1</b><span><b>每组队数在建赛时设，这一屏只读回显。</b>它是建赛表单里唯一跟签表有关的可配项（另一个是报名截止），按<b>比赛</b>设 —— 男双和女双可以不一样。</span></li>
+  <li><b>2</b><span><b>说「4 队一组」不说「4 人一组」</b> —— 双打一队是两个人，说「人」会被读成 2 队。「组」这个词留给小组本身。<b>默认 4 队</b>：业余赛第一诉求是「来一趟多打几场」，每队保底 3 场比 2 场值钱得多。代价是出线 6 队填不满 8 签位，多 2 个轮空、多 6 场比赛。</span></li>
   <li><b>3</b><span><b>A 组那张表是三方循环</b>：三队全是 1 胜 1 负，光看胜场排不出来，靠净胜盘分。判定顺序<b>胜场 → 净胜盘 → 净胜局 → 抽签</b>由平台写死，组织者不可配 —— 赛场上临时改判定顺序就是在颁奖前吵架。</span></li>
   <li><b>4</b><span>未开打的组，名次列显示 <b>「—」不显示 0</b>。0 看起来像「打了但一场没赢」，那是两回事。</span></li>
   <li><b>5</b><span><b>缺人的组直接标出来</b>（D 组「缺 1 队」），空位给的是同一个虚线块 —— 拖一队过来，或走「从俱乐部成员补人」。人不够是业余赛常态，不是异常。</span></li>
   <li><b>6</b><span><b>分组随机 + 可拖。</b>同俱乐部避开、师徒错开一律交给手动，不写进算法 —— 这类约束算法看不见，硬写只会做出一个又复杂又猜不准的分组器。第一版没有种子，所以也没有蛇形分组。</span></li>
-  <li><b>7</b><span>出线交叉<b>自动生成不给拖</b>：A1–B2 是规则不是偏好。小组名次一变它就跟着变，让人拖只会拖出自相矛盾的对阵。</span></li>
+  <li><b>7</b><span>出线交叉<b>自动生成不给拖</b>：「同组的不在第一轮再碰」是规则不是偏好。小组名次一变它就跟着变，让人拖只会拖出自相矛盾的对阵。<b>轮空同样不指定给谁</b> —— 第一版没有种子，按均匀分散落位，谁拿到看抽签。</span></li>
 </ul>
 </x-dc>
 </body>
