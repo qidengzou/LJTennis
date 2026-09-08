@@ -67,15 +67,11 @@ export interface MatchFormat {
 
   // ── 分 ────────────────────────────────────────────────
   /**
-   * 抢七打到几分。默认：**4 局及以下抢五，6 局和 8 局都抢七**，
-   * `tiebreakAt: 0` 时抢十。
-   *
-   * 不是「局数 + 1」—— 那只在 4 和 6 上碰巧成立。抢七是 7 分因为标准
-   * 抢七就是 7 分，跟局数无关；8 局制仍然是 8-8 抢七，不是抢九。
+   * 抢七打到几分。默认：**4 局及以下抢五，6 局抢七**，**8 局抢十**
    */
   tiebreakTo: number;
 
-  /** 金球：40-40 后不打占先，下一分定胜负。*/
+  /** 金球：40-40 后不打占先，下一分定胜负。 */
   noAd: boolean;
 }
 
@@ -88,6 +84,25 @@ export type MembershipStatus =
   | 'active'     // 已入会
   | 'rejected'   // 被拒，可再申请
   | 'removed';   // 被移除，可再申请
+
+/**
+ * 俱乐部里的身份。**一个俱乐部可以有多个 `admin`，但 `owner` 只有一个。**
+ *
+ * 放在 `Membership` 上而不是 `Club.adminIds: string[]`，理由有三条：
+ *   1. **管理员首先得是会员** —— 「不是会员却能管俱乐部」现实里说不通，
+ *      同一条记录带 role 天然保证了这一点
+ *   2. **两个方向的查询都是一次** —— 「谁管这个俱乐部」和「我管哪些俱乐部」
+ *      查的是同一张表的两个索引；存数组的话后者要扫全表
+ *   3. **增删管理员是改一条记录的一个字段**，不是重写整个数组 ——
+ *      两个人同时改不会互相覆盖
+ *
+ * ⚠️ **role 只在 `status === 'active'` 时有效。** 申请中的人不可能是管理员；
+ * 移除会员时 role 必须一并降回 `member`，否则会留下「已移除的管理员」。
+ */
+export type ClubRole =
+  | 'owner'      // 创建者。唯一、不可移除、不可降级；转让是原子操作
+  | 'admin'      // 管理员。建赛、排签表、审批入会
+  | 'member';    // 普通会员
 
 export type Gender = 'M' | 'F';
 
@@ -247,14 +262,48 @@ export interface Tournament {
   coverUrl?: string;
 }
 
-/** 俱乐部会员。**旁挂在报名链路之外** —— Entry 绝不查 Membership，见 PRD.md §2 */
+/**
+ * 俱乐部。**「谁能办赛」这个悬空问题的答案** —— 你是某俱乐部的管理员，
+ * 所以能以俱乐部名义办赛，平台不必维护一份全局组织者白名单。
+ *
+ * **只能在网页后台创建**，小程序不给入口（PRD.md §2）。
+ */
+export interface Club {
+  id: string;
+  /** 深圳网球会 */
+  name: string;
+
+  // ---- 地区三级。列表页显示成「深圳 · 龙岗」，省份用于跨省筛选 ----
+  province: string;   // 广东
+  city: string;       // 深圳
+  district?: string;  // 龙岗。可空 —— 小城市没有区这一级
+
+  description?: string;
+  createdAt: string;
+
+  // 派生字段，列表页直接用
+  memberCount: number;
+  tournamentCount: number;
+}
+
+/**
+ * 俱乐部会员。**旁挂在报名链路之外** —— Entry 绝不查 Membership，见 PRD.md §2。
+ *
+ * 这张表同时回答两件事：**谁在这个俱乐部**（status）和**他是什么身份**（role）。
+ * 两者正交但有一条约束：role 只在 `status === 'active'` 时有效。
+ */
 export interface Membership {
   id: string;
   clubId: string;
   userId: string;
   status: MembershipStatus;
+
+  /** 见 `ClubRole`。**判定「是不是管理员」只看这一处** */
+  role: ClubRole;
+
   appliedAt: string;
   reviewedAt?: string;
+  /** 审批人的 userId */
   reviewedBy?: string;
 }
 

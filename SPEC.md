@@ -292,7 +292,7 @@ Entry 上，单双打共用一套结构。
 | `Tournament.tier` / `clubId` / `coverUrl` | 没有 |
 | `Entry.invitedBy` / `referredBy` / `addedByOrganizer` | 没有 |
 | `Entry.partnerDeadlineAt` / `paymentDeadlineAt` | **契约里已删，代码还在读写** |
-| `Membership` | 整个实体没有 |
+| `Club` / `Membership` | 整个实体没有 —— `admin.*` 鉴权就卡在这：模型里没有可以用来判「他是不是这个俱乐部的管理员」的东西 |
 | `GroupStanding.setsWon/setDiff` | 没有 —— 判定顺序里净胜盘排在净胜局之前，缺了排不出名次 |
 
 **契约领先于实现是正常的**，别反过来改 `types.ts` 去迁就旧代码。
