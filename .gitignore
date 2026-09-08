@@ -15,3 +15,6 @@ dist/
 
 # 本地云环境配置，不进版本库
 mp/miniprogram/config/env.local.js
+
+# 后台的本地环境配置，不进版本库
+adminweb/.env.local
