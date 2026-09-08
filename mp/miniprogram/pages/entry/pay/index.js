@@ -29,7 +29,7 @@ Page({
       content: '云支付需要企业主体 + 商户号。当前为演示流程，点确定模拟支付成功。',
       success(res) {
         if (!res.confirm) return;
-        wx.showToast({ title: '已确认参赛', icon: 'success' });
+        wx.showToast({ title: '已进正选', icon: 'success' });
         setTimeout(function () { wx.navigateTo({ url: '/pages/me/entries/index' }); }, 800);
       },
     });

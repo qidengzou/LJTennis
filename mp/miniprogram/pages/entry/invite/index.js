@@ -54,7 +54,7 @@ Page({
       return;
     }
     if (r.status === 'confirmed') {
-      wx.showToast({ title: '免费赛事，已确认参赛', icon: 'success' });
+      wx.showToast({ title: '免费赛事，已进正选', icon: 'success' });
       setTimeout(function () { wx.navigateTo({ url: '/pages/me/entries/index' }); }, 900);
     } else if (r.status === 'pending_payment') {
       wx.navigateTo({ url: '/pages/entry/pay/index?entry=en1' });

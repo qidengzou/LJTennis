@@ -1,0 +1,190 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    :root{
+      --c-ground:#F4F5F7; --c-surface:#FFFFFF; --c-surface-2:#EBEDF2;
+      --c-ink:#141821; --c-ink-2:#4C5567; --c-ink-3:#7B8496; --c-line:#DFE2E9;
+      --c-brand:#2E4FD8; --c-brand-ink:#FFFFFF; --c-brand-weak:#E7EBFC;
+      --c-win:#0E9F6E; --c-loss:#E0294B; --c-live:#F5A524; --c-on-live:#FFFFFF;
+      --c-danger:#E0294B; --c-void:#7B8496; --c-serve:#D9E64B;
+      /* 头像色板：冷色，不含绿/红/橙 —— 免得和记分语义色撞。俱乐部图标兜底也用它 */
+      --c-av-1:#2E4FD8; --c-av-2:#5B6EA8; --c-av-3:#7A5EA8; --c-av-4:#3F6E7F; --c-av-5:#5A6470;
+      /* 桌面控件 36px：88rpx(44pt) 是给手指的，鼠标不需要 */
+      --h-ctl:36px; --r-s:4px; --r-m:8px; --r-l:12px; --r-full:999px;
+      --e-1:0 1px 3px rgba(20,24,33,.06); --e-2:0 6px 20px rgba(20,24,33,.10);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--c-ground);color:var(--c-ink);font-size:14px;line-height:1.5;
+      font-family:-apple-system,"PingFang SC","Source Han Sans CN",system-ui,sans-serif}
+    a{color:var(--c-brand)}a:hover{color:#243FAD}
+    .app{display:flex;height:960px;overflow:hidden;justify-content:center;padding-top:44px}
+    .main{flex:1;min-width:0;display:flex;flex-direction:column}
+    .btn{height:var(--h-ctl);padding:0 16px;border-radius:var(--r-s);border:1px solid var(--c-line);
+      background:var(--c-surface);color:var(--c-ink-2);font-size:13.5px;display:inline-flex;
+      align-items:center;gap:6px;cursor:pointer}
+    .btn.pri{background:var(--c-brand);border-color:var(--c-brand);color:var(--c-brand-ink);font-weight:600}
+    .btn.dgr{border-color:var(--c-danger);color:var(--c-danger)}
+    .row{display:flex;align-items:center;gap:10px}
+    .sp{flex:1}
+    .card{background:var(--c-surface);border:1px solid var(--c-line);border-radius:var(--r-m)}
+    .pad{padding:16px}
+    .h2{font-size:18px;font-weight:600;letter-spacing:-.01em}
+    .h3{font-size:15px;font-weight:600}
+    .mut{color:var(--c-ink-3);font-size:12.5px}
+    .inp{height:var(--h-ctl);padding:0 10px;border:1px solid var(--c-line);border-radius:var(--r-s);
+      background:var(--c-surface);color:var(--c-ink-3);font-size:13.5px;display:flex;align-items:center}
+    /* 填过的值用正文色，没填的留 ink-3 当占位 —— 一屏扫下去缺哪一项一眼看得见 */
+    .inp.v{color:var(--c-ink)}
+    .inp.focus{border-color:var(--c-brand);box-shadow:0 0 0 3px var(--c-brand-weak)}
+    .ta{min-height:72px;padding:8px 10px;border:1px solid var(--c-line);border-radius:var(--r-s);
+      background:var(--c-surface);color:var(--c-ink-3);font-size:13.5px}
+    .fld{display:flex;flex-direction:column;gap:5px}
+    .lab{font-size:12.5px;color:var(--c-ink-2);display:flex;align-items:center;gap:5px}
+    .lab i{font-style:normal;color:var(--c-danger);font-size:12px}
+    .lab s{text-decoration:none;color:var(--c-ink-3);font-size:11.5px}
+    .tag{display:inline-block;padding:1px 8px;border-radius:var(--r-full);font-size:11px;font-weight:600}
+    .tag.plat{background:var(--c-brand-weak);color:var(--c-brand);padding:2px 8px}
+    .res{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--r-s);cursor:pointer}
+    .res:hover{background:var(--c-surface-2)}
+    .res.on{background:var(--c-brand-weak)}
+    .res.on .nm{color:var(--c-brand)}
+    .av{width:30px;height:30px;border-radius:var(--r-full);flex:none;display:grid;place-items:center;
+      color:#fff;font-size:13px;font-weight:600}
+    .nm{font-size:13.5px;font-weight:600}
+    .ck{color:var(--c-brand);font-weight:700}
+    .hint{font-size:12px;color:var(--c-ink-3);display:flex;gap:6px;align-items:flex-start;line-height:1.45}
+    .hint b{color:var(--c-ink-2);font-weight:600}
+    /* 俱乐部图标按方形 4px 圆角渲染，不裁圆 —— logo 常带文字，裁圆会切字 */
+    .logo{width:56px;height:56px;border-radius:var(--r-s);flex:none;display:grid;place-items:center;
+      color:#fff;font-size:22px;font-weight:600}
+    .drop{flex:1;height:56px;border:1px dashed var(--c-line);border-radius:var(--r-s);
+      display:flex;align-items:center;justify-content:center;gap:8px;color:var(--c-ink-3);
+      font-size:12.5px;cursor:pointer}
+    .anns{margin:0;padding:14px 20px 20px;list-style:none;display:grid;gap:6px;background:var(--c-ground)}
+    .anns li{font-size:12.5px;color:var(--c-ink-2);display:flex;gap:8px;align-items:flex-start}
+    .anns li > b{flex:none;width:16px;height:16px;border-radius:999px;border:1px solid #B03A2E;
+      color:#B03A2E;font-size:9.5px;display:grid;place-items:center;margin-top:2px;font-weight:400}
+  </style>
+</helmet>
+<div class="app">
+  <!-- 没有侧栏：这一屏还没有俱乐部上下文，侧栏那几项（赛事/成员/入会申请）此刻无处可指 -->
+  <div style="width:720px">
+    <div class="mut" style="margin-bottom:10px"><a href="#" style="text-decoration:none">← 选择俱乐部</a></div>
+    <div class="row" style="margin-bottom:4px">
+      <div class="h2">创建俱乐部</div>
+      <span class="tag plat">平台管理员</span>
+    </div>
+    <div class="mut" style="margin-bottom:16px">创建者必须是已注册用户，建完立刻生效，不存在无主俱乐部。</div>
+
+    <div style="display:flex;flex-direction:column;gap:12px">
+
+      <!-- ① 创建者放最上面：它是唯一必须去别处找答案的字段，其余都是照着填 -->
+      <div class="card pad" style="display:flex;flex-direction:column;gap:10px">
+        <div class="row"><div class="h3">创建者</div><span class="mut">owner · 必填 · 只能一个</span></div>
+        <div class="fld">
+          <div class="inp v focus" style="justify-content:space-between">
+            <span>张伟</span><span class="mut">3 位匹配</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:2px;margin:0 -6px">
+          <div class="res on">
+            <div class="av" style="background:var(--c-av-1)">张</div>
+            <div style="flex:1">
+              <div class="nm">张伟</div>
+              <div class="mut">深圳 · 男 · 138****6421 · 注册于 2025-11-04</div>
+            </div>
+            <span class="ck">✓</span>
+          </div>
+          <div class="res">
+            <div class="av" style="background:var(--c-av-3)">张</div>
+            <div style="flex:1">
+              <div class="nm">张伟明</div>
+              <div class="mut">广州 · 男 · 139****0087 · 注册于 2026-02-18</div>
+            </div>
+          </div>
+          <div class="res">
+            <div class="av" style="background:var(--c-av-4)">张</div>
+            <div style="flex:1">
+              <div class="nm">张伟华</div>
+              <div class="mut">东莞 · 男 · 136****2255 · 注册于 2026-06-30</div>
+            </div>
+          </div>
+        </div>
+        <div class="hint">
+          <span>·</span>
+          <span>手机号<b>只能拿来搜，不会显示全号</b> —— 平台管理员不是俱乐部管理员，全号只对该赛事的俱乐部管理员按需开放。同名时靠<b>城市和注册时间</b>分辨。</span>
+        </div>
+      </div>
+
+      <!-- ② 其余字段照着 Club 填，派生字段（成员数/赛事数/创建时间）不出现在表单里 -->
+      <div class="card pad" style="display:flex;flex-direction:column;gap:14px">
+        <div class="h3">俱乐部资料</div>
+
+        <div class="fld">
+          <div class="lab">名称 <i>*</i></div>
+          <div class="inp v">城南网球会</div>
+        </div>
+
+        <div class="row" style="gap:12px;align-items:flex-start">
+          <div class="fld" style="flex:1">
+            <div class="lab">省份 <i>*</i></div>
+            <div class="inp v">广东</div>
+          </div>
+          <div class="fld" style="flex:1">
+            <div class="lab">城市 <i>*</i></div>
+            <div class="inp v">深圳</div>
+          </div>
+          <div class="fld" style="flex:1">
+            <div class="lab">区 <s>可空</s></div>
+            <div class="inp v">南山</div>
+          </div>
+        </div>
+
+        <div class="fld">
+          <div class="lab">图标 <s>可空 · 240×240 PNG</s></div>
+          <div class="row" style="gap:12px">
+            <div class="logo" style="background:var(--c-av-2)">城</div>
+            <div class="drop">＋ 拖入或选择图片</div>
+          </div>
+          <div class="mut">没传就用名称首字加主色块兜底，和头像同一套 —— 灰色占位图会让这个俱乐部看起来像坏了。</div>
+        </div>
+
+        <div class="fld">
+          <div class="lab">简介 <s>可空</s></div>
+          <div class="ta">选手在俱乐部页里看到的一段话。不填就不显示这一块。</div>
+        </div>
+      </div>
+
+      <!-- ③ 底部动作 -->
+      <div class="row" style="padding:2px 2px 0">
+        <div class="mut">建完 <b style="color:var(--c-ink-2)">张伟</b> 立刻是创建者（已入会 · owner），可再由他任命管理员。</div>
+        <div class="sp"></div>
+        <div class="btn">取消</div>
+        <div class="btn pri">创建俱乐部</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<ul class="anns">
+  <li><b>1</b><span><b>从第 2 屏「选择俱乐部」那条虚线进来</b>，只有平台管理员看得见。这一屏<b>不带侧栏</b> —— 此刻还没有俱乐部上下文，侧栏那几项（赛事 / 成员 / 入会申请）无处可指。</span></li>
+  <li><b>2</b><span><b>创建者排在资料前面。</b>名称、省市这些是照着填，创建者是唯一要去别处找答案的字段 —— 找不到人就白填了下面一整屏。</span></li>
+  <li><b>3</b><span><b>不允许无主俱乐部</b>（<code>PRD.md</code> §2）。建的那一刻同时写一条会员关系（<code>status: active</code> + <code>role: owner</code>），不做「先建空的、稍后指定」——中间断一次就留下一个谁都管不了的俱乐部。</span></li>
+  <li><b>4</b><span><b>创建者只能从已注册用户里选，没有代建账号</b>（<code>PRD.md</code> §2）。搜不到人时的出路是让他先自己注册，不是在这里替他建一个。</span></li>
+  <li><b>5</b><span><b>手机号能搜、不能看。</b>输入框接受手机号是因为那是最不会认错人的凭据；但结果里一律是掩码 <code>138****6421</code>。全号只对<b>该赛事的</b>俱乐部管理员按需开放并留操作日志（<code>PRD.md</code> §9）—— <b>平台管理员不自动获得各俱乐部的数据权限</b>，「能开店」和「能翻店里的客户名单」不是同一个权限。</span></li>
+  <li><b>6</b><span>所以结果行里<b>带上城市和注册时间</b>：昵称重名在业余圈很常见，掩码又只剩前三后四，光靠这两样不够判。</span></li>
+  <li><b>7</b><span><b>省和市成对必填，区可空</b> —— 只有市，榜单按地区筛就筛不准（深圳和东莞都在广东）；而小城市根本没有区这一级。</span></li>
+  <li><b>8</b><span><b>图标按方形 4px 圆角渲染，不裁成圆</b> —— 俱乐部 logo 常带文字，裁圆会把字切掉。出图 240×240 PNG（logo 常有透明背景，JPEG 会糊上白底），规格见 <code>design/image-spec.md</code>。</span></li>
+  <li><b>9</b><span><b>成员数、赛事数、创建时间不在表单里</b> —— 那三个是派生的，给它们输入框等于允许填一个假数。新俱乐部的成员数天然是 1（创建者本人）。</span></li>
+  <li><b>10</b><span><b>建完这个俱乐部不会出现在你自己的列表里。</b>平台管理员建店但不入店，第 2 屏列的是「我管理的」（会员关系里 owner / admin 那几条）。这是第 5 条那个规则的直接后果，不是 bug —— 成功提示里要说清楚，否则建完的人第一反应是「没建上」。</span></li>
+</ul>
+</x-dc>
+</body>
+</html>

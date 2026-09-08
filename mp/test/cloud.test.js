@@ -101,7 +101,7 @@ async function main() {
     s.entries = [{ _id: 'p1', eventId: 'ev1', status: 'waitlisted', waitlistPosition: 1, playerIds: ['u1', 'u2'] }];
     const db = memdb(s);
     await makeEntry.releaseSlot(db, 'ev1');
-    eq((await db.get('entries', 'p1')).status, 'confirmed', '两人齐了 → 直接已确认，不用再编排');
+    eq((await db.get('entries', 'p1')).status, 'confirmed', '两人齐了 → 直接成组进正选，不用再编排');
   }
 
   console.log('\n[6] 记分幂等与乐观锁');

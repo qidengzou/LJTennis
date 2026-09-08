@@ -19,9 +19,9 @@ function genderOk(eventType, genders) {
 /**
  * 名额判定。必须在事务内执行（并发报名不能超发）。
  *
- * ⚠️ `occupiedCount` 是**占了正式名额的条数**，不是「已确认」的条数。
+ * ⚠️ `occupiedCount` 是**占了正式名额的条数**，即全部**正选**的条数。
  * 占名额的状态有两个：`seeking_partner`（待编排，已付款）和 `confirmed`。
- * 曾经这里只数 confirmed —— 于是 16 队的比赛已确认 15 队、待编排 4 队时，
+ * 曾经这里只数 confirmed —— 于是 16 队的比赛已成组 15 队、待编排 4 队时，
  * 后来的人还能进正式名额，直接超发。调用方**必须把两个状态一起数**。
  *
  * `waitlisted` 不算 —— 候补虽然也付了钱（PRD §4「候补也先收款」），
@@ -53,7 +53,7 @@ function statusView(entry) {
     case 'waitlisted':
       return { text: '候补 · 第 ' + (entry.waitlistPosition || 1) + ' 位', cls: 'chip-live', dot: false, action: null };
     case 'confirmed':
-      return { text: '已确认', cls: 'chip-win', dot: false, action: null };
+      return { text: '正选', cls: 'chip-win', dot: false, action: null };
     case 'refunding':
       return { text: '退款中', cls: 'chip-live', dot: true, action: null };
     case 'refunded':

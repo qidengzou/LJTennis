@@ -107,7 +107,7 @@ module.exports = function (db, _) {
     return ok({ entries: E.sortEntries(list) });
   }
 
-  /** 取消已确认的报名 → 退款 + 释放名额 + 触发候补转正 */
+  /** 取消正选的报名 → 退款 + 释放名额 + 触发候补转正 */
   async function cancel(ev, ctx) {
     const entry = await db.get(C.ENTRIES, ev.entryId);
     if (!entry) return fail('NOT_FOUND', '报名不存在');
@@ -136,7 +136,7 @@ module.exports = function (db, _) {
  * 不等他付款、没有 24h 倒计时。曾经这里写 `status:'promoted'` 加一个
  * promotionDeadlineAt，那一整套（状态 + 定时任务 + 顺延）随先收款一起删了。
  *
- * 转正后落到哪个状态看人数：双打一个人 → 待编排，凑齐两人或单打 → 已确认。
+ * 转正后落到哪个状态看人数：双打一个人 → 正选·待编排，凑齐两人或单打 → 正选·已成组。
  */
 async function releaseSlot(db, eventId) {
   const waitlisted = await db.where(C.ENTRIES, { eventId: eventId, status: 'waitlisted' });

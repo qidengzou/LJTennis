@@ -34,14 +34,14 @@ eq(E.acceptResult({ ...base, occupiedCount: 31 }).status, 'pending_payment', '31
 eq(E.acceptResult({ ...base, occupiedCount: 32 }).status, 'waitlisted', '32/32 进候补');
 
 // ── SPEC §5.2 超发 ──────────────────────────────────────────────
-// 曾经这里只数 confirmed。16 队的比赛已确认 12 队、待编排 4 队时，
+// 曾经这里只数 confirmed。16 队的比赛已成组 12 队、待编排 4 队时，
 // 名额其实已经满了，但只数 confirmed 会看成 12/16 还有空位 —— 超发。
 console.log('\n[3b] 超发：待编排也占名额');
 const cap16 = { ...base, capacity: 16 };
 eq(E.acceptResult({ ...cap16, occupiedCount: 12 + 4 }).status, 'waitlisted',
-   '已确认 12 + 待编排 4 = 16 → 满了，进候补');
+   '已成组 12 + 待编排 4 = 16 支正选 → 满了，进候补');
 eq(E.acceptResult({ ...cap16, occupiedCount: 12 }).status, 'pending_payment',
-   '只有已确认 12（无待编排）→ 还有名额');
+   '只有已成组 12（无待编排）→ 还有名额');
 eq(E.acceptResult({ ...cap16, occupiedCount: 16 }).status, 'waitlisted',
    '16 条全是待编排、一条 confirmed 都没有 → 照样满员');
 eq(E.acceptResult({ ...cap16, occupiedCount: 15, waitlistCount: 99 }).status, 'pending_payment',
@@ -49,11 +49,14 @@ eq(E.acceptResult({ ...cap16, occupiedCount: 15, waitlistCount: 99 }).status, 'p
 
 console.log('\n[4] 状态显示映射');
 eq(E.statusView({ status: 'pending_payment' }).cls, 'chip-live', '待支付 = 橙');
-eq(E.statusView({ status: 'confirmed' }).cls,       'chip-win',  '已确认 = 绿');
+eq(E.statusView({ status: 'confirmed' }).cls,       'chip-win',  '正选 = 绿');
+// 界面用词是产品规则（PRD §4）：交了钱只有正选和候补两种身份。
+// 「已确认」在这个产品里只指比分，写回去会让两件事重名。
+eq(E.statusView({ status: 'confirmed' }).text, '正选', '界面上叫「正选」，不叫「已确认」');
 eq(E.statusView({ status: 'refunded' }).cls,        'chip-void', '已退款 = 灰');
 eq(E.statusView({ status: 'waitlisted', waitlistPosition: 4 }).text, '候补 · 第 4 位', '候补带位次');
 eq(E.statusView({ status: 'waitlisted' }).action, null, '候补不需要我行动，无按钮');
-eq(E.statusView({ status: 'confirmed' }).action,  null, '已确认无按钮');
+eq(E.statusView({ status: 'confirmed' }).action,  null, '正选无按钮');
 // promoted 状态已删除（PRD §4 候补也先收款 → 转正立刻生效）。
 // 这里反过来断言：它不该再有任何显示，出现即是残留。
 eq(E.statusView({ status: 'promoted' }).text, 'promoted', '已废弃的 promoted 落到 default 分支，不再有专属文案');
@@ -68,7 +71,7 @@ console.log('\n[5] 排序：需要我行动的在前');
     { id: 'd', status: 'waitlisted', createdAt: 8 },
     { id: 'e', status: 'pending_partner', createdAt: 2 },
   ];
-  eq(E.sortEntries(list).map(x => x.id), ['c', 'e', 'd', 'a', 'b'], '待支付 → 待搭档 → 候补 → 已确认 → 已退款');
+  eq(E.sortEntries(list).map(x => x.id), ['c', 'e', 'd', 'a', 'b'], '待支付 → 待搭档 → 候补 → 正选 → 已退款');
 }
 
 console.log('\n[6] 退款规则与边界');
