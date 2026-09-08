@@ -77,49 +77,57 @@
 </helmet>
 <div class="app">
   <div class="side">
-      <div class="brand">LJTennis 后台</div>
-      <div class="snav"><a href="#">赛事<span class="badge">3</span></a><a href="#">成员 128</a><a href="#">入会申请<span class="badge">4</span></a><a href="#">俱乐部资料</a></div>
-      <div class="sgrp">春季双打赛</div>
-      <div class="snav"><a class="on" href="#">报名名单</a><a href="#">抽签</a><a href="#">排程</a><a href="#">场次与比分</a></div>
+    <div class="brand">LJTennis 后台</div>
+    <div class="snav"><a href="#">赛事<span class="badge">3</span></a><a href="#">成员 128</a><a href="#">入会申请<span class="badge">4</span></a><a href="#">俱乐部资料</a></div>
+    <div class="sgrp">春季双打赛</div>
+    <div class="snav"><a class="on" href="#">报名名单</a><a href="#">签表</a><a href="#">排程</a><a href="#">场次与比分</a></div>
     <a class="back" href="#">← 返回俱乐部列表</a>
-    </div>
-    <div class="main">
+  </div>
+  <div class="main">
     <div class="top"><div class="crumb">春季双打赛 › <b>报名名单</b></div>
-      <div class="row"><div class="btn">导出 CSV</div><div class="btn">批量催付</div></div></div>
+      <div class="row"><div class="btn">导出 CSV</div><div class="btn">＋ 代录报名</div></div></div>
     <div class="body">
       <div class="row">
-        <div class="inp" style="width:260px">搜昵称 / 手机号</div>
+        <div class="inp" style="width:240px">搜昵称 / 手机号</div>
         <div class="btn">男双 ▾</div><div class="btn">全部状态 ▾</div>
         <div class="sp"></div>
-        <div class="mut">已选 2 组</div>
+        <div class="mut">已选 2</div>
+        <div class="btn">退款</div>
         <div class="btn dgr">移除</div>
       </div>
       <div class="card" style="flex:1;min-height:0;overflow:auto">
         <table>
-          <tr><th style="width:28px"></th><th>参赛</th><th>比赛</th><th>手机号</th><th>状态</th><th>报名时间</th><th>费用</th><th></th></tr>
-          <tr><td class="mut">☑</td><td><b>张伟 / 李强</b></td><td>男双</td><td>138****6421</td><td><span class="st ok">已确认</span></td><td class="mut">4月2日 10:22</td><td>¥200</td><td class="mut">⋯</td></tr>
-          <tr><td class="mut">☑</td><td><b>王芳 / 赵敏</b></td><td>混双</td><td>185****9029</td><td><span class="st wait">待付款 · 剩 18h</span></td><td class="mut">4月3日 09:10</td><td>¥200</td><td class="mut">⋯</td></tr>
-          <tr><td class="mut">☐</td><td><b>张伟 / 李强</b></td><td>男双</td><td>138****6421</td><td><span class="st wait">待搭档确认 · 26h</span></td><td class="mut">4月3日 09:10</td><td class="mut">未付</td><td class="mut">代为确认</td></tr>
-          <tr><td class="mut">☐</td><td><b>马超 / 秦岭</b></td><td>男双</td><td>151****7788</td><td><span class="st ok">已确认</span></td><td class="mut">4月2日 20:15</td><td class="mut">免付 · 代确认</td><td class="mut">⋯</td></tr>
-          <tr><td class="mut">☐</td><td><b>陈明 / 刘洋</b></td><td>男双</td><td>136****5678</td><td><span class="st ok">已确认</span></td><td class="mut">4月3日 14:40</td><td>¥200</td><td class="mut">⋯</td></tr>
-          <tr><td class="mut">☐</td><td><b>李娜 / 周雨</b></td><td>女双</td><td>139****0000</td><td><span class="st ok">已确认</span></td><td class="mut">4月4日 08:05</td><td>¥200</td><td class="mut">⋯</td></tr>
-          <tr><td class="mut">☐</td><td><b>孙浩 / 吴迪</b></td><td>男双</td><td>137****2211</td><td><span class="st wait">候补 1</span></td><td class="mut">4月4日 19:30</td><td class="mut">未付</td><td class="mut">转正</td></tr>
-          <tr><td class="mut">☐</td><td><b>郑凯 / 冯磊</b></td><td>男双</td><td>133****8899</td><td><span class="st wait">候补 2</span></td><td class="mut">4月5日 11:02</td><td class="mut">未付</td><td class="mut">⋯</td></tr>
-          <tr><td class="mut">☐</td><td><b>许涛</b></td><td>男单</td><td>150****3344</td><td><span class="st gray">已退款</span></td><td class="mut">4月1日 16:20</td><td class="mut">¥200 已退</td><td class="mut">⋯</td></tr>
+          <tr><th style="width:28px"></th><th>参赛</th><th style="width:60px">比赛</th><th style="width:112px">手机号</th><th style="width:186px">状态</th><th style="width:118px">报名时间</th><th style="width:118px">已付</th><th style="width:70px"></th></tr>
+
+          <tr><td class="mut">☑</td><td><b>张伟 / 李强</b></td><td>男双</td><td class="mut">138****6421</td><td><span class="st ok">已确认</span></td><td class="mut">4月2日 10:22</td><td>¥240 <span class="mut">· 2 人</span></td><td class="mut">⋯</td></tr>
+          <tr><td class="mut">☑</td><td><b>陈明 / 刘洋</b></td><td>男双</td><td class="mut">136****5678</td><td><span class="st ok">已确认</span></td><td class="mut">4月3日 14:40</td><td>¥240 <span class="mut">· 2 人</span></td><td class="mut">⋯</td></tr>
+          <tr><td class="mut">☐</td><td><b>李娜 / 周雨</b></td><td>女双</td><td class="mut">139****0000</td><td><span class="st ok">已确认</span></td><td class="mut">4月4日 08:05</td><td>¥240 <span class="mut">· 2 人</span></td><td class="mut">⋯</td></tr>
+
+          <tr><td class="mut">☐</td><td><b>杜康</b></td><td>男双</td><td class="mut">151****7788</td><td><span class="st wait">待编排</span></td><td class="mut">4月4日 09:10</td><td>¥120</td><td class="mut">⋯</td></tr>
+          <tr><td class="mut">☐</td><td><b>方正</b></td><td>男双</td><td class="mut">155****1200</td><td><span class="st wait">待编排</span> <span class="mut">· 已邀请队友</span></td><td class="mut">4月4日 21:36</td><td>¥120</td><td class="mut">⋯</td></tr>
+          <tr><td class="mut">☐</td><td><b>邵斌</b></td><td>男双</td><td class="mut">133****8899</td><td><span class="st wait">待编排</span></td><td class="mut">4月6日 11:20</td><td class="mut">免付 · 补入</td><td class="mut">⋯</td></tr>
+
+          <tr><td class="mut">☐</td><td><b>白杨</b></td><td>男双</td><td class="mut">150****3344</td><td><span class="st wait">候补转正 · 剩 21h</span></td><td class="mut">4月5日 18:02</td><td class="mut">未付</td><td class="mut">催一下</td></tr>
+          <tr><td class="mut">☐</td><td><b>孙浩</b></td><td>男双</td><td class="mut">137****2211</td><td><span class="st wait">候补 1</span></td><td class="mut">4月4日 19:30</td><td class="mut">未付</td><td class="mut">转正</td></tr>
+          <tr><td class="mut">☐</td><td><b>郑凯</b></td><td>男双</td><td class="mut">130****1122</td><td><span class="st wait">候补 2</span></td><td class="mut">4月5日 11:02</td><td class="mut">未付</td><td class="mut">⋯</td></tr>
+
+          <tr><td class="mut">☐</td><td><b>何平</b></td><td>男双</td><td class="mut">152****9911</td><td><span class="st gray">作废 · 截止未组队</span></td><td class="mut">4月1日 09:44</td><td class="mut">¥120 已退</td><td class="mut">⋯</td></tr>
+          <tr><td class="mut">☐</td><td><b>许涛</b></td><td>男单</td><td class="mut">150****3344</td><td><span class="st gray">已退款</span></td><td class="mut">4月1日 16:20</td><td class="mut">¥120 已退</td><td class="mut">⋯</td></tr>
         </table>
       </div>
-      <div class="row"><div class="mut">男双 16 组 · 女双 8 组 · 混双 8 组 · 男单 16 人 · 女单 8 人 · 候补 5 · 待付款 2</div></div>
+      <div class="row"><div class="mut">男双 21 人（已确认 8 组 · 待编排 5 · 候补 3）· 女双 12 · 混双 8 · 男单 16 · 女单 8 · 已收 ¥5,280</div></div>
     </div>
   </div>
 </div>
 <ul class="anns">
-  <li><b>1</b><span>桌面端的价值就是<b>批量操作</b> —— 勾选后批量催付、批量移除。这是小程序做不了、也不该做的事。</span></li>
-  <li><b>2</b><span>手机号在后台<b>仍然只显示掩码</b>。真号存服务端，导出 CSV 时才带全号并记一条操作日志。</span></li>
-  <li><b>3</b><span>候补按位次显示，只有第 1 位带「转正」；其余在「⋯」里，避免误点插队。</span></li>
-  <li><b>4</b><span>状态色沿用小程序的固定映射：待处理=橙、已确认=绿、已退款/作废=灰。</span></li>
-  <li><b>5</b><span><b>「代为确认」只出现在待搭档确认的行上。</b>线下早就说好了、只是对方没点微信消息 —— 组织者替他补这一下。有金钱后果，走确认弹窗，见下一屏。</span></li>
-  <li><b>6</b><span>管理员代确认的报名<b>费用列显示「免付 · 代确认」</b>，不显示金额 —— 否则月底对账会把它算成一笔收入。</span></li>
-  <li><b>7</b><span>列头是<b>「参赛」不是「组合」</b> —— 双打显示两个名字，单打显示一个。<code>Entry</code> 抽象让这一列不用分两种渲染。</span></li>
+  <li><b>1</b><span>桌面端的价值就是<b>批量操作</b> —— 勾选后批量退款、批量移除。这是小程序做不了、也不该做的事。</span></li>
+  <li><b>2</b><span><b>「参赛」这一列单双打、成没成组混排</b>：待编排时是一个人，进了签位才是两个名字。<code>Entry</code>（1~2 人）这个抽象让它不用分两种渲染。列头写「参赛」不写「组合」。</span></li>
+  <li><b>3</b><span><b>没有「待付款」。</b>报名即付款，那个状态和它的 24 小时计时器一并消掉了（<code>PRD.md</code> §4）。所以这一屏也没有「批量催付」——<b>屏上唯一还带倒计时的只有候补转正 24h</b>。</span></li>
+  <li><b>4</b><span><b>候补不预付</b>，所以候补行的「未付」不是欠款，是规则。只有候补第 1 位带「转正」，其余收进「⋯」，避免误点插队。</span></li>
+  <li><b>5</b><span><b>「主办方补入」的人费用列显示「免付 · 补入」，不显示金额</b> —— 否则月底对账会把它算成一笔收入。补入发生在签表屏（第 7 屏），人源是已入会的俱乐部成员。</span></li>
+  <li><b>6</b><span><b>「代录报名」替线下报名的人建一条 Entry</b>，但那个人<b>必须已经注册</b> —— 没有占位账号、没有代建账号，这条红线不破。代录的默认免付，和补入同一套标记。</span></li>
+  <li><b>7</b><span>手机号在后台<b>仍然只显示掩码</b>。真号存服务端，导出 CSV 时才带全号并记一条操作日志。</span></li>
+  <li><b>8</b><span>状态色沿用小程序的固定映射：待编排 / 候补 / 候补转正 = 橙，已确认 = 绿，作废 / 已退款 = 灰。<b>作废要写清原因</b>（「截止未组队」），否则选手来问时组织者自己也说不上来。</span></li>
 </ul>
 </x-dc>
 </body>
