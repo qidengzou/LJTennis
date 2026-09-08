@@ -69,6 +69,21 @@
     .st.gray{background:var(--c-surface-2);color:var(--c-void)}
     .badge{min-width:18px;height:18px;padding:0 6px;border-radius:var(--r-full);background:var(--c-live);
       color:var(--c-on-live);font-size:11px;font-weight:600;display:inline-grid;place-items:center}
+    /* 签表专用 */
+    .slot{padding:6px 9px;display:flex;align-items:center;gap:6px;min-height:31px}
+    .slot + .slot{border-top:1px solid var(--c-surface-2)}
+    .slot.empty{border:1px dashed var(--c-brand);background:var(--c-brand-weak);
+      color:var(--c-brand);font-size:12px;margin:-1px}
+    .slot.half{color:var(--c-ink)}
+    .slot.half i{font-style:normal;color:var(--c-brand);font-size:12px;
+      border:1px dashed var(--c-brand);border-radius:var(--r-s);padding:1px 7px;margin-left:auto}
+    .slot.bye{color:var(--c-ink-3);font-style:italic}
+    .lv{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;color:var(--c-ink-3)}
+    .pc{padding:7px 9px;cursor:grab;display:flex;align-items:center;gap:7px}
+    .av{width:22px;height:22px;border-radius:var(--r-full);background:var(--c-brand);color:#fff;
+      font-size:11px;display:grid;place-items:center;flex:none}
+    .av.b{background:#5B6EA8}.av.c{background:#7A5EA8}.av.d{background:#3F6E7F}.av.e{background:#5A6470}
+    .grp{font-size:11px;color:var(--c-ink-3);letter-spacing:.06em;padding:10px 12px 4px}
     .anns{margin:0;padding:14px 20px 20px;list-style:none;display:grid;gap:6px;background:var(--c-ground)}
     .anns li{font-size:12.5px;color:var(--c-ink-2);display:flex;gap:8px;align-items:flex-start}
     .anns li > b{flex:none;width:16px;height:16px;border-radius:999px;border:1px solid #B03A2E;
@@ -77,85 +92,121 @@
 </helmet>
 <div class="app">
   <div class="side">
-      <div class="brand">LJTennis 后台</div>
-      <div class="snav"><a href="#">赛事<span class="badge">3</span></a><a href="#">成员 128</a><a href="#">俱乐部资料</a></div>
-      <div class="sgrp">春季双打赛</div>
-      <div class="snav"><a href="#">报名名单</a><a class="on" href="#">抽签</a><a href="#">排程</a><a href="#">场次与比分</a></div>
+    <div class="brand">LJTennis 后台</div>
+    <div class="snav"><a href="#">赛事<span class="badge">3</span></a><a href="#">成员 128</a><a href="#">入会申请<span class="badge">4</span></a><a href="#">俱乐部资料</a></div>
+    <div class="sgrp">春季双打赛</div>
+    <div class="snav"><a href="#">报名名单</a><a class="on" href="#">签表</a><a href="#">排程</a><a href="#">场次与比分</a></div>
     <a class="back" href="#">← 返回俱乐部列表</a>
+  </div>
+
+  <div class="main">
+    <div class="top">
+      <div class="crumb">春季双打赛 › <b>签表</b> · 男双 · 单败淘汰</div>
+      <div class="row">
+        <div class="mut" style="color:var(--c-live)">● 未保存</div>
+        <div class="btn">清空</div>
+        <div class="btn">重新生成</div>
+        <div class="btn pri">保存签表</div>
+      </div>
     </div>
-    <div class="main">
-    <div class="top"><div class="crumb">春季双打赛 › <b>抽签</b> · 男双</div>
-      <div class="row"><div class="mut">未保存</div><div class="btn">清空</div><div class="btn">自动生成</div><div class="btn pri">保存签表</div></div></div>
+
     <div class="body" style="flex-direction:row;gap:16px">
 
-      <div class="card" style="width:210px;flex:none;display:flex;flex-direction:column;overflow:hidden">
-        <div class="pad" style="padding:12px 14px;border-bottom:1px solid var(--c-line)">
-          <div class="h3">未入位 · 3</div>
-          <div class="mut">拖到右侧空位</div>
+      <!-- 左：待编排池。躺的是**人**不是组合 -->
+      <div class="card" style="width:246px;flex:none;display:flex;flex-direction:column;overflow:hidden">
+        <div style="padding:12px 14px;border-bottom:1px solid var(--c-line)">
+          <div class="row"><div class="h3">待编排 · 7</div><div class="sp"></div><div class="mut">按水平排</div></div>
+          <div class="mut" style="margin-top:2px">拖两个人到同一个签位即成组</div>
         </div>
-        <div style="padding:10px;display:flex;flex-direction:column;gap:6px;overflow:auto">
-          <div class="card" style="padding:8px 10px;cursor:grab"><b>孙浩 / 吴迪</b><div class="mut">3.5 · 4月4日</div></div>
-          <div class="card" style="padding:8px 10px;cursor:grab"><b>郑凯 / 冯磊</b><div class="mut">3.0 · 4月5日</div></div>
-          <div class="card" style="padding:8px 10px;cursor:grab"><b>许涛 / 何平</b><div class="mut">2.5 · 4月5日</div></div>
-        </div>
-        <div class="pad" style="padding:12px 14px;border-top:1px solid var(--c-line)">
-          <div class="mut">种子数</div>
-          <div class="row" style="gap:6px;margin-top:6px">
-            <div class="btn" style="flex:1;justify-content:center;padding:0 8px">0</div>
-            <div class="btn pri" style="flex:1;justify-content:center;padding:0 8px">4</div>
-            <div class="btn" style="flex:1;justify-content:center;padding:0 8px">8</div>
+
+        <div style="flex:1;min-height:0;overflow:auto">
+          <div class="grp">建议成对 · 互相邀请过</div>
+          <div style="padding:0 10px 6px;display:flex;flex-direction:column;gap:6px">
+            <div class="card" style="padding:0;cursor:grab;border-color:var(--c-brand-weak)">
+              <div class="pc" style="padding-bottom:2px"><span class="av">孙</span><b>孙浩</b><span class="lv">3.5</span></div>
+              <div class="pc" style="padding-top:2px"><span class="av b">吴</span><b>吴迪</b><span class="lv">3.0</span></div>
+            </div>
           </div>
+
+          <div class="grp">单人</div>
+          <div style="padding:0 10px 10px;display:flex;flex-direction:column;gap:5px">
+            <div class="card pc"><span class="av c">郑</span>郑凯<span class="lv">4.0</span></div>
+            <div class="card pc"><span class="av d">冯</span>冯磊<span class="lv">3.5</span></div>
+            <div class="card pc"><span class="av e">许</span>许涛<span class="lv">3.0</span></div>
+            <div class="card pc"><span class="av">何</span>何平<span class="lv">3.0</span></div>
+            <div class="card pc" style="border-color:var(--c-brand-weak);background:#FAFBFF">
+              <span class="av b">邵</span>邵斌<span class="lv">2.5</span>
+              <span class="st gray" style="margin-left:auto">补入</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 人不够时的人源 = 已入会的俱乐部成员 -->
+        <div style="padding:10px 12px;border-top:1px solid var(--c-line)">
+          <div class="btn" style="width:100%;justify-content:center">＋ 从俱乐部成员补人</div>
+          <div class="mut" style="margin-top:6px;line-height:1.5">已入会 128 人 · 补入的默认不付费</div>
         </div>
       </div>
 
+      <!-- 右：签表 -->
       <div class="card" style="flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden">
         <div style="display:flex;border-bottom:1px solid var(--c-line);background:var(--c-surface-2)">
-          <div style="flex:1;padding:8px 12px;font-size:12px;color:var(--c-ink-3)">第一轮 · 8 场</div>
+          <div style="flex:1;padding:8px 12px;font-size:12px;color:var(--c-ink-3)">第一轮 · 8 场 · 4 轮空</div>
           <div style="flex:1;padding:8px 12px;font-size:12px;color:var(--c-ink-3)">四分之一决赛</div>
           <div style="flex:1;padding:8px 12px;font-size:12px;color:var(--c-ink-3)">半决赛</div>
           <div style="flex:1;padding:8px 12px;font-size:12px;color:var(--c-ink-3)">决赛</div>
         </div>
+
         <div style="flex:1;display:flex;padding:12px;gap:12px;overflow:auto">
 
-          <div style="flex:1;display:flex;flex-direction:column;gap:10px">
+          <div style="flex:1;display:flex;flex-direction:column;gap:9px">
+            <!-- 场次 1：轮空（二分递归顺序的第 1 个） -->
             <div class="card" style="padding:0;overflow:hidden">
-              <div style="padding:6px 9px;border-bottom:1px solid var(--c-surface-2);display:flex;gap:6px"><span class="tag tier-a" style="padding:0 5px">1</span><b>张伟 / 李强</b></div>
-              <div style="padding:6px 9px;color:var(--c-ink-3)">李娜 / 周雨</div>
+              <div class="slot"><b>张伟 / 李强</b><span class="lv" style="margin-left:auto">3.5</span></div>
+              <div class="slot bye">轮空</div>
             </div>
+            <!-- 场次 2 -->
             <div class="card" style="padding:0;overflow:hidden">
-              <div style="padding:6px 9px;border-bottom:1px solid var(--c-surface-2)">陈明 / 刘洋</div>
-              <div style="padding:6px 9px;border:1px dashed var(--c-brand);background:var(--c-brand-weak);color:var(--c-brand);font-size:12px">拖到这里</div>
+              <div class="slot">陈明 / 刘洋<span class="lv" style="margin-left:auto">3.0</span></div>
+              <div class="slot">高翔 / 黎明<span class="lv" style="margin-left:auto">3.5</span></div>
             </div>
+            <!-- 场次 3：轮空 -->
             <div class="card" style="padding:0;overflow:hidden">
-              <div style="padding:6px 9px;border-bottom:1px solid var(--c-surface-2);display:flex;gap:6px"><span class="tag tier-b" style="padding:0 5px">3</span>马超 / 秦岭</div>
-              <div style="padding:6px 9px;color:var(--c-ink-3);font-style:italic">轮空</div>
+              <div class="slot">马超 / 秦岭<span class="lv" style="margin-left:auto">4.0</span></div>
+              <div class="slot bye">轮空</div>
             </div>
+            <!-- 场次 4：半空 —— 一个人已入位，还缺搭档 -->
+            <div class="card" style="padding:0;overflow:hidden;border-color:var(--c-brand-weak)">
+              <div class="slot half">杜康<i>＋ 拖入搭档</i></div>
+              <div class="slot">周雨 / 沈括<span class="lv" style="margin-left:auto">3.0</span></div>
+            </div>
+            <!-- 场次 5：整格空 -->
             <div class="card" style="padding:0;overflow:hidden">
-              <div style="padding:6px 9px;border-bottom:1px solid var(--c-surface-2)">高翔 / 黎明</div>
-              <div style="padding:6px 9px">杜康 / 方正</div>
+              <div class="slot empty">拖到这里</div>
+              <div class="slot">方正 / 白杨<span class="lv" style="margin-left:auto">2.5</span></div>
             </div>
-            <div class="mut" style="text-align:center;padding:2px">… 还有 4 场</div>
+            <div class="mut" style="text-align:center;padding:2px">… 还有 3 场（含 2 个轮空）</div>
           </div>
 
           <div style="flex:1;display:flex;flex-direction:column;gap:10px;justify-content:space-around;padding:28px 0">
             <div class="card" style="padding:0;opacity:.55;overflow:hidden">
-              <div style="padding:6px 9px;border-bottom:1px solid var(--c-surface-2);color:var(--c-ink-3)">场次 1 胜者</div>
-              <div style="padding:6px 9px;color:var(--c-ink-3)">场次 2 胜者</div></div>
+              <div class="slot" style="color:var(--c-ink-3)">场次 1 胜者</div>
+              <div class="slot" style="color:var(--c-ink-3)">场次 2 胜者</div></div>
             <div class="card" style="padding:0;opacity:.55;overflow:hidden">
-              <div style="padding:6px 9px;border-bottom:1px solid var(--c-surface-2);color:var(--c-ink-3)">场次 3 胜者</div>
-              <div style="padding:6px 9px;color:var(--c-ink-3)">场次 4 胜者</div></div>
+              <div class="slot" style="color:var(--c-ink-3)">场次 3 胜者</div>
+              <div class="slot" style="color:var(--c-ink-3)">场次 4 胜者</div></div>
           </div>
 
           <div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:28px 0">
             <div class="card" style="padding:0;opacity:.4;overflow:hidden">
-              <div style="padding:6px 9px;border-bottom:1px solid var(--c-surface-2);color:var(--c-ink-3)">待定</div>
-              <div style="padding:6px 9px;color:var(--c-ink-3)">待定</div></div>
+              <div class="slot" style="color:var(--c-ink-3)">待定</div>
+              <div class="slot" style="color:var(--c-ink-3)">待定</div></div>
           </div>
 
           <div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:28px 0">
             <div class="card" style="padding:0;opacity:.4;overflow:hidden">
-              <div style="padding:6px 9px;border-bottom:1px solid var(--c-surface-2);color:var(--c-ink-3)">待定</div>
-              <div style="padding:6px 9px;color:var(--c-ink-3)">待定</div></div>
+              <div class="slot" style="color:var(--c-ink-3)">待定</div>
+              <div class="slot" style="color:var(--c-ink-3)">待定</div></div>
           </div>
         </div>
       </div>
@@ -163,12 +214,15 @@
   </div>
 </div>
 <ul class="anns">
-  <li><b>1</b><span><b>自动生成后可拖拽调整。</b>点「自动生成」按种子位随机排满，不满意的地方拖两个位置对调。全手动 32 组要拖 32 次，全自动又应付不了「这两对是师徒别第一轮碰」。</span></li>
-  <li><b>2</b><span>种子号用等级标签同一套配方（1 号实心、3/4 号浅底），<b>不新开颜色</b>。</span></li>
-  <li><b>3</b><span>后续轮次显示「场次 N 胜者」并<b>降低不透明度</b> —— 它们不可拖，视觉上要和可操作的第一轮分开。</span></li>
-  <li><b>4</b><span>组合卡带<b>自评水平</b>，这是抽签时唯一能参考的强弱信息（系统水平第一版没有）。</span></li>
-  <li><b>5</b><span>名额不满时自动补「轮空」位，用斜体灰字，与真实空位（虚线蓝框）形态区分。</span></li>
-  <li><b>6</b><span>顶栏常驻「未保存」提示 —— 拖了一半刷新页面会全丢，这是后台最容易出事的一屏。</span></li>
+  <li><b>1</b><span><b>左边躺的是「人」不是「组合」。</b>原来的「待配对」屏并进来了 —— 成组就是<b>把第二个人拖进同一个签位</b>那一下，拖出来就拆回两条 Entry。不单开一步（PRD §5）。</span></li>
+  <li><b>2</b><span><b>建议成对</b>：互相邀请过（<code>invitedBy</code>）的两人进屏时<b>已经并好</b>，管理员不用管。这是「机器铺底，人处理例外」—— 常见情形进屏即完成，只剩零头要拖。</span></li>
+  <li><b>3</b><span><b>没有种子。</b>第一版随机抽，轮空按二分递归顺序撒（8 场 → 1·5·3·7·2·6·4·8），4 个轮空落在四个 1/4 区。种子推到第二版，签位结构里留了空的 <code>seed</code> 位。</span></li>
+  <li><b>4</b><span><b>半空签位是这一屏最要紧的状态</b>：一个人已入位、还缺搭档，用「＋ 拖入搭档」虚线块，和整格空位（满格虚线蓝）形态不同。看漏它 = 一个人孤零零上场。</span></li>
+  <li><b>5</b><span><b>从俱乐部成员补人</b> —— 人凑不满时的人源，只能挑<b>已入会</b>的成员，默认不付费，卡上带「补入」标。这是入会审批第一个真正的用处。</span></li>
+  <li><b>6</b><span>池子<b>按自评水平排序</b>，相近的挨在一起 —— 随手拖就是合理分组。这是注册时那个滑杆第一个真正被用到的地方。</span></li>
+  <li><b>7</b><span><b>拖过之后不再自动重排。</b>系统不「纠正」管理员的手动结果。「重新生成」会覆盖拖过的位置，所以要二次确认。</span></li>
+  <li><b>8</b><span>顶栏常驻「未保存」——拖了一半刷新页面会全丢，这是后台最容易出事的一屏。</span></li>
+  <li><b>9</b><span>性别校验<b>反过来用</b>：男双的池子里只有男性，混双只列异性，拖错直接挡下。</span></li>
 </ul>
 </x-dc>
 </body>
