@@ -151,6 +151,11 @@ eq(T.resolveFormat({ setsToWin: 2, gamesToWin: 6 }).decidingTiebreakTo, 0,
 try { T.resolveFormat({ setsToWin: 1, gamesToWin: 0 }); eq('无异常', '应抛错', 'gamesToWin: 0 应报错'); }
 catch (e) { eq(true, true, 'gamesToWin: 0 被拒 —— 整场抢十要用 tiebreakAt: 0 表达'); }
 eq(T.resolveFormat({ setsToWin: 2, gamesToWin: 4, tiebreakTo: 7 }).tiebreakTo, 7, '显式传了就不推导');
+// 预设也走同一段归一化 —— 它们省掉了 tiebreakAt / tiebreakTo，靠推
+eq([T.resolveFormat('proset8_gp').tiebreakAt, T.resolveFormat('proset8_gp').tiebreakTo], [8, 7],
+   '预设省掉的那两项也会被推出来（八局制 8-8 抢七）');
+eq([T.resolveFormat('short4_gp').tiebreakAt, T.resolveFormat('short4_gp').tiebreakTo], [4, 5],
+   '4 局预设推出 4-4 抢五');
 
 
 // 决胜抢七（不是抢十）—— 换成 union 就表达不了，number 才行

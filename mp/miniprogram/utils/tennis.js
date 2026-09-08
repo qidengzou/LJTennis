@@ -32,44 +32,51 @@ const POINT_LABELS = ['0', '15', '30', '40'];
  * 常用预设。**只是建赛表单的快捷方式**，主办方可以在此基础上改任意一项。
  * 字段按**盘 → 局 → 分**从大到小排，跟人说赛制的顺序一致。
  */
+/**
+ * `tiebreakAt` 和 `tiebreakTo` **不写** —— resolveFormat 会推：
+ * 几平进抢七默认等于局数，抢几分按 4 局及以下抢五、其余抢七。
+ * 只有 tb10 那种非常规组合才需要显式写出来。
+ */
 const PRESETS = {
-  //              ── 盘 ──────────────────────  ── 局 ──────────────────  ── 分 ──
+  //              ── 盘 ──────────────────────  ── 局 ────────  ── 分 ──
   // 两盘 + 决胜抢十 —— 业余双打最主流：省时间、场地周转快
-  sets2_st10_gp: { setsToWin: 2, decidingTiebreakTo: 10, gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  noAd: true  },
-  sets3_gp:      { setsToWin: 2, decidingTiebreakTo: 0,  gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  noAd: true  },
-  sets3_ad:      { setsToWin: 2, decidingTiebreakTo: 0,  gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  noAd: false },
-  // 4 局制配抢五 —— 抢分数跟着局数走：4 局抢五，6 局抢七
-  short4_gp:     { setsToWin: 2, decidingTiebreakTo: 10, gamesToWin: 4, tiebreakAt: 4, tiebreakTo: 5,  noAd: true  },
-  set1_gp:       { setsToWin: 1, decidingTiebreakTo: 0,  gamesToWin: 6, tiebreakAt: 6, tiebreakTo: 7,  noAd: true  },
-  // 八局制（pro set）：单盘打到 8 局，8-8 抢七。国内业余双打常用 ——
-  // 六局有时嫌短、三盘两胜又太长，八局定胜负正好卡在中间
-  proset8_gp:    { setsToWin: 1, decidingTiebreakTo: 0,  gamesToWin: 8, tiebreakAt: 8, tiebreakTo: 7,  noAd: true  },
-  // 整场一个抢十：**0 平就进抢七**，也就是一开局就进；抢到 10 分赢下
-  // 这 1 局，也就赢下这一盘。不需要「gamesToWin: 0」那种哨兵值
-  tb10:          { setsToWin: 1, decidingTiebreakTo: 0,  gamesToWin: 1, tiebreakAt: 0, tiebreakTo: 10, noAd: true  },
+  sets2_st10_gp: { setsToWin: 2, decidingTiebreakTo: 10, gamesToWin: 6, noAd: true  },
+  sets3_gp:      { setsToWin: 2, decidingTiebreakTo: 0,  gamesToWin: 6, noAd: true  },
+  sets3_ad:      { setsToWin: 2, decidingTiebreakTo: 0,  gamesToWin: 6, noAd: false },
+  // 4 局制推出来的是 4-4 进、抢五
+  short4_gp:     { setsToWin: 2, decidingTiebreakTo: 10, gamesToWin: 4, noAd: true  },
+  set1_gp:       { setsToWin: 1, decidingTiebreakTo: 0,  gamesToWin: 6, noAd: true  },
+  // 八局制（pro set）：单盘打到 8 局，推出来是 8-8 抢七。国内业余双打常用
+  // —— 六局有时嫌短、三盘两胜又太长，八局定胜负正好卡在中间
+  proset8_gp:    { setsToWin: 1, decidingTiebreakTo: 0,  gamesToWin: 8, noAd: true  },
+  // 整场一个抢十：0 平就进抢七，也就是一开局就进；抢到 10 分赢下这 1 局，
+  // 也就赢下这一盘。这两项推不出来，必须写
+  tb10:          { setsToWin: 1, decidingTiebreakTo: 0,  gamesToWin: 1, noAd: true, tiebreakAt: 0, tiebreakTo: 10 },
 };
 
 const DEFAULT_FORMAT = PRESETS.sets2_st10_gp;
 
 /** 预设名或配置对象 → 配置对象。存进 match 的是**解析后的对象**，见 createMatch */
 function resolveFormat(f) {
-  if (!f) return Object.assign({}, DEFAULT_FORMAT);
-  if (typeof f === 'string') {
-    if (!PRESETS[f]) throw new Error('未知赛制预设: ' + f);
-    return Object.assign({}, PRESETS[f]);
-  }
-  if (typeof f.gamesToWin !== 'number' || typeof f.setsToWin !== 'number') {
+  // 预设、配置对象、不传 —— 三条入口**走同一段归一化**。
+  // 曾经预设走的是 Object.assign({}, PRESETS[f]) 直接返回，绕过了默认
+  // 推导；预设里一旦省掉 tiebreakAt / tiebreakTo 就会推出 undefined。
+  const raw = !f ? DEFAULT_FORMAT : (typeof f === 'string' ? PRESETS[f] : f);
+  if (!raw) throw new Error('未知赛制预设: ' + f);
+  if (typeof raw.gamesToWin !== 'number' || typeof raw.setsToWin !== 'number') {
     throw new Error('赛制配置缺字段: 需要 gamesToWin 与 setsToWin');
   }
-  if (f.gamesToWin < 1) throw new Error('gamesToWin 至少是 1；「整场一个抢十」用 tiebreakAt: 0 表达');
-  // 抢几分的默认值按**实际规则**推，不是「局数 + 1」——
-  // 那个只在 4 和 6 上碰巧成立：抢七是 7 分因为标准抢七就是 7 分，
-  // 跟局数无关；只有 4 局制（FAST4 那套）才用抢五。
-  // 8 局制（pro set）仍然是 8-8 抢七，按 +1 会推成「抢九」，是错的。
-  const at = f.tiebreakAt !== undefined ? f.tiebreakAt : f.gamesToWin;
-  const auto = at === 0 ? 10 : (f.gamesToWin <= 4 ? 5 : 7);
-  return Object.assign({ tiebreakTo: auto, tiebreakAt: at, noAd: true, decidingTiebreakTo: 0 }, f);
+  if (raw.gamesToWin < 1) throw new Error('gamesToWin 至少是 1；「整场一个抢十」用 tiebreakAt: 0 表达');
+
+  // 几平进抢七默认等于局数（6-6 进、8-8 进、4-4 进）。
+  // 抢几分按**实际规则**推，不是「局数 + 1」—— 那个只在 4 和 6 上碰巧
+  // 成立：抢七是 7 分因为标准抢七就是 7 分，跟局数无关；只有 4 局制
+  // （FAST4 那套）才用抢五。8 局制仍是 8-8 抢七，按 +1 会推成抢九，是错的。
+  const at = raw.tiebreakAt !== undefined ? raw.tiebreakAt : raw.gamesToWin;
+  const to = at === 0 ? 10 : (raw.gamesToWin <= 4 ? 5 : 7);
+  return Object.assign({ tiebreakAt: at, tiebreakTo: to, noAd: true, decidingTiebreakTo: 0 }, raw);
 }
+
 
 /**
  * 由配置**推导**显示文案。不能存 label ——
