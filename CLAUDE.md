@@ -84,4 +84,6 @@ cd mp && npm run check      # 六个静态检查：路由/绑定/WXML/共享代�
 
 - **AppSecret、商户号密钥从来不进代码**，一次也没有过，保持下去
 - `env.local.js` 已在 `.gitignore` 里，别改回来
-- `admin.*` 路由**目前没有鉴权**（见 `SPEC.md` §5），有真实用户前必须补上
+- `admin.*` 路由**目前没有鉴权**，而 `users.phoneEncrypted` 存的是**明文**
+  （字段名在撒谎）。两件事**必须一起补**，见 `SPEC.md` §5.1 ——
+  单独做任何一件都等于没做

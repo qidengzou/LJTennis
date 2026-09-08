@@ -67,7 +67,10 @@ module.exports = function (db, openapi) {
       unionid: ctx.unionid || null,
       nickname: String(ev.nickname).slice(0, 20),
       gender: ev.gender,
-      phoneEncrypted: phone,                // TODO 落库前加密
+      // ⚠️ 名不副实：这里存的是**明文**。字段名比明文本身更危险 ——
+      // 看到 Encrypted 会以为已经安全了。加密方案见 SPEC.md §4，
+      // 但它必须和 admin.* 鉴权一起做（SPEC.md §5.1），单独加密没有意义。
+      phoneEncrypted: phone,
       city: ev.city || null,
       selfRatedLevel: ev.level || null,     // 自评，只做初始分组
       avatarColorIndex: Math.abs(hash(ctx.openid)) % 5,
