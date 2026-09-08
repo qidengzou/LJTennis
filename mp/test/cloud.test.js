@@ -75,21 +75,33 @@ async function main() {
     eq((await E.accept({ entryId: id3 }, { userId: 'u2' })).code, 'EXPIRED', '邀请已超时 → EXPIRED');
   }
 
-  console.log('\n[5] 释放名额 → 候补转正并重排');
+  console.log('\n[5] 释放名额 → 候补立刻转正并重排');
   {
     const s = seed();
     s.entries = [
-      { _id: 'w1', eventId: 'ev1', status: 'waitlisted', waitlistPosition: 1 },
+      { _id: 'w1', eventId: 'ev1', status: 'waitlisted', waitlistPosition: 1, playerIds: ['u1'] },
       { _id: 'w2', eventId: 'ev1', status: 'waitlisted', waitlistPosition: 2 },
       { _id: 'w3', eventId: 'ev1', status: 'waitlisted', waitlistPosition: 3 },
     ];
     const db = memdb(s);
     eq(await makeEntry.releaseSlot(db, 'ev1'), 'w1', '位次最小的转正');
     const w1 = await db.get('entries', 'w1');
-    eq([w1.status, !!w1.promotionDeadlineAt, w1.waitlistPosition], ['promoted', true, null], '转正带 24h 截止');
+    // 候补先收过款，所以转正立刻生效 —— 不再落到 promoted、不再带 24h 截止
+    eq([w1.status, w1.waitlistPosition], ['seeking_partner', null], '一个人的双打 → 直接进待编排');
+    eq([w1.promotionDeadlineAt === undefined, w1.status === 'promoted'], [true, false],
+       '不产生 24h 截止，也不再有 promoted 这个中间态');
     eq([(await db.get('entries', 'w2')).waitlistPosition, (await db.get('entries', 'w3')).waitlistPosition],
        [1, 2], '其余候补前移一位');
     eq(await makeEntry.releaseSlot(memdb(seed()), 'ev1'), null, '没有候补时返回 null');
+  }
+
+  console.log('\n[5b] 转正落到哪个状态看人数');
+  {
+    const s = seed();
+    s.entries = [{ _id: 'p1', eventId: 'ev1', status: 'waitlisted', waitlistPosition: 1, playerIds: ['u1', 'u2'] }];
+    const db = memdb(s);
+    await makeEntry.releaseSlot(db, 'ev1');
+    eq((await db.get('entries', 'p1')).status, 'confirmed', '两人齐了 → 直接已确认，不用再编排');
   }
 
   console.log('\n[6] 记分幂等与乐观锁');

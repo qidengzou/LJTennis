@@ -47,7 +47,11 @@ module.exports = function (db, _) {
       const partner = await tx.get(C.USERS, ctx.userId);
       if (!event || !initiator || !partner) return fail('NOT_FOUND', '数据缺失');
 
-      const confirmedCount = await tx.count(C.ENTRIES, { eventId: entry.eventId, status: 'confirmed' });
+      // 占正式名额的两个状态都要数。只数 confirmed 会超发 —— 待编排的那批
+      // 已经付了钱、占着名额，漏掉它们等于把同一个名额卖两次。
+      const occupiedCount =
+          await tx.count(C.ENTRIES, { eventId: entry.eventId, status: 'confirmed' })
+        + await tx.count(C.ENTRIES, { eventId: entry.eventId, status: 'seeking_partner' });
       const waitlistCount = await tx.count(C.ENTRIES, { eventId: entry.eventId, status: 'waitlisted' });
 
       // 与小程序端同一份逻辑（shared/entry.js）
@@ -56,7 +60,7 @@ module.exports = function (db, _) {
         genders: [initiator.gender, partner.gender],
         feeCents: event.feeCents,
         capacity: event.capacity,
-        confirmedCount: confirmedCount,
+        occupiedCount: occupiedCount,
         waitlistCount: waitlistCount,
       });
       if (!r.ok) return fail('GENDER', '这个项目对性别有要求，你和发起人不符合');
@@ -125,15 +129,23 @@ module.exports = function (db, _) {
   return { create, accept, reject, detail, mine, cancel };
 };
 
-/** 有名额释放时把下一位候补转正，并重排候补位次 */
+/**
+ * 有名额释放时把下一位候补转正，并重排候补位次。
+ *
+ * 候补是**先收过款**的（PRD §4），所以转正**立刻生效** —— 不通知本人、
+ * 不等他付款、没有 24h 倒计时。曾经这里写 `status:'promoted'` 加一个
+ * promotionDeadlineAt，那一整套（状态 + 定时任务 + 顺延）随先收款一起删了。
+ *
+ * 转正后落到哪个状态看人数：双打一个人 → 待编排，凑齐两人或单打 → 已确认。
+ */
 async function releaseSlot(db, eventId) {
   const waitlisted = await db.where(C.ENTRIES, { eventId: eventId, status: 'waitlisted' });
   const next = E.nextToPromote(waitlisted);
   if (!next) return null;
+  const players = next.playerIds || [];
   await db.update(C.ENTRIES, next._id, {
-    status: 'promoted',
+    status: players.length >= 2 ? 'confirmed' : 'seeking_partner',
     promotedAt: Date.now(),
-    promotionDeadlineAt: Date.now() + 24 * 3600 * 1000,   // 等待态③
     waitlistPosition: null,
   });
   const rest = waitlisted.filter(function (e) { return e._id !== next._id; });

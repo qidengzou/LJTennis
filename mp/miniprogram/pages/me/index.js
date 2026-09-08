@@ -30,7 +30,7 @@ Page({
     const self = this;
     cloud.call('entry.mine').then(function (r) {
       const list = r.entries || [];
-      const NEED = ['pending_payment', 'promoted', 'pending_partner'];
+      const NEED = ['pending_payment', 'pending_partner'];
       const pending = list.filter(function (e) { return NEED.indexOf(e.status) >= 0; }).length;
       const done = list.filter(function (e) { return e.status === 'confirmed'; }).length;
       self.setData({

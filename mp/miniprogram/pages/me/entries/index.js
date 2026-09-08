@@ -38,7 +38,7 @@ Page({
 
   onAction(e) {
     const { id, status } = e.currentTarget.dataset;
-    if (status === 'pending_payment' || status === 'promoted') {
+    if (status === 'pending_payment') {
       wx.navigateTo({ url: '/pages/entry/pay/index?entry=' + id });
     } else if (status === 'pending_partner') {
       wx.showToast({ title: '已重新发送邀请', icon: 'success' });

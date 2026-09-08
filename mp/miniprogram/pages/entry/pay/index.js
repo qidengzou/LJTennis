@@ -9,7 +9,7 @@ Page({
     this.expiresAt = en.deadlineAt || (Date.now() + 15 * 60000);
     this.setData({
       en: Object.assign({}, en, { fee: en.feeCents / 100 }),
-      cdLabel: en.status === 'promoted' ? '24 小时内支付，超时顺延给下一位' : '超时释放名额',
+      cdLabel: '超时释放名额',
     });
     this.tick();
   },

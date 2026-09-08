@@ -94,7 +94,7 @@ module.exports = function (db, openapi) {
     }
 
     if (ev.gender && ev.gender !== u.gender) {
-      const ACTIVE = ['pending_partner', 'pending_payment', 'waitlisted', 'promoted', 'confirmed'];
+      const ACTIVE = ['pending_partner', 'pending_payment', 'waitlisted', 'seeking_partner', 'confirmed'];
       const mine = await db.where(C.ENTRIES, { playerIds: u._id });
       const blocking = mine.filter(function (e) { return ACTIVE.indexOf(e.status) >= 0; });
       if (blocking.length) {
