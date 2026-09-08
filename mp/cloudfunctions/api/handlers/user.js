@@ -71,8 +71,10 @@ module.exports = function (db, openapi) {
       // 看到 Encrypted 会以为已经安全了。加密方案见 SPEC.md §4，
       // 但它必须和 admin.* 鉴权一起做（SPEC.md §5.1），单独加密没有意义。
       phoneEncrypted: phone,
+      province: ev.province || null,        // 和 city 成对，注册时不收，资料页补
       city: ev.city || null,
       selfRatedLevel: ev.level || null,     // 自评，只做初始分组
+      systemRatedLevel: null,               // 算法第一版不做，见 PRD §11
       avatarColorIndex: Math.abs(hash(ctx.openid)) % 5,
       createdAt: Date.now(),
     };
@@ -80,12 +82,13 @@ module.exports = function (db, openapi) {
     return ok({ user: safeSelf(Object.assign({ _id: id }, u)) });
   }
 
-  /** 昵称随时可改；**性别在有 active entry 时锁定** */
+  /** 昵称、省市、自评水平随时可改；**性别只有后台能改** */
   async function update(ev, ctx) {
     const u = await db.first(C.USERS, { openid: ctx.openid });
     if (!u) return fail('NOT_FOUND', '还没注册');
     const patch = {};
     if (ev.nickname) patch.nickname = String(ev.nickname).slice(0, 20);
+    if (ev.province !== undefined) patch.province = ev.province;
     if (ev.city !== undefined) patch.city = ev.city;
     if (ev.phone !== undefined) {
       if (ev.phone && !PHONE.test(String(ev.phone))) return fail('BAD_ARGS', '手机号格式不对');
@@ -96,14 +99,10 @@ module.exports = function (db, openapi) {
       patch.selfRatedLevel = ev.level;      // 自评随时可改，不像性别要锁
     }
 
+    // 性别是参赛资格的判据（MD/WD/XD），自助改等于自助换赛区 ——
+    // 所以这里一律拒，不再看有没有进行中的报名。改性别走后台。
     if (ev.gender && ev.gender !== u.gender) {
-      const ACTIVE = ['pending_partner', 'pending_payment', 'waitlisted', 'seeking_partner', 'confirmed'];
-      const mine = await db.where(C.ENTRIES, { playerIds: u._id });
-      const blocking = mine.filter(function (e) { return ACTIVE.indexOf(e.status) >= 0; });
-      if (blocking.length) {
-        return fail('GENDER_LOCKED', '你有进行中的报名，等赛事结束后才能改性别', { count: blocking.length });
-      }
-      patch.gender = ev.gender;
+      return fail('GENDER_READONLY', '性别不能自己改，请联系赛事组织者');
     }
     await db.update(C.USERS, u._id, patch);
     return ok({ user: safeSelf(Object.assign({}, u, patch)) });
@@ -144,8 +143,10 @@ module.exports = function (db, openapi) {
 /** 自己看自己：手机号脱敏，绝不返回密文 */
 function safeSelf(u) {
   return {
-    _id: u._id, nickname: u.nickname, gender: u.gender, city: u.city,
+    _id: u._id, nickname: u.nickname, gender: u.gender,
+    province: u.province || null, city: u.city || null,
     selfRatedLevel: u.selfRatedLevel || null,
+    systemRatedLevel: u.systemRatedLevel != null ? u.systemRatedLevel : null,  // 没算出来 → 「—」，绝不用自评顶替
     avatarColorIndex: u.avatarColorIndex,
     phoneMasked: mask(u.phoneEncrypted) || null,   // 前缀取真号，别写死成 138
     createdAt: u.createdAt,

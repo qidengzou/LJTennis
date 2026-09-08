@@ -71,14 +71,21 @@
 | POST | `/auth/phone` | 微信加密数据 → 手机号 | 注册步骤 1 |
 | POST | `/users` | 注册：nickname + gender | 注册步骤 2 |
 | GET | `/users/me` | 我的资料与统计 | 我的 |
-| PATCH | `/users/me` | 改昵称 / 城市；**gender 有 active entry 时返回 409** | 资料编辑 |
+| PATCH | `/users/me` | 改昵称 / 省市 / 自评水平。**不接受 gender** | 资料编辑 |
 | GET | `/users/:id` | 选手主页（不含手机号） | 选手主页 |
 | GET | `/users/me/partners` | 常搭档列表 | 发起报名 · 选搭档 |
 | GET | `/users/me/records` | 我的战绩，按赛事分组 | 我的战绩 |
 
-**`PATCH /users/me` 的 gender 规则**：存在 status ∈ {pending_partner, pending_payment,
-waitlisted, promoted, confirmed} 的 entry 时拒绝修改，错误体要带上阻塞的赛事名，
-前端据此渲染「你有 1 个进行中的混双报名，等这场赛事结束后就能修改」。
+**`PATCH /users/me` 一律不改 gender**，传了就返回 `GENDER_READONLY` ——
+不看有没有进行中的报名，没报过名的新用户同样拒。
+
+性别是 MD / WD / XD 的**参赛资格判据**，能自助改就等于能自助换赛区。
+注册时选错的唯一出路是找组织者，**改性别只在后台**。
+资料编辑页把它渲染成锁定态，并把这条路径写在旁边 ——
+只锁不给出路，用户会以为是 bug。
+
+> 🚧 后台 9 屏里**目前没有任何一屏能改用户资料**（`SPEC.md` §2）。
+> 这条规则落地前，「找组织者」这条路是断的。
 
 ### 赛事与比赛
 

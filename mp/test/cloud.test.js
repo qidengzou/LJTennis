@@ -139,15 +139,25 @@ async function main() {
     eq((await M.confirm({ matchId: 'm1' }, { userId: 'u2' })).code, 'BAD_STATE', '重复确认 → BAD_STATE');
   }
 
-  console.log('\n[8] 性别在有进行中报名时锁定');
+  console.log('\n[8] 性别用户改不了，一次报名都没有也改不了');
   {
+    // 从「有进行中报名才锁」改成「一律锁」：性别是 MD/WD/XD 的资格判据，
+    // 能自助改就等于能自助换赛区。没报过名的新用户同样拒 —— 这条是关键，
+    // 旧规则下他是能改的。
+    const U = makeUser(memdb(seed()));
+    eq((await U.update({ gender: 'F' }, { openid: 'o1' })).code, 'GENDER_READONLY', '干净用户也拒绝改性别');
+
     const s = seed();
     s.entries = [{ _id: 'e1', eventId: 'ev1', playerIds: ['u1'], status: 'confirmed' }];
-    const db = memdb(s), U = makeUser(db);
-    const r = await U.update({ gender: 'F' }, { openid: 'o1' });
-    eq([r.ok, r.code, r.count], [false, 'GENDER_LOCKED', 1], '有 confirmed 报名 → 拒绝改性别');
-    eq((await U.update({ nickname: '张三' }, { openid: 'o1' })).ok, true, '昵称仍可改');
-    eq((await makeUser(memdb(seed())).update({ gender: 'F' }, { openid: 'o1' })).ok, true, '无进行中报名 → 可改');
+    const U2 = makeUser(memdb(s));
+    eq((await U2.update({ gender: 'F' }, { openid: 'o1' })).code, 'GENDER_READONLY', '有报名的更要拒');
+    eq((await U2.update({ nickname: '张三' }, { openid: 'o1' })).ok, true, '昵称仍可改');
+    eq((await U2.update({ gender: 'M' }, { openid: 'o1' })).ok, true, '传的还是原值 → 不算改，放行');
+
+    const U3 = makeUser(memdb(seed()));
+    const r = await U3.update({ province: '广东', city: '深圳' }, { openid: 'o1' });
+    eq([r.ok, r.data.user.province, r.data.user.city], [true, '广东', '深圳'], '省市成对可改');
+    eq(r.data.user.systemRatedLevel, null, '系统水平没算出来 → null，不拿自评顶替');
   }
 
   console.log('\n[9] 落地页返回体不含手机号');

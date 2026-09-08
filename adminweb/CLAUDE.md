@@ -1,46 +1,35 @@
 # adminweb —— 组织者网页后台
 
-赛前用的桌面端后台：建俱乐部、建赛事、审批入会、抽签、排程、批量导入。
+赛前用的桌面端后台：建俱乐部、建赛事、审批入会、签表。
 **React + Vite + TypeScript**，同仓子目录，和 `mp/` 平级。
 
 设计稿在 `design/admin/`（9 屏，双击 `ljtennis-admin-backend.html` 打开）。
-根目录那份 `CLAUDE.md` 仍然管着：术语、规格归属、不要碰的东西 —— 那些
-不在这里重复。
+根目录那份 `CLAUDE.md` 仍然管着：术语、规格归属、不要碰的东西 —— 那些不在这里重复。
 
 ## 边界 —— 先读这条
 
 **后台不新开后端。** 它和小程序调的是**同一个** `api` 云函数分发器
-（`mp/cloudfunctions/api/`），只是换了客户端：`@cloudbase/js-sdk` 的
-`callFunction`，而不是 `wx.cloud.callFunction`。
+（`mp/cloudfunctions/api/`），只是换了客户端：`@cloudbase/js-sdk` 的 `callFunction`，而不是 `wx.cloud.callFunction`。
 
-不要为后台写第二套 handler，也不要在前端直连数据库。要加接口就去改那个
-分发器，并同步 `api/endpoints.md`。
+不要为后台写第二套 handler，也不要在前端直连数据库。要加接口就去改那个分发器，并同步 `api/endpoints.md`。
 
-**该做什么、不该做什么**看 `PRD.md` §2 的「现场 vs 赛前」：记分、改比分、
-处理争议是**现场**的事，留在小程序里，别因为后台屏大就挪过来。
+**该做什么、不该做什么**看 `PRD.md` §2 的「现场 vs 赛前」：记分、改比分、处理争议是**现场**的事，留在小程序里，别因为后台屏大就挪来。
 
 ## 契约：直接编译 `api/types.ts`，不许抄
-
-这是「同仓子目录而不是子仓库」换来的唯一红利，别浪费掉：
 
 ```ts
 // tsconfig.json
 "include": ["src", "../api/types.ts"],
-"paths":   { "@contract": ["../api/types.ts"] }
+"paths":   { "@api/types": ["../api/types.ts"] }
 ```
 
 ```js
 // vite.config.ts —— 两处都要，少一处 dev 会 403
-resolve: { alias: { '@contract': path.resolve(__dirname, '../api/types.ts') } },
+resolve: { alias: { '@api/types': path.resolve(__dirname, '../api/types.ts') } },
 server:  { fs: { allow: ['..'] } }   // types.ts 在 Vite root 之外
 ```
 
-- **类型不同步就编译不过** —— 这就是那道门。抄一份到 `src/types.ts` 等于
-  自愿放弃它
-- `api/types.ts` 里有一个运行时导出（`NTRP_LEVELS`），所以它不是纯类型文件，
-  会被真的打进包 —— 这没问题，但别在里面加重逻辑
-- 顺带：**在 adminweb 之前，`api/types.ts` 根本没有自动检查**，只靠人手跑
-  `tsc`。`npm run verify` 配好之后它才第一次被门管起来
+- 顺带：**在 adminweb 之前，`api/types.ts` 根本没有自动检查**，只靠人手跑 `tsc`。`npm run verify` 配好之后它才第一次被门管起来
 
 ## 目录
 
