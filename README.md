@@ -42,19 +42,16 @@ design/admin/ljtennis-admin-backend.html             组织者网页后台 · 9 
 > 原来的线框（`design/stage2/`、`design/wireframes.html`、赛事首页那三张）
 > 已删除，需要时从历史里取：`git show e2df422:design/wireframes.html`
 
-早期高保真稿（阶段 1–2，**已过时，只作参考**）：
+还留着一份阶段 3 的产物：
 
 ```
-design/hifi-matchday.html        比赛日全链路 13 屏
-design/hifi-registration.html    报名链路 12 屏
-design/hifi-account.html         注册与个人
-design/hifi-rank.html            积分榜
-design/design-system-v2.html     设计系统（记分器是可运行原型）
-design/ia-v2.html                信息架构（20 页版，已被 skeleton 取代）
+design/design-system-v2.html     设计系统 —— 记分器是可运行原型，暂时没有替代品
 ```
 
-> 这几份还写着「项目」「待支付」「待搭档确认」「发起人一人付清」这些
-> **已经废掉的说法**。要看现在的模型，只看 `PRD.md` 和上面那六张画布。
+> 阶段 1–2 的那批过时稿（`hifi-*.html`、`ia-v2.html`、`wireframes.html`）
+> **已全部删除**。它们看起来像正式稿，内容却还写着「项目」「待支付」
+> 「待搭档确认」「发起人一人付清」—— 比线框更容易被照着实现。
+> 需要考古：`git show 50c94e0:design/hifi-account.html`
 
 ## 小程序工程
 

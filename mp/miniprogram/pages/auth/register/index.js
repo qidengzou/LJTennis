@@ -4,7 +4,7 @@ const store = require('../../../utils/store');
 /**
  * 注册。自定义导航栏 + 全屏照片 + 单页表单。
  *
- * 两个触发点（design/hifi-account.html §01）：
+ * 两个触发点（PRD.md §9）：
  *   A 点「报名 / 接受邀请」时 —— 带上下文，完成后回原流程
  *   B 点「我的」tab 时 —— 无上下文，完成后回「我的」
  * 回跳目标走本地存储：wx.switchTab 带不了参数。
