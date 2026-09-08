@@ -99,6 +99,22 @@ export type MembershipStatus =
  * ⚠️ **role 只在 `status === 'active'` 时有效。** 申请中的人不可能是管理员；
  * 移除会员时 role 必须一并降回 `member`，否则会留下「已移除的管理员」。
  */
+/**
+ * **平台级身份**，和 `ClubRole` 不是一回事：
+ *   `PlatformRole` = 你在这个产品里是谁
+ *   `ClubRole`     = 你在某一个俱乐部里是谁
+ *
+ * 只有 `admin` 能**创建俱乐部**。用 `ClubRole` 来判会死锁 ——
+ * 第一个俱乐部谁都建不了，因为那时还没有人是任何俱乐部的管理员。
+ *
+ * ⚠️ **平台管理员不自动获得各俱乐部的数据权限。** 他能建俱乐部、能指定
+ * 谁当创建者，但看不到某场赛事报名者的手机号 —— 那条仍然只对**该赛事的**
+ * 俱乐部管理员开放（`PRD.md` §9）。两套权限不互相包含。
+ */
+export type PlatformRole =
+  | 'user'       // 默认。报名、记分、看榜
+  | 'admin';     // 平台管理员：创建俱乐部、指定创建者
+
 export type ClubRole =
   | 'owner'      // 创建者。唯一、不可移除、不可降级；转让是原子操作
   | 'admin'      // 管理员。建赛、排签表、审批入会
@@ -207,6 +223,14 @@ export interface User {
    * 由比分推算的双打水平仍延后到第二版，字段另设。
    */
   selfRatedLevel?: NtrpLevel;
+
+  /**
+   * 平台级身份，默认 `'user'`。见 `PlatformRole` ——
+   * **它和「在某个俱乐部里是不是管理员」是两码事**。
+   *
+   * 没有自助入口：第一个平台管理员靠人工改库引导，之后由平台管理员指定。
+   */
+  platformRole: PlatformRole;
 
   /** 头像色板索引 0-4，由 id 取模得出。冷色系，不含绿/红/橙（避免与记分语义色冲突） */
   avatarColorIndex: number;

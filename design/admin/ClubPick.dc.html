@@ -118,10 +118,13 @@
         </div>
         <span class="mut">›</span>
       </div>
+      <!-- 只对平台管理员显示。普通俱乐部管理员看不到这一条 -->
       <div class="card pad" style="display:flex;align-items:center;gap:14px;cursor:pointer;
                   border-style:dashed;color:var(--c-ink-3)">
         <div style="width:44px;height:44px;display:grid;place-items:center;font-size:20px;flex:none">+</div>
         <div style="flex:1">创建俱乐部</div>
+        <span class="tag" style="background:var(--c-brand-weak);color:var(--c-brand);font-size:11px;
+              font-weight:600;padding:2px 8px;border-radius:var(--r-full)">平台管理员</span>
       </div>
     </div>
   </div>
@@ -131,9 +134,11 @@
   <li><b>2</b><span><b>只有一个俱乐部时自动跳过这一屏</b>，直接进工作区。多数人是这种情况，不该为少数人多一次点击。</span></li>
   <li><b>3</b><span>待办角标聚合到俱乐部一级 —— 哪个俱乐部有事，在这一屏就看得见，不用逐个点进去。</span></li>
   <li><b>4</b><span>进工作区后侧栏底部有<b>「← 返回俱乐部列表」</b>。不做切换器 —— 换俱乐部是低频动作，退回这一屏再选就够了。</span></li>
-  <li><b>5</b><span>「创建俱乐部」在这里 —— 它是网页端的职责（赛前操作），小程序只指路不给按钮。</span></li>
-  <li><b>6</b><span><b>图标可传可不传。</b>第一个是传过的，后两个<b>用俱乐部名首字加主色块兜底</b> —— 和头像同一套，跟赛事封面「没传就用主色渐变」是同一条规则。灰色占位图会让那个俱乐部看起来像坏了。</span></li>
-  <li><b>7</b><span>图标按<b>方形 4px 圆角</b>渲染，不裁成圆 —— 俱乐部 logo 常带文字，裁圆会把字切掉。出图 240×240 PNG（logo 常有透明背景，JPEG 会糊上白底）。</span></li>
+  <li><b>5</b><span>「创建俱乐部」在这里 —— 它是网页端的职责（赛前操作），小程序只指路不给按钮。<b>而且只对平台管理员显示</b>：普通俱乐部管理员进来只看得到自己管的那几个，看不到这一条。</span></li>
+  <li><b>6</b><span><b>「能建俱乐部」是平台身份，不是俱乐部身份。</b>用俱乐部身份判会死锁 —— 第一个俱乐部谁都建不了，因为那时还没人是任何俱乐部的管理员。第一个平台管理员<b>没有自助入口</b>，靠人工改库引导。</span></li>
+  <li><b>7</b><span><b>平台管理员不自动获得各俱乐部的数据权限。</b>他能建俱乐部、能指定谁当创建者，但看不到某场赛事报名者的手机号 —— 那条只对该赛事的俱乐部管理员开放。「能开店」和「能翻店里的客户名单」不该是同一个权限。</span></li>
+  <li><b>8</b><span><b>图标可传可不传。</b>第一个是传过的，后两个<b>用俱乐部名首字加主色块兜底</b> —— 和头像同一套，跟赛事封面「没传就用主色渐变」是同一条规则。灰色占位图会让那个俱乐部看起来像坏了。</span></li>
+  <li><b>9</b><span>图标按<b>方形 4px 圆角</b>渲染，不裁成圆 —— 俱乐部 logo 常带文字，裁圆会把字切掉。出图 240×240 PNG（logo 常有透明背景，JPEG 会糊上白底）。</span></li>
 </ul>
 </x-dc>
 </body>
