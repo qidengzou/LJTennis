@@ -40,11 +40,16 @@ export type DrawFormat =
  */
 export interface MatchFormat {
   // ── 盘 ────────────────────────────────────────────────
-  /** 几盘几胜 */
-  setsToWin: number;
+  /**
+   * **先赢几盘算赢** —— 不是「总共打几盘」。
+   *   `2` + `decidingSet:'full'` = 三盘两胜
+   *   `2` + `decidingSet:'tb10'` = 两盘 + 决胜抢十
+   *   `1` = 单盘
+   */
+  sets: number;
 
   /**
-   * 决胜盘怎么打，仅 `setsToWin >= 2` 有意义。
+   * 决胜盘怎么打，仅 `sets >= 2` 有意义。
    * `'tb10'`（1-1 后打一个抢十）是业余双打主流 ——
    * **和 `gamesToWin: 0` 的「整场一个抢十」不是一回事**。
    */

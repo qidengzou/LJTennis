@@ -112,11 +112,11 @@ m = game(m, 1); s2.push(T.server(m));
 eq(s2, ['甲', '乙', '甲'], '单打每局换发');
 
 // ── 结构化格式 ──────────────────────────────────────────────
-// 旧的扁平枚举表达不了「两盘 + 决胜抢十」：setsToWin:2 是第三盘打满，
+// 旧的扁平枚举表达不了「两盘 + 决胜抢十」：sets:2 是第三盘打满，
 // tb10 是整场只有一个抢十，都不是这个 —— 而它是业余双打最主流的赛制。
 console.log('\n[10b] 决胜盘抢十（默认赛制）');
 m = T.createMatch({ serveOrder: ORDER });
-eq([m.format.setsToWin, m.format.decidingSet], [2, 'tb10'], '默认就是两盘 + 决胜抢十');
+eq([m.format.sets, m.format.decidingSet], [2, 'tb10'], '默认就是两盘 + 决胜抢十');
 for (let i = 0; i < 6; i++) m = game(m, 0);      // A 拿下第一盘
 for (let i = 0; i < 6; i++) m = game(m, 1);      // B 拿下第二盘
 eq([m.setWins, m.tiebreak], [[1, 1], true], '1-1 之后自动进抢十，不再打满一盘');
@@ -135,15 +135,15 @@ eq([m.setWins, m.tiebreak], [[1, 1], false], '1-1 之后仍是普通一盘');
 console.log('\n[10d] 格式是配置不是枚举');
 eq(T.formatLabel('sets2_st10_gp'), '两盘 + 决胜抢十 · 6局金球 · 抢七',
    '文案由配置推导，顺序是盘 → 局 → 分');
-eq(T.formatLabel({ setsToWin: 1, gamesToWin: 5 }), '单盘 · 5局金球 · 抢六',
+eq(T.formatLabel({ sets: 1, gamesToWin: 5 }), '单盘 · 5局金球 · 抢六',
    '预设之外的自定义组合也能用，且文案自动对');
 
 // 抢几分跟着局数走：4 局抢五、6 局抢七 —— 不传 tiebreakTo 时自动推
-eq(T.resolveFormat({ setsToWin: 2, gamesToWin: 4 }).tiebreakTo, 5, '4 局默认抢五');
-eq(T.resolveFormat({ setsToWin: 2, gamesToWin: 6 }).tiebreakTo, 7, '6 局默认抢七');
-eq(T.resolveFormat({ setsToWin: 2, gamesToWin: 4 }).tiebreakAt, 4, '几平进抢七默认等于局数');
-eq(T.resolveFormat({ setsToWin: 1, gamesToWin: 0 }).tiebreakTo, 10, '整场一个抢十没有局可跟，兜底成 10');
-eq(T.resolveFormat({ setsToWin: 2, gamesToWin: 4, tiebreakTo: 7 }).tiebreakTo, 7, '显式传了就不推导');
+eq(T.resolveFormat({ sets: 2, gamesToWin: 4 }).tiebreakTo, 5, '4 局默认抢五');
+eq(T.resolveFormat({ sets: 2, gamesToWin: 6 }).tiebreakTo, 7, '6 局默认抢七');
+eq(T.resolveFormat({ sets: 2, gamesToWin: 4 }).tiebreakAt, 4, '几平进抢七默认等于局数');
+eq(T.resolveFormat({ sets: 1, gamesToWin: 0 }).tiebreakTo, 10, '整场一个抢十没有局可跟，兜底成 10');
+eq(T.resolveFormat({ sets: 2, gamesToWin: 4, tiebreakTo: 7 }).tiebreakTo, 7, '显式传了就不推导');
 
 console.log('\n[10e] 4 局制走通');
 m = T.createMatch({ serveOrder: ORDER, format: 'short4_gp' });
