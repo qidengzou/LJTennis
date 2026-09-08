@@ -135,16 +135,23 @@ eq([m.setWins, m.tiebreak], [[1, 1], false], '1-1 之后仍是普通一盘');
 console.log('\n[10d] 格式是配置不是枚举');
 eq(T.formatLabel('sets2_st10_gp'), '两盘 + 决胜抢十 · 6局金球 · 抢七',
    '文案由配置推导，顺序是盘 → 局 → 分');
-eq(T.formatLabel({ setsToWin: 1, gamesToWin: 5 }), '单盘 · 5局金球 · 抢六',
+eq(T.formatLabel({ setsToWin: 1, gamesToWin: 5 }), '单盘 · 5局金球 · 抢七',
    '预设之外的自定义组合也能用，且文案自动对');
 
 // 抢几分跟着局数走：4 局抢五、6 局抢七 —— 不传 tiebreakTo 时自动推
 eq(T.resolveFormat({ setsToWin: 2, gamesToWin: 4 }).tiebreakTo, 5, '4 局默认抢五');
 eq(T.resolveFormat({ setsToWin: 2, gamesToWin: 6 }).tiebreakTo, 7, '6 局默认抢七');
+// 8 局制（pro set）是 8-8 抢七，不是「局数+1」推出来的抢九
+eq(T.resolveFormat({ setsToWin: 1, gamesToWin: 8 }).tiebreakTo, 7, '8 局默认抢七，不是抢九');
 eq(T.resolveFormat({ setsToWin: 2, gamesToWin: 4 }).tiebreakAt, 4, '几平进抢七默认等于局数');
-eq(T.resolveFormat({ setsToWin: 1, gamesToWin: 0 }).tiebreakTo, 10, '整场一个抢十没有局可跟，兜底成 10');
+eq(T.resolveFormat({ setsToWin: 1, gamesToWin: 1, tiebreakAt: 0 }).tiebreakTo, 10,
+   'tiebreakAt: 0（一开局就进）默认抢十');
+eq(T.resolveFormat({ setsToWin: 2, gamesToWin: 6 }).decidingTiebreakTo, undefined,
+   '决胜盘不填就是打满，没有 0 这个哨兵值');
+try { T.resolveFormat({ setsToWin: 1, gamesToWin: 0 }); eq('无异常', '应抛错', 'gamesToWin: 0 应报错'); }
+catch (e) { eq(true, true, 'gamesToWin: 0 被拒 —— 整场抢十要用 tiebreakAt: 0 表达'); }
 eq(T.resolveFormat({ setsToWin: 2, gamesToWin: 4, tiebreakTo: 7 }).tiebreakTo, 7, '显式传了就不推导');
-eq(T.resolveFormat({ setsToWin: 2, gamesToWin: 6 }).decidingTiebreakTo, 0, '决胜盘默认打满，不抢');
+
 
 // 决胜抢七（不是抢十）—— 换成 union 就表达不了，number 才行
 m = T.createMatch({ serveOrder: ORDER, format: { setsToWin: 2, gamesToWin: 6, decidingTiebreakTo: 7 } });
@@ -154,6 +161,15 @@ for (let i = 0; i < 6; i++) m = game(m, 1);
 eq(m.tiebreak, true, '1-1 进决胜抢七');
 m = win(m, 0, 7);
 eq([m.finished, m.sets[2].tiebreak], [true, { a: 7, b: 0 }], '抢到 7 分就结束，不是 10');
+
+console.log('\n[10e2] 八局制走通');
+m = T.createMatch({ serveOrder: ORDER, format: 'proset8_gp' });
+for (let i = 0; i < 7; i++) { m = game(m, 0); m = game(m, 1); }
+eq([m.games, m.tiebreak, m.finished], [[7, 7], false, false], '7-7 还没到抢七');
+m = game(m, 0); m = game(m, 1);
+eq([m.games, m.tiebreak], [[8, 8], true], '8-8 才进抢七');
+m = win(m, 0, 7);
+eq([m.finished, m.sets[0]], [true, { a: 9, b: 8, tiebreak: { a: 7, b: 0 } }], '抢七拿下，记成 9-8');
 
 console.log('\n[10e] 4 局制走通');
 m = T.createMatch({ serveOrder: ORDER, format: 'short4_gp' });
