@@ -107,9 +107,9 @@
           <tr><td class="mut">☐</td><td><b>方正</b></td><td>男双</td><td class="mut">155****1200</td><td><span class="st wait">待编排</span> <span class="mut">· 已邀请队友</span></td><td class="mut">4月4日 21:36</td><td>¥120</td><td class="mut">⋯</td></tr>
           <tr><td class="mut">☐</td><td><b>邵斌</b></td><td>男双</td><td class="mut">133****8899</td><td><span class="st wait">待编排</span></td><td class="mut">4月6日 11:20</td><td class="mut">免付 · 补入</td><td class="mut">⋯</td></tr>
 
-          <tr><td class="mut">☐</td><td><b>白杨</b></td><td>男双</td><td class="mut">150****3344</td><td><span class="st wait">候补转正 · 剩 21h</span></td><td class="mut">4月5日 18:02</td><td class="mut">未付</td><td class="mut">催一下</td></tr>
-          <tr><td class="mut">☐</td><td><b>孙浩</b></td><td>男双</td><td class="mut">137****2211</td><td><span class="st wait">候补 1</span></td><td class="mut">4月4日 19:30</td><td class="mut">未付</td><td class="mut">转正</td></tr>
-          <tr><td class="mut">☐</td><td><b>郑凯</b></td><td>男双</td><td class="mut">130****1122</td><td><span class="st wait">候补 2</span></td><td class="mut">4月5日 11:02</td><td class="mut">未付</td><td class="mut">⋯</td></tr>
+          <tr><td class="mut">☐</td><td><b>孙浩</b></td><td>男双</td><td class="mut">137****2211</td><td><span class="st wait">候补 1</span></td><td class="mut">4月4日 19:30</td><td>¥120</td><td class="mut">转正</td></tr>
+          <tr><td class="mut">☐</td><td><b>郑凯</b></td><td>男双</td><td class="mut">130****1122</td><td><span class="st wait">候补 2</span></td><td class="mut">4月5日 11:02</td><td>¥120</td><td class="mut">⋯</td></tr>
+          <tr><td class="mut">☐</td><td><b>白杨</b></td><td>男双</td><td class="mut">150****3344</td><td><span class="st wait">候补 3</span></td><td class="mut">4月5日 18:02</td><td>¥120</td><td class="mut">⋯</td></tr>
 
           <tr><td class="mut">☐</td><td><b>何平</b></td><td>男双</td><td class="mut">152****9911</td><td><span class="st gray">作废 · 截止未组队</span></td><td class="mut">4月1日 09:44</td><td class="mut">¥120 已退</td><td class="mut">⋯</td></tr>
           <tr><td class="mut">☐</td><td><b>许涛</b></td><td>男单</td><td class="mut">150****3344</td><td><span class="st gray">已退款</span></td><td class="mut">4月1日 16:20</td><td class="mut">¥120 已退</td><td class="mut">⋯</td></tr>
@@ -122,12 +122,12 @@
 <ul class="anns">
   <li><b>1</b><span>桌面端的价值就是<b>批量操作</b> —— 勾选后批量退款、批量移除。这是小程序做不了、也不该做的事。</span></li>
   <li><b>2</b><span><b>「参赛」这一列单双打、成没成组混排</b>：待编排时是一个人，进了签位才是两个名字。<code>Entry</code>（1~2 人）这个抽象让它不用分两种渲染。列头写「参赛」不写「组合」。</span></li>
-  <li><b>3</b><span><b>没有「待付款」。</b>报名即付款，那个状态和它的 24 小时计时器一并消掉了（<code>PRD.md</code> §4）。所以这一屏也没有「批量催付」——<b>屏上唯一还带倒计时的只有候补转正 24h</b>。</span></li>
-  <li><b>4</b><span><b>候补不预付</b>，所以候补行的「未付」不是欠款，是规则。只有候补第 1 位带「转正」，其余收进「⋯」，避免误点插队。</span></li>
+  <li><b>3</b><span><b>这一屏一个倒计时都没有</b>，也没有「批量催付」。报名即付款、候补也先收款，两个待付状态和它们的计时器全消掉了（<code>PRD.md</code> §4）。剩下的两个等待态（待编排 / 候补）<b>同一个出口：报名截止那一刻结算</b>。</span></li>
+  <li><b>4</b><span><b>候补也付了钱</b>，所以候补行的费用列有金额，不是「未付」。<b>「转正」只出现在候补第 1 位</b>，其余收进「⋯」，避免误点插队 —— 点下去<b>立刻生效</b>，钱已经收过，不用通知本人也不用等他付。</span></li>
   <li><b>5</b><span><b>「主办方补入」的人费用列显示「免付 · 补入」，不显示金额</b> —— 否则月底对账会把它算成一笔收入。补入发生在签表屏（第 7 屏），人源是已入会的俱乐部成员。</span></li>
   <li><b>6</b><span><b>「代录报名」替线下报名的人建一条 Entry</b>，但那个人<b>必须已经注册</b> —— 没有占位账号、没有代建账号，这条红线不破。代录的默认免付，和补入同一套标记。</span></li>
   <li><b>7</b><span>手机号在后台<b>仍然只显示掩码</b>。真号存服务端，导出 CSV 时才带全号并记一条操作日志。</span></li>
-  <li><b>8</b><span>状态色沿用小程序的固定映射：待编排 / 候补 / 候补转正 = 橙，已确认 = 绿，作废 / 已退款 = 灰。<b>作废要写清原因</b>（「截止未组队」），否则选手来问时组织者自己也说不上来。</span></li>
+  <li><b>8</b><span>状态色沿用小程序的固定映射：待编排 / 候补 = 橙，已确认 = 绿，作废 / 已退款 = 灰。<b>作废要写清原因</b>（「截止未组队」），否则选手来问时组织者自己也说不上来。</span></li>
 </ul>
 </x-dc>
 </body>

@@ -114,7 +114,8 @@
     .dock{background:var(--c-surface);border-top:1px solid var(--c-line);padding:10px 16px 18px;display:flex;flex-direction:column;gap:7px}
     .btn{height:46px;border-radius:var(--r-m);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600}
     .btn.pri{background:var(--c-brand);color:var(--c-brand-ink);box-shadow:0 6px 16px rgba(46,79,216,.32)}
-    .btn.wait{background:var(--c-live);color:var(--c-on-live);box-shadow:0 6px 16px rgba(245,165,36,.32)}
+    .btn.wait{background:var(--c-wx);color:#fff;box-shadow:0 6px 16px rgba(7,193,96,.32)}
+    :root{--c-wx:#07C160}
     .plist{background:var(--c-surface);border-radius:var(--r-l);box-shadow:var(--e-1);overflow:hidden}
     .pr{display:flex;align-items:center;gap:10px;padding:10px 14px}
     .pr + .pr{border-top:1px solid var(--c-surface-2)}
@@ -153,8 +154,9 @@
     </div>
 
     <div class="banner" style="display:{{fullShow}}">
-      <b style="color:var(--c-ink)">名额已满，现在报进的是候补。</b>候补<b style="color:var(--c-ink)">不用先付款</b> ——
-      有人退赛时按顺序转正，转正后 <span class="num">24</span> 小时内付款即可。
+      <b style="color:var(--c-ink)">名额已满，现在报进的是候补 —— 同样要先付款。</b>
+      有人退出时按顺序<b style="color:var(--c-ink)">立刻转正</b>；到报名截止仍没转上，
+      <b style="color:var(--c-ink)">全额退款</b>。
     </div>
 
     <div class="info">
@@ -194,8 +196,9 @@
   <li><b>1</b><span><b>登录墙在这个按钮上，不在这一屏的入口。</b>整屏免登录能看完 —— 费用、赛制、谁报了名。<b>点「报名」那一下才弹注册</b>，注册完自动回来继续。这是分享拉新的关键：先让人看见值不值得来。</span></li>
   <li><b>2</b><span><b>已报名列表里单双打、成没成队混排</b>：成了队的显示两个名字，还没配上的显示一个 + 「还缺搭档」。这不是技术细节的泄漏 —— <b>它正是选手决定要不要来的依据</b>：看到有两个人还缺搭档，一个人也敢报。</span></li>
   <li><b>3</b><span><b>「自评」摆出来。</b>业余赛最怕报了名发现水平差一大截。这是注册时那个滑杆第二个真正被用到的地方（第一个是签表的排序）。</span></li>
-  <li><b>4</b><span><b>满员不是错误状态</b> —— 橙不是红，按钮<b>不灰掉</b>而是变成「加入候补」。旁边的横幅先说清「候补不用先付款」，别让人以为交了钱还排队。</span></li>
-  <li><b>5</b><span><b>候补按钮用主色不用微信绿</b>：绿色在本项目只给微信原生能力（支付、手机号授权），而加候补<b>不触发支付</b>。这条规则在报名确认页也一样。</span></li>
+  <li><b>4</b><span><b>满员不是错误状态</b> —— 橙不是红，按钮<b>不灰掉</b>而是变成「加入候补 · ¥100」。金额写在按钮上，别让人点下去才发现要付钱。</span></li>
+  <li><b>5</b><span><b>候补也先收款</b>，所以这个按钮<b>用微信绿</b> —— 它真的会唤起微信支付，和上面「报名」是同一条链路。绿色在本项目只给微信原生能力，这里名副其实。<br>换来的是：有人退出时候补<b>立刻转正</b>，不用通知本人、不用等他 24 小时内付款 —— 那个定时任务和 <code>promoted</code> 状态一起没了（<code>PRD.md</code> §4）。</span></li>
+  <li><b>8</b><span><b>「付了钱也可能打不上」写在按钮正下方。</b>这是先收款唯一的代价，藏起来第一次退款就会变成客诉。没转正的到报名截止<b>全额退</b>，不按赛前天数扣。</span></li>
   <li><b>6</b><span>赛制和格式写在这儿而不是藏起来：<b>「6 局金球」和「三盘两胜」是两回事</b> —— 短盘讲一盘打几局，金球讲平分怎么办。业余选手对这两个很敏感，写清楚能减少现场争执。</span></li>
   <li><b>7</b><span>这一屏<b>没有须知和协议</b>，那些在报名确认页（<code>entry/create</code>）。这里回答「要不要来」，那里回答「确认付钱」—— 两个问题不要挤在一屏。</span></li>
 </ul>
@@ -213,10 +216,10 @@ class Component extends DCLogic {
       barW:      full ? '100%' : '75%',
       fullShow:  full ? 'block' : 'none',
       ctaCls:    full ? 'wait' : 'pri',
-      ctaText:   full ? '加入候补' : '报名 · ¥100',
-      dockNote:  full ? '候补不收款，转正后再付' : '点了先注册，注册完回到这里继续',
+      ctaText:   full ? '加入候补 · ¥100' : '报名 · ¥100',
+      dockNote:  full ? '付了钱也可能打不上 —— 没转正全额退' : '点了先注册，注册完回到这里继续',
       noteText:  full
-        ? '候补按报名先后排队。有人退赛时第 1 位先转正，24 小时不付就顺延下一位。'
+        ? '候补按报名先后排队。有人退出时第 1 位立刻转正 —— 钱已经收过，不用再等谁付款。'
         : '双打一个人也能先报 —— 交完钱进「待编排」，搭档由主办方在签表上安排；到报名截止仍没配上，自动作废并全额退款。',
     };
   }

@@ -55,21 +55,28 @@ export type EventStatus =
   | 'done';
 
 /**
- * 报名状态机。三个「等待态」各有超时出口，见 Entry 上的 *DeadlineAt 字段。
+ * 报名状态机。两个「等待态」（seeking_partner / waitlisted）**同一个出口**：
+ * 报名截止那一刻结算，没进签位的作废退款、没转正的候补全额退款。
+ * 没有任何按状态各自计时的倒计时字段。
  * 状态色映射固定（design-system-v2 §01）：
- *   seeking_partner / waitlisted / promoted → live 橙
+ *   seeking_partner / waitlisted → live 橙
  *   confirmed → win 绿
  *   cancelled / refunded → void 灰
  */
 export type EntryStatus =
   /**
-   * 等待态①：**待组队**。报名即付款，付完就落在这里。
+   * 等待态①：**待编排**。报名即付款，付完就落在这里。
    * 双打只有这一条路径：接受邀请、扫码报名、朋友推荐进来的完全一样，
-   * 区别只是 invitedBy 填没填。组队一律由主办方在后台手动完成。
+   * 区别只是 invitedBy 填没填。成组一律由主办方在签表屏上完成。
    */
   | 'seeking_partner'
-  | 'waitlisted'        // 候补中，不预付
-  | 'promoted'          // 等待态③：候补转正，24h 内须付款
+  /**
+   * 等待态②：**候补**。**同样先收款** —— 有人退出立刻转正（改状态即可，
+   * 不用等谁响应），到报名截止仍没转上则全额退款。
+   * 付了钱但**不占正式名额**：占名额的只有 seeking_partner / confirmed。
+   * 旧的 'promoted'（转正待付）随先收款一起删掉了。
+   */
+  | 'waitlisted'
   | 'confirmed'         // 已确认参赛，进签表
   | 'cancelled'         // 作废（拒绝 / 超时 / 主动取消）
   | 'refunding'

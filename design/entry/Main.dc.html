@@ -34,8 +34,8 @@
 
     <!-- 满员时先说清楚，别让人付完了才知道进的是候补 -->
     <div style="display: {{bannerShow}}; background: #FFF6E5; border-left: 3px solid #F5A524; border-radius: 8px; padding: 10px 12px; font-size: 13px; line-height: 1.6; color: #4C5567">
-      <b style="color:#141821">名额已满。</b>现在提交的是<b style="color:#141821">候补</b>，<b style="color:#141821">先不付款</b>。
-      有人退赛时按顺序转正，转正后再来付这 <span class="num">¥120</span>。
+      <b style="color:#141821">名额已满，现在提交的是候补 —— 同样先付款。</b>
+      有人退出时立刻转正；到报名截止仍没转上，<b style="color:#141821">全额退款</b>。
     </div>
 
     <!-- 赛事上下文：人在这一屏最容易忘了自己在报什么 -->
@@ -84,7 +84,7 @@
       <div class="k" style="margin-bottom:10px">须知</div>
       <div style="display:flex;flex-direction:column;gap:9px;font-size:13px;line-height:1.6;color:#4C5567">
         <div style="display:flex;gap:8px"><b class="num" style="color:#2E4FD8">1</b><span><b style="color:#141821">报名即付款。</b>付完进「待组队」，不是「已确认」——组队由主办方在后台完成。</span></div>
-        <div style="display:flex;gap:8px"><b class="num" style="color:#2E4FD8">2</b><span>报名截止仍未组上队，报名<b style="color:#141821">作废并全额退款</b>，不用自己申请。</span></div>
+        <div style="display:flex;gap:8px"><b class="num" style="color:#2E4FD8">2</b><span>报名截止仍未组上队、或候补仍未转正，<b style="color:#141821">作废并全额退款</b>，不用自己申请。</span></div>
         <div style="display:flex;gap:8px"><b class="num" style="color:#2E4FD8">3</b><span>已确认后想退，走「我的报名 → 申请退款」。</span></div>
       </div>
     </div>
@@ -110,12 +110,12 @@ class Component extends DCLogic {
     const waitlist = this.props.scene === '已满 · 加入候补';
     return {
       bannerShow: waitlist ? 'block' : 'none',
-      payLabel:   waitlist ? '现在应付' : '应付',
-      payAmount:  waitlist ? '¥0' : '¥120',
-      payFg:      waitlist ? '#7B8496' : '#141821',
-      // 候补不走支付，所以按钮不是微信绿 —— 绿色在本项目只给微信原生能力
-      ctaBg:      waitlist ? '#2E4FD8' : '#07C160',
-      ctaText:    waitlist ? '加入候补' : '微信支付 ¥120',
+      payLabel:   waitlist ? '应付（候补）' : '应付',
+      payAmount:  '¥120',
+      payFg:      '#141821',
+      // 候补也走支付，所以照样是微信绿 —— 绿色只给微信原生能力，这里名副其实
+      ctaBg:      '#07C160',
+      ctaText:    waitlist ? '微信支付 ¥120 · 加入候补' : '微信支付 ¥120',
     };
   }
 }
