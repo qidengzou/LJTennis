@@ -1,10 +1,13 @@
 /**
- * LJTennis 数据模型 v1.0
- * 第一版范围：注册 + 报名 + 记分 + 积分（双打）
+ * LJTennis 数据模型 v1.1
+ * 第一版范围：注册 + 报名 + 记分 + 积分（单打 + 双打）
  *
- * 这份类型定义从 design/ 下的 41 屏高保真反推而来，
- * 同时作为小程序、后端、组织者后台三端的契约。
- * 每个字段后面标注了它出现在哪一屏。
+ * **这份文件是类型与状态机的真身。** 冲突时以它为准 —— 产品规则看
+ * `PRD.md`，页面结构看 `SPEC.md`，但字段和枚举以这里为准。
+ * 三端（小程序、云函数、网页后台）共用这一份契约。
+ *
+ * ⚠️ 契约会**领先于实现**。代码还没跟上的地方记在 `SPEC.md` §5「待修」，
+ * 不要反过来改这份文件去迁就旧代码。
  */
 
 // ============================================================
@@ -19,16 +22,37 @@ export type EventType =
   | 'MS'   // 男单
   | 'WS';  // 女单
 
-/** 赛制。第一版只做两种 */
+/** 赛制。第一版只做两种，覆盖约 90% 的业余赛事。见 PRD.md §5 */
 export type DrawFormat =
   | 'knockout'        // 单败淘汰 → 树状签表
-  | 'group_knockout'; // 小组循环取前二出线 → 小组积分表 + 树状签表
+  | 'group_knockout'; // 小组循环 → 小组积分表 + 树状签表（出线数见 Event.qualifyCount）
 
-/** 比赛赛制。由赛事设定，选手不可改（避免两边记的赛制不一致） */
+/**
+ * 比赛格式。由赛事设定，选手不可改（避免两边记的赛制不一致）。
+ *
+ * **与 `DrawFormat` 是两个维度**：DrawFormat 决定签表长什么样，
+ * MatchFormat 决定一分怎么算。
+ *
+ * **「短盘」和「金球」也是两个维度**：短盘讲一盘打几局，
+ * 金球（no-ad）讲平分之后怎么办 —— 平分不打占先，下一分定胜负。
+ *
+ * 取值必须与 `mp/miniprogram/utils/tennis.js` 的 `FORMATS` 逐个对齐。
+ */
 export type MatchFormat =
-  | 'short6_tb'   // 6 局短盘，6-6 抢七
-  | 'long6_tb'    // 标准 6 局
+  | 'short6_gp'   // 6 局金球，6-6 抢七，三盘两胜 —— **默认**
+  | 'short6_tb'   // 6 局短盘（占先制），6-6 抢七，三盘两胜
+  | 'single6_tb'  // 单盘 6 局，抢七
   | 'tb10';       // 抢十
+
+/** 赛事积分等级。组织者选等级，各轮次分值由平台固定 —— 见 PRD.md §7 */
+export type TournamentTier = 'A' | 'B' | 'C';
+
+/** 俱乐部会员状态。入会要管理员审核；**审批只管入会，不管报名** —— PRD.md §2 */
+export type MembershipStatus =
+  | 'pending'    // 申请中
+  | 'active'     // 已入会
+  | 'rejected'   // 被拒，可再申请
+  | 'removed';   // 被移除，可再申请
 
 export type Gender = 'M' | 'F';
 
@@ -115,7 +139,14 @@ export interface User {
    */
   gender: Gender;
 
-  /** 手机号。**加密存储，绝不返回给其他选手**。自己看时脱敏为 138****6421 */
+  /**
+   * 手机号。**绝不返回给其他选手** —— 选手侧任何地方都只看到掩码
+   * `138****6421`，包括自己的。真号只在云函数里存在。
+   *
+   * ⚠️ **字段名超前于实现：现在存的是明文。** 加密方案见 `SPEC.md` §4，
+   * 它必须和 `admin.*` 鉴权一起做（`SPEC.md` §5.1）—— 只加密不做访问控制，
+   * 号还是谁都能导。谁能看到全号的规则见 `PRD.md` §9。
+   */
   phoneEncrypted: string;
 
   city?: string;
@@ -167,6 +198,29 @@ export interface Tournament {
   status: TournamentStatus;
   description?: string;
   organizerId: string;
+
+  /** 所属俱乐部。「你是某俱乐部管理员，所以能以俱乐部名义办赛」 */
+  clubId: string;
+
+  /** 积分等级。组织者选，分值由平台固定 —— 自由填分值会让全局榜失去可比性 */
+  tier: TournamentTier;
+
+  /**
+   * 封面。**可选** —— 没传不是错误状态，用主色渐变加赛事名首字水印兜底，
+   * 灰色占位图会让那场赛事看起来像坏了。出图 1125×630，见 `design/DESIGN.md` §2
+   */
+  coverUrl?: string;
+}
+
+/** 俱乐部会员。**旁挂在报名链路之外** —— Entry 绝不查 Membership，见 PRD.md §2 */
+export interface Membership {
+  id: string;
+  clubId: string;
+  userId: string;
+  status: MembershipStatus;
+  appliedAt: string;
+  reviewedAt?: string;
+  reviewedBy?: string;
 }
 
 export interface Event {
@@ -176,16 +230,47 @@ export interface Event {
   drawFormat: DrawFormat;
   matchFormat: MatchFormat;
 
-  /** 名额（组数） */
+  /**
+   * 名额。**单位跟着比赛走**：双打是「队」，单打是「人」——
+   * 界面上照这个渲染（16 队 / 16 人）。`Entry`（1~2 人）让这一列
+   * 只换单位、不换逻辑。**「组」这个词留给小组循环的小组**。
+   */
   capacity: number;
 
   /** 报名费，单位「分」。**0 = 免费，报名状态机走捷径直接 confirmed** */
   feeCents: number;
 
-  status: EventStatus;
+  /** 候补上限。建赛时设 */
+  waitlistCapacity?: number;
 
-  // 派生字段，列表页直接用
-  confirmedCount: number;
+  // ---- 小组循环专用。drawFormat === 'knockout' 时无意义 ----
+  /**
+   * 每组几**队**。建赛时按比赛设 —— 男双和女双可以不一样。**默认 4**：
+   * 业余赛第一诉求是「来一趟多打几场」，4 队一组每队保底 3 场。
+   * 代价是 12 队分 3×4 后出线 6 队填不满 8 签位，会有 2 个轮空。
+   */
+  groupSize?: 3 | 4;
+
+  /**
+   * 每组取前几出线。**第一版固定 2，不给组织者配。**
+   *
+   * 它不是自由旋钮：`出线队数 = 组数 × qualifyCount`，而这个乘积必须
+   * 填得进 2 的幂签表。4 队一组取前 3 会得到 9 队进 16 签位、7 个轮空 ——
+   * 一张没法看的签表。取前 1 则让小组赛最后一轮变成走过场。
+   *
+   * **同一个比赛里所有小组必须一致**，所以它在 Event 上而不是 Group 上。
+   * 字段留着：第二版遇到「8 组取第一」这种场景改一个值即可，不动模型。
+   */
+  qualifyCount?: number;
+
+  // ---- 派生字段，列表页直接用 ----
+  /**
+   * **占了正式名额**的条数 = `seeking_partner` + `confirmed`。
+   * 曾经这里叫 confirmedCount 且只数 confirmed —— 于是待编排那批
+   * （已付款、占着名额）被漏掉，直接超发。**别用「付没付钱」去判名额**：
+   * 候补也付了钱，但占的是候补位。
+   */
+  occupiedCount: number;
   waitlistCount: number;
 }
 
@@ -201,30 +286,57 @@ export interface Entry {
   id: string;
   eventId: string;
 
-  /** [发起人, 搭档]。顺序有意义：playerIds[0] === initiatorId */
+  /**
+   * 参赛人。**报名时只有一个人** —— 成组发生在主办方把第二个人拖进
+   * 同一签位那一刻（PRD.md §5），拖出来就拆回两条 Entry。单打恒为 1 人。
+   */
   playerIds: string[];
 
-  /** 发起人。**由他一人付清全款** —— 每多一个付款环节就多掉一批人 */
+  /**
+   * 报名人。**每人付自己那一份，没有代付** —— 两个陌生人之间代付很尴尬，
+   * 单独报名时更是根本没有「发起人」这个角色。
+   */
   initiatorId: string;
 
   status: EntryStatus;
 
-  // ---- 三个等待态的超时时间。到点由定时任务自动流转 ----
-  /** ①搭档确认截止。超时 → cancelled */
-  partnerDeadlineAt?: string;
-  /** ②支付截止。超时 → cancelled 并释放名额，随即触发候补转正 */
-  paymentDeadlineAt?: string;
-  /** ③候补转正后的支付截止（转正时间 +24h）。超时 → cancelled 并顺延下一位候补 */
-  promotionDeadlineAt?: string;
+  // ---- 来源。两个字段必须分开，这是正确性问题不是记账问题 ----
+  /**
+   * **邀请队友**：想跟我一队的人接受邀请后填这里。**参与配对** ——
+   * 签表屏进屏时会把有这层关系的两人预先并好。
+   */
+  invitedBy?: string;
+  /**
+   * **邀请朋友**：只是叫人来打同一场，**不进同一队**。只做来源统计，
+   * 第一版不做界面，但字段要存 —— 冷启动阶段「人从哪来」丢了就补不回来。
+   *
+   * ⚠️ 与 `invitedBy` **共用一个字段会出错**：配对屏会把「张伟叫李强来
+   * 打比赛」误读成「张伟想跟李强一队」，生成一条看起来很有道理的错误建议，
+   * 管理员多半就点确认了。
+   */
+  referredBy?: string;
 
   /** 候补位次，从 1 开始。按钮上要显示（「加入候补 · 第 4 位」） */
   waitlistPosition?: number;
 
-  /** 种子号，组织者后台设定，可空 */
+  /**
+   * **主办方补入**。人凑不满一张签表时，主办方从本俱乐部已入会成员里
+   * 直接挑人进签位（PRD.md §5）。这类 Entry **默认免付**，账目上要分得开 ——
+   * 月底对账不能把它算成一笔收入。
+   *
+   * 边界：补人只能补进签表，**不能替人报名** —— 被补的人必须已注册。
+   */
+  addedByOrganizer?: boolean;
+
+  /**
+   * 种子号。**第一版一律为空** —— 抽签是随机的，抽完主办方手动拖调
+   * （PRD.md §5）。字段留着是接口：第二版加种子只是多一步排序，不改模型。
+   */
   seed?: number;
 
   createdAt: string;
-  partnerRespondedAt?: string;
+  /** 候补转正时刻。候补先收过款，所以转正立刻生效，没有「转正待付」这一档 */
+  promotedAt?: string;
   paidAt?: string;
   cancelledAt?: string;
 }
@@ -232,12 +344,15 @@ export interface Entry {
 export interface Order {
   id: string;
   entryId: string;
-  /** 付款人 === entry.initiatorId */
+  /**
+   * 付款人。**每人付自己那一份** —— 双打一条 Entry 对应**两笔** Order，
+   * 不是一笔全款。候补也有 Order：候补同样先收款（PRD.md §4）。
+   */
   payerId: string;
   amountCents: number;
   status: OrderStatus;
   wxTransactionId?: string;
-  /** 与 entry 的 paymentDeadlineAt 一致 */
+  /** 微信支付本身的订单过期时间。**与报名状态无关** —— 报名没有支付倒计时 */
   expiresAt: string;
   refundCents?: number;
   refundedAt?: string;
@@ -249,23 +364,39 @@ export interface Order {
 // 签表与场次
 // ============================================================
 
-/** 小组（仅 group_knockout） */
+/**
+ * 小组（仅 group_knockout）。
+ * **出线名额不在这里** —— 它在 `Event.qualifyCount` 上，因为同一个比赛里
+ * 所有小组必须一致，否则出线队数不确定、签表算不出来。
+ */
 export interface Group {
   id: string;
   eventId: string;
   /** A / B / C … */
   name: string;
   entryIds: string[];
-  /** 出线名额，默认 2 */
-  qualifyCount: number;
 }
 
-/** 小组积分行。同分看净胜局 —— 这条规则要显示在表下面，不能藏进规则页 */
+/**
+ * 小组积分行。
+ *
+ * **判定顺序：胜场 → 净胜盘 → 净胜局 → 抽签。** 由平台写死，组织者不可配 ——
+ * 赛场上临时改判定顺序，就是在颁奖前吵架。这条规则要显示在表下面，
+ * 不能藏进规则页。
+ *
+ * 三队一组最常出现的是**三方循环**（每队都 1 胜 1 负），光看胜场排不出名次，
+ * 净胜盘一比就分开了 —— 所以 `setDiff` 必须存，不能只存净胜局。
+ */
 export interface GroupStanding {
   entryId: string;
   rank: number;
   wins: number;
   losses: number;
+  /** 净胜盘的分子分母。**排在净胜局之前比** */
+  setsWon: number;
+  setsLost: number;
+  /** setsWon - setsLost */
+  setDiff: number;
   gamesWon: number;
   gamesLost: number;
   /** gamesWon - gamesLost */
@@ -349,11 +480,15 @@ export interface Match {
 /**
  * 积分记录。**排「人」不排「组合」** —— 双打搭档会换，排组合没有连续性。
  *
- * ⚠️ 以下规则尚未确定，界面按通行假设绘制，规则一定后只需改分值来源：
- *   1. 各轮次分值（冠军/亚军/四强/八强/十六强/小组未出线）
- *   2. 赛事等级系数
- *   3. 双打是两人各得全额还是各得一半
- *   4. 赛季划分方式（当前假设：自然年，年末清零）
+ * 已定：**组织者选等级（A/B/C），各轮次分值由平台固定**。不让组织者自由
+ * 填分值，否则全局榜会失去可比性 —— 赛事 A 冠军给 1000、赛事 B 给 100，
+ * 榜首可能只是参加了分值虚高的赛事。ATP 榜单成立恰恰因为 1000/500/250
+ * 是等级而不是自由输入框。见 PRD.md §7。
+ *
+ * ⚠️ 以下仍未定，界面按通行假设绘制，定了只需改分值来源：
+ *   1. A/B/C 各轮次的**具体分值**（冠军/亚军/四强/八强/十六强/小组未出线）
+ *   2. 双打是两人各得全额还是各得一半
+ *   3. 赛季划分方式（当前假设：自然年，年末清零）
  */
 export interface PointRecord {
   id: string;
@@ -382,17 +517,26 @@ export interface RankRow {
 }
 
 // ============================================================
-// 定时任务（后端必须实现，缺一个就会有名额烂在手里）
+// 定时任务
 // ============================================================
 
+/**
+ * **一个按状态各自计时的倒计时都没有。**
+ *
+ * 原来有三个（搭档确认 48h、支付 24h、候补转正 24h），随着两条规则一起消失：
+ *   · 「报名即付款」 → 搭档确认和支付两个等待态没了
+ *   · 「候补也先收款」 → 转正立刻生效，不用等谁付款
+ *
+ * 剩下的两个等待态（`seeking_partner` / `waitlisted`）**同一个出口**：
+ * 报名截止那一刻结算。所以只需要一个定时任务，而且它跑的时间是确定的。
+ */
 export type ScheduledJob =
-  /** ① 搭档邀请超时 → entry.cancelled */
-  | 'expire_partner_invite'
-  /** ② 支付超时 → entry.cancelled + 释放名额 + 触发候补转正 */
-  | 'expire_payment'
-  /** ③ 候补转正 24h 未付 → cancelled + **自动顺延下一位候补**（业余赛退赛率高，会频繁触发） */
-  | 'expire_promotion'
-  /** ④ 报名截止 → event.closed */
-  | 'close_registration'
-  /** ⑤ 赛前提醒订阅消息 */
+  /**
+   * ① 报名截止结算。一次做完三件事：
+   *   · event.status → closed
+   *   · 仍在 seeking_partner 的（没进签位）→ cancelled + 全额退款
+   *   · 仍在 waitlisted 的（没转正）→ cancelled + 全额退款，不按赛前天数扣
+   */
+  | 'settle_registration_deadline'
+  /** ② 赛前提醒订阅消息 */
   | 'send_match_reminder';
