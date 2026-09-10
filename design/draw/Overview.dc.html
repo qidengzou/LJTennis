@@ -1,0 +1,201 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    :root{
+      --c-ground:#F4F5F7;--c-surface:#FFFFFF;--c-surface-2:#EBEDF2;
+      --c-ink:#141821;--c-ink-2:#4C5567;--c-ink-3:#7B8496;--c-line:#DFE2E9;
+      --c-brand:#2E4FD8;--c-brand-ink:#FFFFFF;--c-brand-weak:#E7EBFC;
+      --c-win:#0E9F6E;--c-loss:#E0294B;--c-live:#F5A524;--c-on-live:#FFFFFF;--c-void:#7B8496;
+      --c-serve:#D9E64B;
+      --c-av-1:#2E4FD8;--c-av-2:#5B6EA8;--c-av-3:#7A5EA8;--c-av-4:#3F6E7F;--c-av-5:#5A6470;
+      /* 令牌换算：750rpx = 375px，所以下面全是小程序值的一半 */
+      --r-s:4px;--r-m:8px;--r-l:12px;--r-full:999px;
+      --h-control:44px;--h-cta:48px;
+      --t-score:48px;--t-set:17px;--t-h1:22px;--t-h2:18px;--t-h3:16px;
+      --t-body:14px;--t-caption:12px;--t-micro:10px;
+      --e-1:0 1px 4px rgba(20,24,33,.06);--e-2:0 4px 16px rgba(20,24,33,.12);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;padding:18px;background:#E9EBEF;color:var(--c-ink);
+      font-size:var(--t-body);line-height:1.5;
+      font-family:-apple-system,"PingFang SC","HarmonyOS Sans SC","Source Han Sans CN",system-ui,sans-serif}
+    a{color:var(--c-brand)}a:hover{color:#243FAD}
+    .stage{display:flex;gap:24px;align-items:flex-start}
+    .cap{font-size:12px;color:var(--c-ink-3);margin:0 0 10px}
+    .phone{width:375px;background:var(--c-ground);border-radius:28px;overflow:hidden;
+      box-shadow:0 10px 40px rgba(20,24,33,.18);display:flex;flex-direction:column}
+    /* 二级页的导航：返回箭头 + 标题 + 微信胶囊 */
+    .nav{height:44px;flex:none;background:var(--c-surface);border-bottom:1px solid var(--c-line);
+      display:flex;align-items:center;justify-content:center;position:relative;font-size:17px;font-weight:600}
+    .nav .bk{position:absolute;left:14px;top:12px;width:10px;height:20px;color:var(--c-ink)}
+    .nav .capsule{position:absolute;right:10px;top:7px;width:87px;height:30px;border:1px solid var(--c-line);
+      border-radius:15px;display:flex;align-items:center;justify-content:space-evenly;color:var(--c-ink-2);font-size:11px}
+    .nav .capsule i{width:1px;height:16px;background:var(--c-line)}
+    .k{font-size:var(--t-caption);color:var(--c-ink-3)}
+    .num{font-variant-numeric:tabular-nums}
+    .card{background:var(--c-surface);border-radius:var(--r-l);box-shadow:var(--e-1);padding:14px}
+    .row-between{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .btn{height:var(--h-cta);border-radius:var(--r-m);display:flex;align-items:center;justify-content:center;
+      font-size:16px;font-weight:600}
+    .btn-primary{background:var(--c-brand);color:var(--c-brand-ink);box-shadow:0 6px 16px rgba(46,79,216,.30)}
+    .btn-outline{background:var(--c-surface);color:var(--c-ink-2);border:1px solid var(--c-line)}
+    .chip{display:inline-flex;align-items:center;height:22px;padding:0 10px;border-radius:var(--r-full);
+      border:1px solid var(--c-line);background:var(--c-surface);font-size:11px;color:var(--c-ink-2)}
+    .chip.live{background:#FDF0DC;border-color:transparent;color:#B87508;font-weight:600}
+    .chip.win{background:#E4F6EE;border-color:transparent;color:var(--c-win);font-weight:600}
+    .chip.gray{background:var(--c-surface-2);border-color:transparent;color:var(--c-void)}
+    .seg{display:flex;background:var(--c-surface-2);border-radius:var(--r-m);padding:3px;gap:3px}
+    .seg-i{flex:1;height:38px;border-radius:6px;display:flex;align-items:center;justify-content:center;
+      font-size:14px;color:var(--c-ink-2);min-width:0;padding:0 6px;text-align:center}
+    .seg-i.on{background:var(--c-surface);color:var(--c-ink);font-weight:600;box-shadow:var(--e-1)}
+    .anns{margin:18px 0 0;padding:0;list-style:none;display:grid;gap:6px;max-width:820px}
+    .anns li{font-size:12px;color:var(--c-ink-2);display:flex;gap:8px;align-items:flex-start}
+    .anns li > b{flex:none;width:16px;height:16px;border-radius:999px;border:1px solid #B03A2E;color:#B03A2E;
+      font-size:9.5px;display:grid;place-items:center;margin-top:2px;font-weight:400}
+
+    /* —— 照 pages/draw/index.wxss 换算（rpx / 2）—— */
+    .pg{flex:1;min-height:0;padding:12px;display:flex;flex-direction:column;gap:10px;overflow:hidden}
+    .segwrap{overflow:hidden}
+    .chips{display:flex;gap:6px;flex-wrap:wrap}
+    .fchip{border:1px solid var(--c-line);border-radius:var(--r-full);padding:4px 11px;
+      font-size:var(--t-caption);color:var(--c-ink-2)}
+    .fchip.on{background:var(--c-brand-weak);border-color:var(--c-brand);color:var(--c-brand);font-weight:600}
+    /* 场次卡：占满整行，双打两个名字用正常字号排得下 —— 分页方案的核心收益 */
+    .mc{background:var(--c-surface);border-radius:var(--r-l);padding:12px 14px;box-shadow:var(--e-1);
+      display:flex;flex-direction:column;gap:8px}
+    .mc.mine{outline:2px solid var(--c-brand);outline-offset:-2px}
+    .mc-h{display:flex;justify-content:space-between;align-items:center;gap:8px;
+      font-size:var(--t-caption);color:var(--c-ink-3)}
+    .mc-r{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:var(--t-h3)}
+    .mc-r.lose{color:var(--c-ink-3)}
+    .nm{flex:1;min-width:0;word-break:break-word}
+    .nm.pend{color:var(--c-ink-3)}
+    .sc{display:flex;gap:10px;flex:none}
+    .sc span{min-width:15px;text-align:center;font-size:var(--t-set);font-weight:600;font-variant-numeric:tabular-nums}
+    .sup{font-size:9px;vertical-align:super;margin-left:1px}
+    .dash{color:var(--c-ink-3);flex:none}
+    .mt12{margin-top:4px}
+    .sec{margin-top:8px}
+    /* 小组积分表 */
+    .gt-h,.gt-row{display:flex;align-items:center;gap:6px;padding:9px 4px;border-bottom:1px solid var(--c-line)}
+    .gt-h{font-size:var(--t-micro);color:var(--c-ink-3);padding-bottom:7px}
+    .gt-row:last-of-type{border-bottom:0}
+    .gt-row.q{background:rgba(14,159,110,.08)}
+    .c-r{width:22px;text-align:center;color:var(--c-ink-3);font-size:var(--t-caption)}
+    .c-n{flex:1;min-width:0;font-size:var(--t-body)}
+    .c-v{width:48px;text-align:right;font-size:var(--t-h3);font-weight:600;font-variant-numeric:tabular-nums}
+    .gt-note{display:block;margin-top:8px}
+    /* 全览图 */
+    .cv{flex:1;min-height:0;background:var(--c-ground);display:flex;align-items:center;justify-content:center;padding:8px}
+    .bar{flex:none;padding:10px 14px 14px;background:var(--c-surface);border-top:1px solid var(--c-line);
+      display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .mini{border:1px solid var(--c-line);border-radius:var(--r-full);padding:5px 12px;
+      font-size:var(--t-caption);color:var(--c-ink-2)}
+    .mini.on{background:var(--c-brand-weak);border-color:var(--c-brand);color:var(--c-brand);font-weight:600}
+  </style>
+</helmet>
+<div class="stage">
+  <div>
+    <p class="cap">全览图 · 适应屏幕后</p>
+    <div class="phone" style="height:760px">
+      <div class="nav"><svg class="bk" viewBox="0 0 10 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 1.5 1.5 10l7 8.5"/></svg>全览图<div class="capsule"><span>&#8226;&#8226;&#8226;</span><i></i><span>&#9678;</span></div></div>
+      <div class="cv">
+        <svg viewBox="0 0 698 656" width="100%" style="max-height:100%" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system,PingFang SC,sans-serif">
+          <path d="M166 43 H177 V121 H166 M177 82 H188" fill="none" stroke="#DFE2E9" stroke-width="1.5"/>
+          <path d="M166 199 H177 V277 H166 M177 238 H188" fill="none" stroke="#DFE2E9" stroke-width="1.5"/>
+          <path d="M166 355 H177 V433 H166 M177 394 H188" fill="none" stroke="#DFE2E9" stroke-width="1.5"/>
+          <path d="M166 511 H177 V589 H166 M177 550 H188" fill="none" stroke="#DFE2E9" stroke-width="1.5"/>
+          <path d="M338 82 H349 V238 H338 M349 160 H360" fill="none" stroke="#DFE2E9" stroke-width="1.5"/>
+          <path d="M338 394 H349 V550 H338 M349 472 H360" fill="none" stroke="#DFE2E9" stroke-width="1.5"/>
+          <path d="M510 160 H521 V472 H510 M521 316 H532" fill="none" stroke="#DFE2E9" stroke-width="1.5"/>
+          <text x="16" y="12" font-size="11" font-weight="600" fill="#7B8496">16强</text>
+          <rect x="16" y="16" width="150" height="54" rx="8" fill="#E7EBFC" stroke="#2E4FD8" stroke-width="1.5"/>
+          <line x1="26" y1="43" x2="156" y2="43" stroke="#EBEDF2" stroke-width="1"/>
+          <text x="26" y="33" font-size="12" fill="#141821">张伟/李强</text>
+          <text x="26" y="60" font-size="12" fill="#141821">陈明/刘洋</text>
+          <rect x="16" y="94" width="150" height="54" rx="8" fill="#FFFFFF" stroke="#DFE2E9" stroke-width="1.5"/>
+          <line x1="26" y1="121" x2="156" y2="121" stroke="#EBEDF2" stroke-width="1"/>
+          <text x="26" y="111" font-size="12" fill="#4C5567">高翔/秦朗</text>
+          <text x="26" y="138" font-size="12" fill="#4C5567">郑凯/白杨</text>
+          <rect x="16" y="172" width="150" height="54" rx="8" fill="#FFFFFF" stroke="#DFE2E9" stroke-width="1.5"/>
+          <line x1="26" y1="199" x2="156" y2="199" stroke="#EBEDF2" stroke-width="1"/>
+          <text x="26" y="189" font-size="12" fill="#4C5567">马超/秦岭</text>
+          <text x="26" y="216" font-size="12" fill="#4C5567">杜康/方正</text>
+          <rect x="16" y="250" width="150" height="54" rx="8" fill="#FFFFFF" stroke="#DFE2E9" stroke-width="1.5"/>
+          <line x1="26" y1="277" x2="156" y2="277" stroke="#EBEDF2" stroke-width="1"/>
+          <text x="26" y="267" font-size="12" fill="#4C5567">孙浩/吴迪</text>
+          <text x="26" y="294" font-size="12" fill="#4C5567">邵斌/许涛</text>
+          <rect x="16" y="328" width="150" height="54" rx="8" fill="#FFFFFF" stroke="#DFE2E9" stroke-width="1.5"/>
+          <line x1="26" y1="355" x2="156" y2="355" stroke="#EBEDF2" stroke-width="1"/>
+          <text x="26" y="345" font-size="12" fill="#4C5567">周航/戴维</text>
+          <text x="26" y="372" font-size="12" fill="#4C5567">林峰/罗宇</text>
+          <rect x="16" y="406" width="150" height="54" rx="8" fill="#FFFFFF" stroke="#DFE2E9" stroke-width="1.5"/>
+          <line x1="26" y1="433" x2="156" y2="433" stroke="#EBEDF2" stroke-width="1"/>
+          <text x="26" y="423" font-size="12" fill="#4C5567">钱进/万里</text>
+          <text x="26" y="450" font-size="12" fill="#4C5567">程磊/尹哲</text>
+          <rect x="16" y="484" width="150" height="54" rx="8" fill="#FFFFFF" stroke="#DFE2E9" stroke-width="1.5"/>
+          <line x1="26" y1="511" x2="156" y2="511" stroke="#EBEDF2" stroke-width="1"/>
+          <text x="26" y="501" font-size="12" fill="#4C5567">黄涛/曹阳</text>
+          <text x="26" y="528" font-size="12" fill="#4C5567">谢军/贺鹏</text>
+          <rect x="16" y="562" width="150" height="54" rx="8" fill="#FFFFFF" stroke="#DFE2E9" stroke-width="1.5"/>
+          <line x1="26" y1="589" x2="156" y2="589" stroke="#EBEDF2" stroke-width="1"/>
+          <text x="26" y="579" font-size="12" fill="#4C5567">姜昊/崔明</text>
+          <text x="26" y="606" font-size="12" fill="#4C5567">袁飞/毕川</text>
+          <text x="188" y="12" font-size="11" font-weight="600" fill="#7B8496">8强</text>
+          <rect x="188" y="55" width="150" height="54" rx="8" fill="#E7EBFC" stroke="#2E4FD8" stroke-width="1.5"/>
+          <line x1="198" y1="82" x2="328" y2="82" stroke="#EBEDF2" stroke-width="1"/>
+          <text x="198" y="72" font-size="12" fill="#141821">张伟/李强</text>
+          <text x="198" y="99" font-size="12" fill="#141821">高翔/秦朗</text>
+          <rect x="188" y="211" width="150" height="54" rx="8" fill="#FFFFFF" stroke="#DFE2E9" stroke-width="1.5"/>
+          <line x1="198" y1="238" x2="328" y2="238" stroke="#EBEDF2" stroke-width="1"/>
+          <text x="198" y="228" font-size="12" fill="#4C5567">马超/秦岭</text>
+          <text x="198" y="255" font-size="12" fill="#4C5567">孙浩/吴迪</text>
+          <rect x="188" y="367" width="150" height="54" rx="8" fill="#FFFFFF" stroke="#DFE2E9" stroke-width="1.5"/>
+          <line x1="198" y1="394" x2="328" y2="394" stroke="#EBEDF2" stroke-width="1"/>
+          <text x="198" y="384" font-size="12" fill="#4C5567">周航/戴维</text>
+          <text x="198" y="411" font-size="12" fill="#4C5567">钱进/万里</text>
+          <rect x="188" y="523" width="150" height="54" rx="8" fill="#FFFFFF" stroke="#DFE2E9" stroke-width="1.5"/>
+          <line x1="198" y1="550" x2="328" y2="550" stroke="#EBEDF2" stroke-width="1"/>
+          <text x="198" y="540" font-size="12" fill="#4C5567">黄涛/曹阳</text>
+          <text x="198" y="567" font-size="12" fill="#4C5567">姜昊/崔明</text>
+          <text x="360" y="12" font-size="11" font-weight="600" fill="#7B8496">半决赛</text>
+          <rect x="360" y="133" width="150" height="54" rx="8" fill="#E7EBFC" stroke="#2E4FD8" stroke-width="1.5"/>
+          <line x1="370" y1="160" x2="500" y2="160" stroke="#EBEDF2" stroke-width="1"/>
+          <text x="370" y="150" font-size="12" fill="#7B8496">待定</text>
+          <text x="370" y="177" font-size="12" fill="#7B8496">待定</text>
+          <rect x="360" y="445" width="150" height="54" rx="8" fill="#FFFFFF" stroke="#DFE2E9" stroke-width="1.5"/>
+          <line x1="370" y1="472" x2="500" y2="472" stroke="#EBEDF2" stroke-width="1"/>
+          <text x="370" y="462" font-size="12" fill="#7B8496">待定</text>
+          <text x="370" y="489" font-size="12" fill="#7B8496">待定</text>
+          <text x="532" y="12" font-size="11" font-weight="600" fill="#7B8496">决赛</text>
+          <rect x="532" y="289" width="150" height="54" rx="8" fill="#E7EBFC" stroke="#2E4FD8" stroke-width="1.5"/>
+          <line x1="542" y1="316" x2="672" y2="316" stroke="#EBEDF2" stroke-width="1"/>
+          <text x="542" y="306" font-size="12" fill="#7B8496">待定</text>
+          <text x="542" y="333" font-size="12" fill="#7B8496">待定</text>
+        </svg>
+      </div>
+      <div class="bar">
+        <span class="k">单指拖动 · 双指缩放</span>
+        <div class="chips"><div class="mini">适应屏幕</div><div class="mini on">我的路径</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+<ul class="anns">
+  <li><b>1</b><span><b>全览图单开一屏，不塞进签表页里。</b>它解决的是「整张表长什么样」，是个偶尔的需求 —— 常用的是「我下一场打谁」，那个在分页视图里。两件事挤一屏，两件事都做不好。</span></li>
+  <li><b>2</b><span>用 <code>canvas</code> 画不用 DOM 排：<b>单指拖动、双指缩放</b>要跟手，DOM 方案在低端机上拖起来会掉帧。这张稿的几何和实现一致 —— 列宽 172、盒子 150×54、行高 78。</span></li>
+  <li><b>3</b><span><b>「适应屏幕」是必须有的一个按钮。</b>缩放拖动之后人一定会迷路，得有一键回到全局 —— 没有它，用户只能退出去重进。</span></li>
+  <li><b>4</b><span><b>「我的路径」在这里是压暗别人</b>，不是过滤掉别人 —— 树状图删掉一半盒子，连线就断了，剩下的看不出是一张签表。</span></li>
+  <li><b>5</b><span>盒子里<b>两行之间有一条浅分隔线</b>：一个盒子是一场，两行是两方。没有这条线，八个盒子叠下来像十六行名单。</span></li>
+  <li><b>6</b><span>轮次标签贴着<b>每列上方</b>而不是做成固定表头 —— 缩放之后表头会跟内容对不上，贴着列走的标签不会。</span></li>
+</ul>
+</x-dc>
+</body>
+</html>
