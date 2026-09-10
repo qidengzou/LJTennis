@@ -101,8 +101,12 @@
     .undo{border:1px solid var(--c-line);color:var(--c-ink-2);border-radius:var(--r-full);
       padding:5px 13px;font-size:var(--t-caption)}
     .sync{text-align:center;font-size:var(--t-caption);color:var(--c-live)}
-    .switch{text-align:center;font-size:var(--t-caption);color:var(--c-ink-3)}
-    .switch b{color:var(--c-brand);font-weight:600}
+    .hint{text-align:center;font-size:var(--t-caption);color:var(--c-ink-3);line-height:1.5}
+    /* 空盘位是虚线框：既是占位，也是「这儿能直接填」的邀请 */
+    .bc.slot{border:1px dashed var(--c-line);border-radius:var(--r-s);height:32px;
+      display:grid;place-items:center;color:var(--c-line);font-size:15px}
+    .bc.slot.bad{border-color:var(--c-loss);border-style:solid;color:var(--c-loss)}
+    .bc.typed{border-bottom:2px solid var(--c-brand-weak)}
     .foot{margin-top:auto}
     .quit{margin-top:10px;text-align:center;font-size:var(--t-caption);color:var(--c-ink-3);padding:6px 0}
     .verdict{display:flex;align-items:flex-start;gap:8px;border-radius:var(--r-m);padding:10px 12px;
@@ -131,7 +135,7 @@
 </helmet>
 <div class="stage">
   <div>
-    <p class="cap">记分中 · 逐分点</p>
+    <p class="cap">正在逐分点</p>
     <div class="phone" style="height:760px">
       <div class="nav"><svg class="bk" viewBox="0 0 10 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 1.5 1.5 10l7 8.5"/></svg>记分<div class="capsule"><span>&#8226;&#8226;&#8226;</span><i></i><span>&#9678;</span></div></div>
       <div class="scr">
@@ -146,7 +150,6 @@
           <div class="tz-p">30</div>
         </div>
 
-        <!-- 我方在下。这一块正被按下：整块变 brand-weak，不做水波纹 -->
         <div class="tapz hit">
           <div class="tz-names">
             <div class="tz-n"><span class="sdot on"></span>张伟</div>
@@ -157,14 +160,95 @@
 
         <div class="board">
           <div class="bhead"><span class="bn"></span><span class="bc">1</span><span class="bc">2</span><span class="bc">3</span></div>
-          <div class="brow"><span class="bn">张伟 / 李强</span><span class="bc w">7<i>7</i></span><span class="bc now">3</span><span class="bc empty">&#8212;</span></div>
-          <div class="brow"><span class="bn">陈明 / 刘洋</span><span class="bc">6<i>5</i></span><span class="bc now">2</span><span class="bc empty">&#8212;</span></div>
+          <div class="brow"><span class="bn">张伟 / 李强</span><span class="bc w">7<i>7</i></span><span class="bc now">3</span><span class="bc slot"></span></div>
+          <div class="brow"><span class="bn">陈明 / 刘洋</span><span class="bc">6<i>5</i></span><span class="bc now">2</span><span class="bc slot"></span></div>
         </div>
         <div class="barrow"><span class="sync">离线 · 3 分未同步</span><span class="undo">撤销</span></div>
-        <div class="switch">懒得逐分点？<b>改成直接填比分</b></div>
+        <div class="hint">盘分也可以<b>直接点着填</b> &#8212; 不逐分点一样能结束比赛</div>
 
         <div class="foot">
           <div class="btn btn-outline">结束比赛</div>
+          <!-- 退出 ≠ 返回：返回只是离开这一屏，记分权还在他手上 -->
+          <div class="quit">退出记分，让别人来记</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div>
+    <p class="cap">一分没点，直接把盘分填进同一块板</p>
+    <div class="phone" style="height:760px">
+      <div class="nav"><svg class="bk" viewBox="0 0 10 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 1.5 1.5 10l7 8.5"/></svg>记分<div class="capsule"><span>&#8226;&#8226;&#8226;</span><i></i><span>&#9678;</span></div></div>
+      <div class="scr">
+        <div class="scr-head"><span>春季双打赛 · 3 号场</span><span>6局金球 · 抢七 · 两盘+决胜抢十</span></div>
+
+        <!-- 对方在上：抬头就是球网对面，贴合球场物理方位 -->
+        <div class="tapz">
+          <div class="tz-names">
+            <div class="tz-n"><span class="sdot"></span>陈明</div>
+            <div class="tz-n"><span class="sdot"></span>刘洋</div>
+          </div>
+          <div class="tz-p">0</div>
+        </div>
+
+        <div class="tapz">
+          <div class="tz-names">
+            <div class="tz-n"><span class="sdot on"></span>张伟</div>
+            <div class="tz-n"><span class="sdot"></span>李强</div>
+          </div>
+          <div class="tz-p">0</div>
+        </div>
+
+        <div class="board">
+          <div class="bhead"><span class="bn"></span><span class="bc">1</span><span class="bc">2</span><span class="bc">3</span></div>
+          <div class="brow win"><span class="bn">张伟 / 李强</span><span class="bc typed">6</span><span class="bc typed">6</span><span class="bc slot"></span></div>
+          <div class="brow"><span class="bn">陈明 / 刘洋</span><span class="bc typed">4</span><span class="bc typed">3</span><span class="bc slot"></span></div>
+        </div>
+
+        <div class="verdict ok"><span>&#10003;</span><span><b>张伟 / 李强 2-0 获胜</b><br>赢够两盘，可以结束比赛 &#8212; 但这场没有小分，直播面板只能显示局分</span></div>
+
+        <div class="foot">
+          <div class="btn btn-primary">结束比赛并提交</div>
+          <!-- 退出 ≠ 返回：返回只是离开这一屏，记分权还在他手上 -->
+          <div class="quit">退出记分，让别人来记</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div>
+    <p class="cap">填了个打不出来的分</p>
+    <div class="phone" style="height:760px">
+      <div class="nav"><svg class="bk" viewBox="0 0 10 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 1.5 1.5 10l7 8.5"/></svg>记分<div class="capsule"><span>&#8226;&#8226;&#8226;</span><i></i><span>&#9678;</span></div></div>
+      <div class="scr">
+        <div class="scr-head"><span>春季双打赛 · 3 号场</span><span>6局金球 · 抢七 · 两盘+决胜抢十</span></div>
+
+        <!-- 对方在上：抬头就是球网对面，贴合球场物理方位 -->
+        <div class="tapz">
+          <div class="tz-names">
+            <div class="tz-n"><span class="sdot"></span>陈明</div>
+            <div class="tz-n"><span class="sdot"></span>刘洋</div>
+          </div>
+          <div class="tz-p">0</div>
+        </div>
+
+        <div class="tapz">
+          <div class="tz-names">
+            <div class="tz-n"><span class="sdot on"></span>张伟</div>
+            <div class="tz-n"><span class="sdot"></span>李强</div>
+          </div>
+          <div class="tz-p">0</div>
+        </div>
+
+        <div class="board">
+          <div class="bhead"><span class="bn"></span><span class="bc">1</span><span class="bc">2</span><span class="bc">3</span></div>
+          <div class="brow"><span class="bn">张伟 / 李强</span><span class="bc slot bad">6</span><span class="bc slot"></span><span class="bc slot"></span></div>
+          <div class="brow"><span class="bn">陈明 / 刘洋</span><span class="bc slot bad">5</span><span class="bc slot"></span><span class="bc slot"></span></div>
+        </div>
+
+        <div class="verdict no"><span>!</span><span><b>第 1 盘只领先 1 局，收不了盘</b><br>6 局制里 6-5 打不出来 &#8212; 要么 7-5，要么 7-6 再补抢七分</span></div>
+
+        <div class="foot">
+          <div class="btn btn-outline" style="opacity:.5">结束比赛</div>
+          <!-- 退出 ≠ 返回：返回只是离开这一屏，记分权还在他手上 -->
           <div class="quit">退出记分，让别人来记</div>
         </div>
       </div>
@@ -172,18 +256,19 @@
   </div>
 </div>
 <ul class="anns">
-  <li><b>1</b><span><b>整块可点，126pt 高。</b>一场 60~100 分，每一分都要点一下 —— 点击区做成 44pt 就等着点错。这是全站<b>唯一一处刻意远超 44pt</b> 的控件（<code>min-height: 252rpx</code>）。按下去整块变 <code>brand-weak</code>，不做水波纹：手指盖着的地方看不见涟漪。</span></li>
-  <li><b>2</b><span><b>对方在上、我方在下</b> —— 贴合球场物理方位：抬头是球网对面，低头是自己这半场。反过来放，每一分都要在脑子里转一次向。</span></li>
-  <li><b>3</b><span><b>发球点是网球黄</b>（<code>--c-serve</code>），<b>全站只有这一处用它</b>（<code>tokens.wxss</code> 里明写「别处禁用」）。双打四个人按 A1→B1→A2→B2 轮转，「现在轮到谁发」是最容易记错、也最容易吵起来的一件事。</span></li>
-  <li><b>4</b><span><b>比分板是一行一队、一列一盘</b>，电视记分条那种形式。它替掉了原来那条「盘 1:0 · 局 3:2」—— 那个要读，这个只要扫。<b>赢下的那一盘数字加粗转深，输的压灰</b>，不靠颜色区分；抢七分做上标（<code>7⁷ 6⁵</code>）。</span></li>
-  <li><b>5</b><span><b>当前这一盘用主色标出来</b>（3 : 2 那一列），还没打的盘是虚位。所以一眼能看出「打到第几盘、这一盘打到几比几」，不用再单开一个字段。</span></li>
-  <li><b>6</b><span><b>撤销是必需品，不是善后功能。</b>网球比分路径依赖 —— 点错一分不能直接把数字改回去（40 退回 30 还牵着局分、盘分、发球轮转），只能一步步退。所以它常驻在比分板旁边，不藏进菜单。</span></li>
-  <li><b>7</b><span><b>「离线 · 3 分未同步」是状态陈述，不是报错。</b>橙字、一行，不弹窗不变红。球场信号差是常态（<code>PRD.md</code> §6：离线优先是地基），界面一慌用户就会去反复刷新，反而更容易丢分。</span></li>
-  <li><b>8</b><span><b>「改成直接填比分」就在这一屏上切</b>，不是另一个页面 —— 打了两局发现懒得点了是常见情形。切过去比分板还是同一块，只是格子变成可填的（见「直接填比分」那一屏）。</span></li>
-  <li><b>9</b><span><b>「结束比赛」用描边不用主色。</b>这一屏鼓励你做的事是记分，不是结束；误触结束是真实风险。点完它变成「提交比分」—— 中间隔一次，给一个反悔的机会。</span></li>
-  <li><b>10</b><span><b>「退出记分」不等于左上角的返回。</b>返回只是离开这一屏 —— 去看眼签表、回个消息 —— <b>记分权还在他手上</b>；交权必须是显式的一下。而且它<b>要求本地已同步</b>：先交权后同步，接手的人从服务端拿到的是旧比分。没网时这一行点不动，写「未同步，先联网」。</span></li>
-  <li><b>11</b><span>它做成<b>文字链不是按钮</b>，压在「结束比赛」下面：低频、有后果，和主按钮并排只会增加误触。但也不能藏进菜单 —— 记分方临时有事要能一眼找到它，否则整场就卡死在他手上。</span></li>
-  <li><b>12</b><span>当前分 <b>48px</b>（96rpx）。判据是<b>站在底线能看清</b> —— 记分的人手机多半放在网柱边，掏出来瞄一眼，不是端在眼前读。</span></li>
+  <li><b>1</b><span><b>逐分点和直接填盘分是同一屏，不是两个模式。</b>没有切换开关 —— 上面两块可点，下面比分板的格子可填，<b>两样一直都在</b>。打了两局发现懒得点了，就直接往板上填；一分没点也能填满收工。做成两个模式，人还得先决定「我今天要用哪种」，而那个决定往往到第三局才做得出来。</span></li>
+  <li><b>2</b><span><b>整块可点，126pt 高。</b>一场 60~100 分，每一分都要点一下 —— 点击区做成 44pt 就等着点错。这是全站<b>唯一一处刻意远超 44pt</b> 的控件（<code>min-height: 252rpx</code>）。按下去整块变 <code>brand-weak</code>，不做水波纹：手指盖着的地方看不见涟漪。</span></li>
+  <li><b>3</b><span><b>对方在上、我方在下</b> —— 贴合球场物理方位：抬头是球网对面，低头是自己这半场。反过来放，每一分都要在脑子里转一次向。</span></li>
+  <li><b>4</b><span><b>发球点是网球黄</b>（<code>--c-serve</code>），<b>全站只有这一处用它</b>（<code>tokens.wxss</code> 里明写「别处禁用」）。双打四人按 A1→B1→A2→B2 轮转，「现在轮到谁发」最容易记错、也最容易吵起来。</span></li>
+  <li><b>5</b><span><b>比分板一行一队、一列一盘</b>，电视记分条那种形式。它替掉了原来那条「盘 1:0 · 局 3:2」—— 那个要读，这个只要扫。赢下的那一盘<b>数字加粗转深、输的压灰</b>，不靠颜色区分；抢七分做上标（<code>7⁷ 6⁵</code>）。</span></li>
+  <li><b>6</b><span><b>空盘位是虚线框</b> —— 既是占位，也是「这儿能直接填」的邀请。逐分点出来的数字不带框，手填的带一条浅底线，<b>一眼看得出这盘是点出来的还是填进去的</b>。</span></li>
+  <li><b>7</b><span><b>填的分必须是这个赛制下打得出来的。</b>第三屏是 6-5：6 局制里根本收不了盘。判据在 <code>utils/tennis.js</code> 的 <code>resultFromSets</code>，守卫在 <code>test/tennis.test.js</code> <code>[11b]</code>。<b>没有这道判据，签表会被一个打不出来的比分推进，事后没人查得出来。</b></span></li>
+  <li><b>8</b><span><b>报错要说清怎么改</b>，不是只说「不合法」：「6 局制里 6-5 打不出来 —— 要么 7-5，要么 7-6 再补抢七分」。填错的人多半不是不懂规则，是手滑。</span></li>
+  <li><b>9</b><span><b>判据实时给结论</b>，不等提交才报。绿条直接写「2-0 获胜，可以结束比赛」，同时获胜那一行带上底色 —— 和打完之后比分板长的样子一致。<b>「这场没有小分」也写在这条里</b>：不记小分就没有小分，直播面板只能显示局分。这是选择不是缺陷，但得让人在按下按钮之前就知道。</span></li>
+  <li><b>10</b><span><b>撤销是必需品，不是善后功能。</b>网球比分路径依赖 —— 点错一分不能直接把数字改回去（40 退回 30 还牵着局分、盘分、发球轮转），只能一步步退。所以它常驻在比分板旁边。<b>手填的盘分不走撤销</b>，直接点那个格子改就是了。</span></li>
+  <li><b>11</b><span><b>「离线 · 3 分未同步」是状态陈述，不是报错。</b>橙字、一行，不弹窗不变红。球场信号差是常态（<code>PRD.md</code> §6：离线优先是地基），界面一慌用户就会反复刷新，反而更容易丢分。</span></li>
+  <li><b>12</b><span><b>「结束比赛」用描边不用主色</b> —— 这一屏鼓励你做的事是记分，不是结束。但盘分一填满、判据说打完了，它就转成主色的「结束比赛并提交」：此刻最该点的确实是它。</span></li>
+  <li><b>13</b><span><b>「退出记分」不等于左上角的返回。</b>返回只是离开这一屏 —— 去看眼签表、回个消息 —— <b>记分权还在他手上</b>；交权必须是显式的一下。而且它<b>要求本地已同步</b>：先交权后同步，接手的人从服务端拿到的是旧比分。没网时这一行点不动，写「未同步，先联网」。它做成文字链压在主按钮下面：低频、有后果，并排放只会增加误触。</span></li>
 </ul>
 </x-dc>
 </body>
