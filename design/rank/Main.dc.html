@@ -1,0 +1,208 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    :root{
+      --c-ground:#F4F5F7;--c-surface:#FFFFFF;--c-surface-2:#EBEDF2;
+      --c-ink:#141821;--c-ink-2:#4C5567;--c-ink-3:#7B8496;--c-line:#DFE2E9;
+      --c-brand:#2E4FD8;--c-brand-ink:#FFFFFF;--c-brand-weak:#E7EBFC;
+      --c-win:#0E9F6E;--c-loss:#E0294B;--c-live:#F5A524;--c-on-live:#FFFFFF;--c-void:#7B8496;
+      --c-serve:#D9E64B;
+      --c-av-1:#2E4FD8;--c-av-2:#5B6EA8;--c-av-3:#7A5EA8;--c-av-4:#3F6E7F;--c-av-5:#5A6470;
+      /* 令牌换算：750rpx = 375px，所以下面全是小程序值的一半 */
+      --r-s:4px;--r-m:8px;--r-l:12px;--r-full:999px;
+      --h-control:44px;--h-cta:48px;
+      --t-score:48px;--t-set:17px;--t-h1:22px;--t-h2:18px;--t-h3:16px;
+      --t-body:14px;--t-caption:12px;--t-micro:10px;
+      --e-1:0 1px 4px rgba(20,24,33,.06);--e-2:0 4px 16px rgba(20,24,33,.12);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;padding:18px;background:#E9EBEF;color:var(--c-ink);
+      font-size:var(--t-body);line-height:1.5;
+      font-family:-apple-system,"PingFang SC","HarmonyOS Sans SC","Source Han Sans CN",system-ui,sans-serif}
+    a{color:var(--c-brand)}a:hover{color:#243FAD}
+    .stage{display:flex;gap:24px;align-items:flex-start}
+    .cap{font-size:12px;color:var(--c-ink-3);margin:0 0 10px}
+    .phone{width:375px;background:var(--c-ground);border-radius:28px;overflow:hidden;
+      box-shadow:0 10px 40px rgba(20,24,33,.18);display:flex;flex-direction:column}
+    /* 二级页的导航：返回箭头 + 标题 + 微信胶囊 */
+    .nav{height:44px;flex:none;background:var(--c-surface);border-bottom:1px solid var(--c-line);
+      display:flex;align-items:center;justify-content:center;position:relative;font-size:17px;font-weight:600}
+    .nav .bk{position:absolute;left:14px;top:12px;width:10px;height:20px;color:var(--c-ink)}
+    .nav .capsule{position:absolute;right:10px;top:7px;width:87px;height:30px;border:1px solid var(--c-line);
+      border-radius:15px;display:flex;align-items:center;justify-content:space-evenly;color:var(--c-ink-2);font-size:11px}
+    .nav .capsule i{width:1px;height:16px;background:var(--c-line)}
+    .k{font-size:var(--t-caption);color:var(--c-ink-3)}
+    .num{font-variant-numeric:tabular-nums}
+    .card{background:var(--c-surface);border-radius:var(--r-l);box-shadow:var(--e-1);padding:14px}
+    .row-between{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .btn{height:var(--h-cta);border-radius:var(--r-m);display:flex;align-items:center;justify-content:center;
+      font-size:16px;font-weight:600}
+    .btn-primary{background:var(--c-brand);color:var(--c-brand-ink);box-shadow:0 6px 16px rgba(46,79,216,.30)}
+    .btn-outline{background:var(--c-surface);color:var(--c-ink-2);border:1px solid var(--c-line)}
+    .chip{display:inline-flex;align-items:center;height:22px;padding:0 10px;border-radius:var(--r-full);
+      border:1px solid var(--c-line);background:var(--c-surface);font-size:11px;color:var(--c-ink-2)}
+    .chip.live{background:#FDF0DC;border-color:transparent;color:#B87508;font-weight:600}
+    .chip.win{background:#E4F6EE;border-color:transparent;color:var(--c-win);font-weight:600}
+    .chip.gray{background:var(--c-surface-2);border-color:transparent;color:var(--c-void)}
+    .seg{display:flex;background:var(--c-surface-2);border-radius:var(--r-m);padding:3px;gap:3px}
+    .seg-i{flex:1;height:38px;border-radius:6px;display:flex;align-items:center;justify-content:center;
+      font-size:14px;color:var(--c-ink-2);min-width:0;padding:0 6px;text-align:center}
+    .seg-i.on{background:var(--c-surface);color:var(--c-ink);font-weight:600;box-shadow:var(--e-1)}
+    .anns{margin:18px 0 0;padding:0;list-style:none;display:grid;gap:6px;max-width:820px}
+    .anns li{font-size:12px;color:var(--c-ink-2);display:flex;gap:8px;align-items:flex-start}
+    .anns li > b{flex:none;width:16px;height:16px;border-radius:999px;border:1px solid #B03A2E;color:#B03A2E;
+      font-size:9.5px;display:grid;place-items:center;margin-top:2px;font-weight:400}
+
+    .stage{display:flex;gap:24px;align-items:flex-start}
+    .tabbar{height:50px;flex:none;background:var(--c-surface);border-top:1px solid var(--c-line);display:flex}
+    .tabbar div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+      gap:2px;font-size:10px;color:var(--c-ink-3)}
+    .tabbar div.on{color:var(--c-brand)}
+    .tabbar svg{width:22px;height:22px}
+    .pg{flex:1;min-height:0;padding:12px;display:flex;flex-direction:column;gap:10px;overflow:hidden}
+    .fchips{display:flex;gap:6px;flex-wrap:wrap}
+    .fchip{border:1px solid var(--c-line);border-radius:var(--r-full);padding:5px 12px;
+      font-size:var(--t-caption);color:var(--c-ink-2);background:var(--c-surface)}
+    .fchip.on{background:var(--c-brand-weak);border-color:var(--c-brand);color:var(--c-brand);font-weight:600}
+    /* 我的名次：钉在筛选下面，不用滚到第 187 名去找自己 */
+    .mine{background:var(--c-brand);color:var(--c-brand-ink);border-radius:var(--r-l);
+      padding:12px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 6px 16px rgba(46,79,216,.28)}
+    .mine .rk{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;min-width:34px}
+    .mine .nm{flex:1;min-width:0;font-size:16px;font-weight:600}
+    .mine .v{text-align:right}
+    .mine .pt{font-size:19px;font-weight:700;font-variant-numeric:tabular-nums}
+    .mine .ev{font-size:11px;opacity:.8}
+    .list{background:var(--c-surface);border-radius:var(--r-l);box-shadow:var(--e-1);overflow:hidden}
+    .lh{display:flex;align-items:center;gap:10px;padding:8px 14px;font-size:var(--t-micro);
+      color:var(--c-ink-3);border-bottom:1px solid var(--c-line)}
+    .row{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--c-surface-2)}
+    .row:last-child{border-bottom:0}
+    .row.me{background:var(--c-brand-weak)}
+    .rk{width:26px;flex:none;text-align:center;font-size:15px;font-weight:600;
+      font-variant-numeric:tabular-nums;color:var(--c-ink-2)}
+    .rk.top{color:var(--c-brand)}
+    .av{width:30px;height:30px;border-radius:var(--r-full);flex:none;display:grid;place-items:center;
+      color:#fff;font-size:13px;font-weight:600}
+    .nm{flex:1;min-width:0;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .pt{width:52px;flex:none;text-align:right;font-size:16px;font-weight:700;font-variant-numeric:tabular-nums}
+    .ev{width:44px;flex:none;text-align:right;font-size:12px;color:var(--c-ink-3);font-variant-numeric:tabular-nums}
+    .lh .rk,.lh .pt,.lh .ev{font-size:var(--t-micro);font-weight:400;color:var(--c-ink-3)}
+    .note{font-size:var(--t-caption);color:var(--c-ink-3);line-height:1.6;padding:0 4px}
+    /* 我的积分明细 */
+    .sum{background:var(--c-surface);border-radius:var(--r-l);box-shadow:var(--e-1);padding:16px 14px;
+      display:flex;align-items:baseline;gap:16px}
+    .sum .big{font-size:36px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
+    .sum .u{font-size:var(--t-caption);color:var(--c-ink-3)}
+    .sum .sp{flex:1}
+    .prow{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--c-surface-2)}
+    .prow:last-child{border-bottom:0}
+    .prow .t{flex:1;min-width:0}
+    .prow .t b{display:block;font-size:14.5px;font-weight:600}
+    .prow .t span{font-size:12px;color:var(--c-ink-3)}
+    .prow .p{flex:none;font-size:17px;font-weight:700;font-variant-numeric:tabular-nums}
+    .prow .p.zero{color:var(--c-ink-3);font-weight:600}
+    .tag{display:inline-block;padding:1px 7px;border-radius:var(--r-full);font-size:10.5px;font-weight:600}
+    .tag.a{background:var(--c-brand);color:#fff}
+    .tag.b{background:var(--c-brand-weak);color:var(--c-brand)}
+    .tag.c{border:1px solid var(--c-line);color:var(--c-ink-3)}
+    .tbd{background:#FDF0DC;color:#B87508;border-radius:var(--r-m);padding:10px 12px;
+      font-size:var(--t-caption);line-height:1.55}
+    .anns{margin:18px 0 0;padding:0;list-style:none;display:grid;gap:6px;max-width:820px}
+    .anns li{font-size:12px;color:var(--c-ink-2);display:flex;gap:8px;align-items:flex-start}
+    .anns li > b{flex:none;width:16px;height:16px;border-radius:999px;border:1px solid #B03A2E;color:#B03A2E;
+      font-size:9.5px;display:grid;place-items:center;margin-top:2px;font-weight:400}
+  </style>
+</helmet>
+<div class="stage">
+  <div>
+    <p class="cap">积分榜 · 第 2 个 tab</p>
+    <div class="phone" style="height:780px">
+      <div class="nav">积分<div class="capsule"><span>&#8226;&#8226;&#8226;</span><i></i><span>&#9678;</span></div></div>
+      <div class="pg">
+        <div class="fchips">
+          <span class="fchip on">男双</span><span class="fchip">女双</span><span class="fchip">混双</span>
+          <span class="fchip">男单</span><span class="fchip">女单</span>
+        </div>
+        <div class="fchips">
+          <span class="fchip on">2026 赛季 &#9662;</span><span class="fchip">全部俱乐部 &#9662;</span>
+        </div>
+
+        <!-- 我的名次钉在这儿：不用滚到第 187 名去找自己 -->
+        <div class="mine">
+          <span class="rk">12</span><span class="nm">张伟</span>
+          <span class="v"><div class="pt">860</div><div class="ev">9 场</div></span>
+        </div>
+
+        <div class="list">
+          <div class="lh"><span class="rk">#</span><span style="width:30px"></span>
+            <span class="nm">选手</span><span class="pt">积分</span><span class="ev">场次</span></div>
+        <div class="row"><span class="rk top">1</span><span class="av" style="background:var(--c-av-1)">李</span><span class="nm">李昊</span><span class="pt">2,140</span><span class="ev">14 场</span></div>
+        <div class="row"><span class="rk top">2</span><span class="av" style="background:var(--c-av-2)">陈</span><span class="nm">陈明</span><span class="pt">1,980</span><span class="ev">11 场</span></div>
+        <div class="row"><span class="rk top">2</span><span class="av" style="background:var(--c-av-3)">王</span><span class="nm">王强</span><span class="pt">1,980</span><span class="ev">16 场</span></div>
+        <div class="row"><span class="rk">4</span><span class="av" style="background:var(--c-av-4)">刘</span><span class="nm">刘洋</span><span class="pt">1,720</span><span class="ev">12 场</span></div>
+        <div class="row"><span class="rk">5</span><span class="av" style="background:var(--c-av-5)">高</span><span class="nm">高翔</span><span class="pt">1,455</span><span class="ev">9 场</span></div>
+        <div class="row"><span class="rk">6</span><span class="av" style="background:var(--c-av-1)">郑</span><span class="nm">郑凯</span><span class="pt">1,320</span><span class="ev">13 场</span></div>
+        </div>
+        <div class="note">同分并列，且<b>并列占用名次</b>（1 · 2 · 2 · 4）。<br>
+          <b>场次</b>列不能省 &#8212; 没有它，「打得多分就高」会让榜单显得不公。</div>
+      </div>
+      <div class="tabbar">
+        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4a3 3 0 0 0 3 5M17 6h3a3 3 0 0 1-3 5"/></svg>赛事</div>
+        <div class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19h16M7 16V9M12 16V5M17 16v-4"/></svg>积分</div>
+        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/></svg>我的</div>
+      </div>
+    </div>
+  </div>
+  <div>
+    <p class="cap">我的积分 · 每一场拿了多少</p>
+    <div class="phone" style="height:780px">
+      <div class="nav"><svg class="bk" viewBox="0 0 10 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 1.5 1.5 10l7 8.5"/></svg>我的积分<div class="capsule"><span>&#8226;&#8226;&#8226;</span><i></i><span>&#9678;</span></div></div>
+      <div class="pg">
+        <div class="sum">
+          <div><div class="big">860</div><div class="u">2026 赛季 · 男双</div></div>
+          <span class="sp"></span>
+          <div style="text-align:right"><div class="big" style="font-size:24px">9</div><div class="u">参赛场次</div></div>
+          <div style="text-align:right"><div class="big" style="font-size:24px">12</div><div class="u">当前名次</div></div>
+        </div>
+
+        <div class="list">
+          <div class="lh"><span class="t" style="flex:1">每一场拿了多少</span><span>含 0 分</span></div>
+          <div class="prow"><div class="t"><b>四月市级公开赛 <span class="tag a">A</span></b><span>男双 · 亚军</span></div><span class="p">360</span></div>
+          <div class="prow"><div class="t"><b>春季双打赛 <span class="tag b">B</span></b><span>男双 · 8 强</span></div><span class="p">120</span></div>
+          <div class="prow"><div class="t"><b>三月社区赛 <span class="tag c">C</span></b><span>男双 · 小组未出线</span></div><span class="p zero">0</span></div>
+          <div class="prow"><div class="t"><b>冬季团体赛 <span class="tag b">B</span></b><span>男双 · 冠军</span></div><span class="p">380</span></div>
+        </div>
+
+        <div class="note"><b>0 分那一行必须列出来。</b>只列加分不列零分，
+          用户会怀疑漏算 &#8212; 而「参加了但没拿分」本来就是常态。</div>
+
+        <div class="tbd"><b>分值是占位的。</b>A/B/C 各轮次的具体分值、双打两人
+          各得全额还是各半、赛季怎么划 &#8212; 三件都还没定（<code>PRD.md</code> §7）。
+          定了只改分值来源，这一屏的结构不动。</div>
+      </div>
+    </div>
+  </div>
+</div>
+<ul class="anns">
+  <li><b>1</b><span><b>第一版只有积分榜，没有水平榜。</b>积分是<b>数出来的</b> —— 打了哪几场、各拿多少分、加起来。水平（<code>systemRatedLevel</code>）要从比分反推，算法是 P2（<code>PRD.md</code> §11）。<b>所以这一屏没有「积分 / 水平」两个页签</b>：先给一个能解释清楚的数，比给一个说不清怎么来的数好。</span></li>
+  <li><b>2</b><span><b>排「人」不排「组合」。</b>搭档会换 —— 排组合，一换人历史就断了，榜上会出现一堆只打过一次的名字。</span></li>
+  <li><b>3</b><span><b>「场次」那一列不能省。</b>积分是累加的，打得多自然高；不摆出场次，榜单看起来就像在奖励闲。摆出来之后「1,980 分 / 11 场」和「1,980 分 / 16 场」的差别一眼就看得到。</span></li>
+  <li><b>4</b><span><b>我的名次钉在筛选下面</b>，不用滚到第 187 名去找自己。它同时是这一屏最主要的动机来源 —— 「全城第几」比「谁是第一」更能让人打下一场。</span></li>
+  <li><b>5</b><span><b>同分并列，且并列占用名次</b>（1 · 2 · 2 · 4，见 <code>api/types.ts</code> 的 <code>RankRow.tied</code>）。不占用的话第三个人会看到自己写着「3」而上面有两个「2」，读起来像少了一个人。</span></li>
+  <li><b>6</b><span><b>榜单行不显示俱乐部。</b>「按俱乐部筛」筛的是<b>赛事</b>不是人 —— 只统计在该俱乐部办的赛事里拿到的分。选手可以加 0 个或多个俱乐部，归属是社区层，跟积分无关（<code>PRD.md</code> §7）。行上挂俱乐部会让人以为分是俱乐部给的。</span></li>
+  <li><b>7</b><span><b>类型摆成一排常驻，赛季和俱乐部收进下拉。</b>换比赛类型是高频（我打男双也打混双），换赛季和俱乐部是低频。</span></li>
+  <li><b>8</b><span><b>这个 tab 不拦未注册</b>（<code>SPEC.md</code> §2）—— 榜单是公开信息，而且是很好的落地内容。未注册时只是那张「我的名次」卡不出现。</span></li>
+  <li><b>9</b><span><b>0 分那一行必须列出来。</b>只列加分不列零分，用户会怀疑漏算 —— 而「参加了但没拿分」本来就是常态（<code>api/types.ts</code> 的 <code>PointRecord.points</code> 上写着这条）。所以明细页的表头直接写「含 0 分」。</span></li>
+  <li><b>10</b><span>明细每行带<b>赛事等级角标</b>（A / B / C）—— 「为什么这场只有 120 分」这个问题，答案一半在等级上。等级色沿用赛事卡那套。</span></li>
+  <li><b>11</b><span><b>分值是占位的，屏上直说。</b>A/B/C 各轮次的具体分值、双打两人各得全额还是各半、赛季怎么划 —— 三件都还没定（<code>PRD.md</code> §7）。这三件<b>不阻塞画页面</b>，定了只改分值来源，结构一行不动；但稿上不标出来，下一个人会当成已定的数抄走。</span></li>
+</ul>
+</x-dc>
+</body>
+</html>

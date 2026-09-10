@@ -1,0 +1,15 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html", "x": 0, "y": 0, "w": 880, "h": 1240, "title": "积分榜 · 高保真" }
+  ],
+  "annotations": [
+    {
+      "id": "note",
+      "x": 0,
+      "y": -230,
+      "w": 720,
+      "text": "积分。第 2 个 tab（榜单）+ 我的积分明细。\n\n第一版**直接统计积分** —— 打了哪几场、各拿多少分、加起来。\n没有水平榜：systemRatedLevel 要从比分反推，算法是 P2（PRD §11）。\n先给一个能解释清楚的数，比给一个说不清怎么来的数好。\n\nmp/miniprogram/pages/rank/ 现在还是一张 TBD 占位卡，这是它的稿。"
+    }
+  ],
+  "launch": { "view": "canvas" }
+}

@@ -354,6 +354,7 @@ Draw.slots  长度 = size（2 的幂），下标就是签位号
 | `Tournament.tier` / `clubId` / `coverUrl` | 没有 |
 | `Entry.invitedBy` / `referredBy` / `addedByOrganizer` | 没有 |
 | `Entry.partnerDeadlineAt` / `paymentDeadlineAt` | **契约里已删，代码还在读写** |
+| `PointRecord` / `RankRow` | 整个实体没有 —— `pages/rank/` 还是一张 TBD 占位卡，稿已出（`design/rank/`） |
 | `Draw` / `DrawSize` | 整个实体没有 —— `utils/draw.js` 只从 `Match[]` 反推着渲染，签位、轮空、「生成过没有」「拖过没有」全都没处存，所以第 7 屏的拖拽做不了 |
 | `Club` / `Membership` | 整个实体没有 —— `admin.*` 鉴权就卡在这：模型里没有可以用来判「他是不是这个俱乐部的管理员」的东西 |
 | `User.platformRole` | 没有。建俱乐部要靠它判权限；第一个平台管理员**没有自助入口**，得人工改库引导 |
