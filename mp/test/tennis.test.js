@@ -205,6 +205,9 @@ console.log('\n[11b] 只填大分：这串盘分打不打得出来');
   eq(R([{ a: 6, b: 5 }]).legal, false, '6-5 收不了盘');
   eq(R([{ a: 8, b: 6 }]).legal, false, '6 局制里 8-6 到不了');
   eq(R([{ a: 7, b: 6 }]).legal, false, '7-6 缺抢七比分');
+  // 理由文案要分得开「缺」和「打不出来」—— 导入历史数据出问题时，
+  // 这两句指向的是完全不同的修法
+  eq(R([{ a: 7, b: 6 }]).reason, '第 1 盘缺抢7的比分', '缺抢分说「缺」，不说「打不出来」');
   eq(R([{ a: 7, b: 6, tiebreak: { a: 5, b: 7 } }]).legal, false, '抢七赢家和这一盘赢家对不上');
   eq(R([{ a: 6, b: 4 }, { a: 6, b: 3 }, { a: 6, b: 0 }]).legal, false, '已经 2-0 了不该还有第三盘');
   eq(R([{ a: 1, b: 0, tiebreak: { a: 10, b: 8 } }]).legal, false, '第一盘不是决胜盘，不能记成 1-0');
@@ -221,6 +224,51 @@ console.log('\n[11b] 只填大分：这串盘分打不打得出来');
   const back = R(T.toMatchScore(x).sets);
   eq([x.finished, back.legal, back.finished, back.winner], [true, true, true, 0],
      '逐分记出来的比分，喂回判据必须一致');
+}
+
+console.log('\n[11c] 盘位给的选项：名单和判据必须正好相等');
+{
+  const show = (l) => l.map((x) => x.hi + '-' + x.lo + (x.needsTiebreak ? '*' : '')).join(' ');
+  const L = (fmt, opts) => T.legalSetScores(fmt, opts);
+
+  eq(show(L(T.PRESETS.sets2_st10_gp)), '6-0 6-1 6-2 6-3 6-4 7-5 7-6*',
+     '6 局制的名单（* = 还要补抢分）');
+  eq(show(L(T.PRESETS.sets2_st10_gp, { deciding: true })), '1-0*', '决胜盘只有 1-0 + 抢十分');
+  eq(show(L(T.PRESETS.proset8_gp)), '8-0 8-1 8-2 8-3 8-4 8-5 8-6 9-7 9-8*',
+     '八局制名单不一样 —— 判据跟着赛制走，不写死 6');
+  eq(show(L(T.PRESETS.short4_gp)), '4-0 4-1 4-2 5-3 5-4*', '4 局制推出来是 4-4 进、抢五');
+  eq(show(L(T.PRESETS.tb10)), '1-0*', '整场一个抢十');
+
+  // 7-0「看着合法」但永远走不到：拿到第 6 局领先 2 局，那盘当场就收了
+  eq(L(T.PRESETS.sets2_st10_gp).some((x) => x.hi === 7 && x.lo === 0), false, '7-0 不在名单上');
+  eq(L(T.PRESETS.sets2_st10_gp).some((x) => x.hi === 6 && x.lo === 5), false, '6-5 不在名单上');
+
+  // ── 这两条是重点：名单和判据要**正好相等**，不能只是「名单里的都合法」 ──
+  // 名单窄了，界面挡掉本来打得出来的比分；名单宽了，界面让你选一个服务端会拒的。
+  const FMTS = ['sets2_st10_gp', 'proset8_gp', 'short4_gp', 'sets3_ad'];
+  let inBad = 0, outBad = 0;
+  for (const key of FMTS) {
+    const f = T.PRESETS[key];
+    const listed = new Set(L(f).map((x) => x.hi + '-' + x.lo));
+    const tbTo = T.resolveFormat(f).tiebreakTo;
+    for (let hi = 1; hi <= 12; hi++) {
+      for (let lo = 0; lo < hi; lo++) {
+        const item = L(f).find((x) => x.hi === hi && x.lo === lo);
+        const st = item && item.needsTiebreak
+          ? { a: hi, b: lo, tiebreak: { a: tbTo, b: 0 } }
+          : { a: hi, b: lo };
+        const legal = T.resultFromSets([st], f).legal;
+        if (listed.has(hi + '-' + lo) && !legal) inBad++;
+        // 名单外的：连补上抢分也不该合法
+        if (!listed.has(hi + '-' + lo)) {
+          const withTb = T.resultFromSets([{ a: hi, b: lo, tiebreak: { a: tbTo, b: 0 } }], f).legal;
+          if (legal || withTb) outBad++;
+        }
+      }
+    }
+  }
+  eq(inBad, 0, '名单里的每一项，判据都说合法');
+  eq(outBad, 0, '名单外的每一项，判据都说不合法');
 }
 
 console.log('\n[12] 非法入参');

@@ -262,53 +262,110 @@ function setsForDisplay(m) {
 }
 
 /**
+ * **一盘合不合法。** `resultFromSets` 和 `legalSetScores` 都走这里 ——
+ * 规则表只有一张，两边分开写迟早会不一致（而不一致的样子是：
+ * 界面让你选 7-5，服务端说 7-5 打不出来）。
+ *
+ * @param {{a:number,b:number,tiebreak?:{a:number,b:number}}} st
+ * @param {boolean} deciding 是不是决胜盘（决胜抢十那种没有局分）
+ * @returns {{ok:boolean, reason:string, winner:0|1}}
+ */
+function checkSet(st, cfg, deciding) {
+  const no = function (reason) { return { ok: false, reason: reason, winner: -1 }; };
+  const a = st && st.a, b = st && st.b;
+  if (typeof a !== 'number' || typeof b !== 'number' || a < 0 || b < 0) return no('局分不完整');
+  if (a === b) return no('打平了，收不了盘');
+  const w = a > b ? 0 : 1;
+  const hi = Math.max(a, b), lo = Math.min(a, b);
+  const T = cfg.tiebreakAt;
+  const tb = st.tiebreak;
+  const ok = { ok: true, reason: '', winner: w };
+
+  // 决胜盘抢十 / 整场一个抢十：没有局分，记成 1-0 + 抢分
+  if (deciding || T === 0) {
+    const to = deciding ? cfg.decidingTiebreakTo : cfg.tiebreakTo;
+    if (hi !== 1 || lo !== 0) return no('是抢' + to + '，只记 1-0 不记局分');
+    if (!tb) return no('缺抢' + to + '的比分');
+    if (!tbOk(tb, w, to)) return no('抢' + to + '的比分打不出来');
+    return ok;
+  }
+  // 抢七盘：局分只可能是 (T+1)-T，且抢七赢家必须是这一盘的赢家
+  if (hi === T + 1 && lo === T) {
+    if (!tb) return no('缺抢' + cfg.tiebreakTo + '的比分');
+    if (!tbOk(tb, w, cfg.tiebreakTo)) return no('抢' + cfg.tiebreakTo + '的比分打不出来');
+    return ok;
+  }
+  if (tb) return no('不该有抢七比分');
+  if (hi < cfg.gamesToWin) return no('不够 ' + cfg.gamesToWin + ' 局，收不了盘');
+  // 拿到第 G 局且领先 2 局，那一盘当场就结束了 —— 所以局分只有两种落点：
+  //   G-l（l <= G-2）    6-0 ~ 6-4
+  //   (T+1)-(T-1)        7-5：5-5 之后连下两局
+  // 7-0 这种「看着合法」的比分其实永远走不到，第 6 局就该收了。
+  if (hi === cfg.gamesToWin) {
+    if (hi - lo < 2) return no('只领先 1 局，收不了盘');
+    if (lo >= T) return no(hi + '-' + lo + ' 该进抢七，不能这么收');
+    return ok;
+  }
+  if (hi === T + 1 && lo === T - 1) return ok;
+  return no(hi + '-' + lo + ' 在这个赛制下打不出来');
+}
+
+/**
+ * **这一盘能填哪几个比分。** 填盘分时界面照这个出选项 ——
+ * 6 局制给的是 6-0 6-1 6-2 6-3 6-4 7-5 7-6，**6-5 不在名单上，也就填不进去**。
+ *
+ * 把错误变成填不出来，比把错误提示写漂亮有用得多（`PRD.md` §6）。
+ *
+ * 名单是**枚举 + 拿 `checkSet` 筛**出来的，不是另写一份规则 ——
+ * 所以它和 `resultFromSets` 不可能对不上。守卫里有一条正是这个：
+ * 名单里每一项喂回 `resultFromSets` 都必须判为合法。
+ *
+ * @returns {{hi:number, lo:number, needsTiebreak:boolean}[]} 从**这一盘赢家**的角度看
+ */
+function legalSetScores(format, opts) {
+  const cfg = resolveFormat(format);
+  const deciding = !!(opts && opts.deciding);
+  const to = deciding ? cfg.decidingTiebreakTo : cfg.tiebreakTo;
+  const cap = Math.max(cfg.gamesToWin, cfg.tiebreakAt) + 2;
+  const out = [];
+  for (let hi = 1; hi <= cap; hi++) {
+    for (let lo = 0; lo < hi; lo++) {
+      if (checkSet({ a: hi, b: lo }, cfg, deciding).ok) {
+        out.push({ hi: hi, lo: lo, needsTiebreak: false });
+      } else if (checkSet({ a: hi, b: lo, tiebreak: { a: to, b: 0 } }, cfg, deciding).ok) {
+        // 这个比分本身成立，只是还差一个抢分 —— 界面选完它要接着问抢到几比几
+        out.push({ hi: hi, lo: lo, needsTiebreak: true });
+      }
+    }
+  }
+  return out;
+}
+
+/**
  * 只填大分时用：一串盘分能不能构成一场打得出来的比赛。
  *
  * 业余赛常态是**没人愿意每分点一次** —— 打完回来填 6-4 6-3 就想收工
- * （`PRD.md` §6「不记小分也能结束比赛」）。但填出来的分必须是这个赛制下
- * 真打得出来的：6-5 收不了盘，8-6 在 6 局制里到不了，决胜抢十不该有局分。
- * 没有这道判据，签表就会被一个打不出来的比分推进。
+ * （`PRD.md` §6「不记小分也能结束比赛」）。界面那边靠 `legalSetScores`
+ * 把错误挡在填不进去，**这里是服务端那一侧的守卫**：导入的历史数据、
+ * 管理员改比分、以后别的端，都不经过那个选项名单。
  *
- * 判据只看**这一盘合不合法**和**赢够盘没有**，不还原逐分 ——
+ * 判据只看**每一盘合不合法**和**赢够盘没有**，不还原逐分 ——
  * 逐分本来就没记，硬编一份假的比真话还糟。
  *
  * @returns {{legal:boolean, finished:boolean, winner:0|1|-1, reason:string}}
  */
 function resultFromSets(sets, format) {
   const cfg = resolveFormat(format);
-  const T = cfg.tiebreakAt;                 // 几平进抢七
   const wins = [0, 0];
   const bad = function (reason) { return { legal: false, finished: false, winner: -1, reason: reason }; };
 
   for (let i = 0; i < (sets || []).length; i++) {
     if (wins[0] >= cfg.setsToWin || wins[1] >= cfg.setsToWin) return bad('已经分出胜负，后面不该还有盘');
-    const st = sets[i] || {};
-    const a = st.a, b = st.b;
-    if (typeof a !== 'number' || typeof b !== 'number' || a < 0 || b < 0) return bad('第 ' + (i + 1) + ' 盘局分不完整');
-    if (a === b) return bad('第 ' + (i + 1) + ' 盘打平了，收不了盘');
-    const w = a > b ? 0 : 1;                // 这一盘谁赢
-    const hi = Math.max(a, b), lo = Math.min(a, b);
-    const tb = st.tiebreak;
-
-    // 决胜盘抢十 / 整场一个抢十：没有局分，记成 1-0 + 抢分
-    const deciding = cfg.decidingTiebreakTo > 0 && T > 0 &&
+    const deciding = cfg.decidingTiebreakTo > 0 && cfg.tiebreakAt > 0 &&
                      wins[0] === cfg.setsToWin - 1 && wins[1] === cfg.setsToWin - 1;
-    if (deciding || T === 0) {
-      const to = deciding ? cfg.decidingTiebreakTo : cfg.tiebreakTo;
-      if (hi !== 1 || lo !== 0) return bad('第 ' + (i + 1) + ' 盘是抢' + to + '，只记 1-0 不记局分');
-      if (!tb) return bad('第 ' + (i + 1) + ' 盘缺抢' + to + '的比分');
-      if (!tbOk(tb, w, to)) return bad('第 ' + (i + 1) + ' 盘的抢' + to + '比分打不出来');
-    } else if (hi === T + 1 && lo === T) {
-      // 抢七盘：局分只可能是 (T+1)-T，且抢七的赢家必须是这一盘的赢家
-      if (!tb) return bad('第 ' + (i + 1) + ' 盘缺抢' + cfg.tiebreakTo + '的比分');
-      if (!tbOk(tb, w, cfg.tiebreakTo)) return bad('第 ' + (i + 1) + ' 盘的抢' + cfg.tiebreakTo + '比分打不出来');
-    } else {
-      if (tb) return bad('第 ' + (i + 1) + ' 盘不该有抢七比分');
-      if (hi < cfg.gamesToWin) return bad('第 ' + (i + 1) + ' 盘不够 ' + cfg.gamesToWin + ' 局，收不了盘');
-      if (hi - lo < 2) return bad('第 ' + (i + 1) + ' 盘只领先 1 局，收不了盘');
-      if (hi > T + 1 || lo >= T) return bad('第 ' + (i + 1) + ' 盘 ' + hi + '-' + lo + ' 在这个赛制下打不出来');
-    }
-    wins[w] += 1;
+    const r = checkSet(sets[i], cfg, deciding);
+    if (!r.ok) return bad('第 ' + (i + 1) + ' 盘' + r.reason);
+    wins[r.winner] += 1;
   }
 
   const winner = wins[0] >= cfg.setsToWin ? 0 : (wins[1] >= cfg.setsToWin ? 1 : -1);
@@ -348,5 +405,6 @@ module.exports = {
   isGoldenPoint,
   setsForDisplay,
   resultFromSets,
+  legalSetScores,
   toMatchScore,
 };
