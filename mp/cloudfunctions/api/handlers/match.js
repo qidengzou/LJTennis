@@ -56,10 +56,30 @@ module.exports = function (db) {
     });
   }
 
+  /**
+   * 他在这场的哪一边：0 = A、1 = B、**-1 = 根本不是这场的人**。
+   *
+   * 记分、确认、提异议**一律先过这一关**。原来一个都没查 ——
+   * `lib/gate.js` 只拦「未注册」，于是任何注册用户都能给任意一场报比分、
+   * 替别人确认、冻结任意一场比赛。
+   *
+   * ⚠️ 这是**选手侧**的判据。管理员记分 / 改比分（`PRD.md` §6）是另一条路，
+   * 做的时候要单独放行，别把这里改松。
+   */
+  async function sideOf(m, userId) {
+    if (!userId) return -1;
+    const a = m.entryAId ? await db.get(C.ENTRIES, m.entryAId) : null;
+    if (a && (a.playerIds || []).indexOf(userId) >= 0) return 0;
+    const b = m.entryBId ? await db.get(C.ENTRIES, m.entryBId) : null;
+    if (b && (b.playerIds || []).indexOf(userId) >= 0) return 1;
+    return -1;
+  }
+
   async function start(ev, ctx) {
     const m = await db.get(C.MATCHES, ev.matchId);
     if (!m) return fail('NOT_FOUND', '场次不存在');
     if (m.status === 'confirmed') return fail('BAD_STATE', '这场已经确认过了');
+    if ((await sideOf(m, ctx.userId)) < 0) return fail('FORBIDDEN', '只有这场的选手能开始记分');
     await db.update(C.MATCHES, ev.matchId, {
       status: 'live',
       scorerId: ctx.userId,
@@ -77,6 +97,13 @@ module.exports = function (db) {
     const m = await db.get(C.MATCHES, ev.matchId);
     if (!m) return fail('NOT_FOUND', '场次不存在');
     if (m.status === 'confirmed') return fail('BAD_STATE', '这场已经确认过了');
+    // 记分方定下了就只认他 —— 队友也不行，两个人同时记会互相覆盖。
+    // 还没定（没走 start 直接报分）则至少得是这场的人。
+    if (m.scorerId) {
+      if (m.scorerId !== ctx.userId) return fail('FORBIDDEN', '这场由对方记分');
+    } else if ((await sideOf(m, ctx.userId)) < 0) {
+      return fail('FORBIDDEN', '只有这场的选手能记分');
+    }
 
     const cur = m.version || 0;
     if (typeof ev.version === 'number' && ev.version !== cur) {
@@ -104,6 +131,13 @@ module.exports = function (db) {
     if (!m) return fail('NOT_FOUND', '场次不存在');
     if (m.status !== 'pending_confirm') return fail('BAD_STATE', '这场不在待确认状态');
     if (m.scorerId === ctx.userId) return fail('FORBIDDEN', '记分方不能自己确认');
+    // 「确认人必须是**对方**组合中的任一人」（api/types.ts 的 confirmedById）。
+    // 只查「不是记分方」远远不够：那样场外任何注册用户都能替人确认，
+    // 队友也能 —— 而队友确认自己这边记的分，等于没有确认这一步。
+    const mine = await sideOf(m, ctx.userId);
+    if (mine < 0) return fail('FORBIDDEN', '只有这场的选手能确认');
+    const theirs = await sideOf(m, m.scorerId);
+    if (theirs >= 0 && mine === theirs) return fail('FORBIDDEN', '要由对方确认');
 
     await db.update(C.MATCHES, ev.matchId, {
       status: 'confirmed', confirmedById: ctx.userId, confirmedAt: Date.now(),
@@ -116,6 +150,13 @@ module.exports = function (db) {
   async function dispute(ev, ctx) {
     const m = await db.get(C.MATCHES, ev.matchId);
     if (!m) return fail('NOT_FOUND', '场次不存在');
+    // 异议是**确认之前**的岔路（PRD.md §6 那张流程图）。已确认的场次胜者
+    // 早就 advance 进下游了，这时候再冻结，签表上就会出现「从一场有争议的
+    // 比赛里晋级」—— 而没有任何东西会把下游退回去。改判要走管理员改比分。
+    if (m.status !== 'live' && m.status !== 'pending_confirm') {
+      return fail('BAD_STATE', '这场不在可提异议的状态');
+    }
+    if ((await sideOf(m, ctx.userId)) < 0) return fail('FORBIDDEN', '只有这场的选手能提异议');
     await db.update(C.MATCHES, ev.matchId, {
       status: 'disputed', disputeReason: ev.reason || '', version: (m.version || 0) + 1,
     });

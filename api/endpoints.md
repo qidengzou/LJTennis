@@ -24,6 +24,22 @@
 
 `Authorization: Bearer <session>`，session 由 `POST /auth/login` 用微信 `code` 换取。
 
+### 记分那几条：登录之外还要在场上
+
+`match.start` / `match.score` / `match.confirm` / `match.dispute`
+**只对这场的参赛选手开放**，光是「已注册」不够 ——
+否则任何注册用户都能给别人的场次报比分、替别人确认、冻结任意一场比赛。
+
+| 接口 | 除了登录还要满足 |
+|---|---|
+| `match.start` | 是这场的选手 |
+| `match.score` | **是这场的记分方**（记分方已定时队友也不行 —— 两人同时记会互相覆盖） |
+| `match.confirm` | 是**对方**那一边的人（见 `types.ts` 的 `confirmedById`）。记分方和他队友都不行 |
+| `match.dispute` | 是这场的选手，**且这场还没确认** —— 异议是确认之前的岔路（`PRD.md` §6） |
+
+> 管理员记分 / 改比分是**另一条路**（`PRD.md` §6：管理员记的分不需要选手确认）。
+> 做那条的时候单独放行，别把上面这层改松。
+
 ### 后台接口 `admin.*` —— 两层身份，且**现在一层都没查**
 
 网页后台（`adminweb/`）调的是同一个 session，但要在它之上再查两层身份

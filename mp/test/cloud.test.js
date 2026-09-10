@@ -127,8 +127,13 @@ async function main() {
   console.log('\n[7] 确认与签表推进');
   {
     const s = seed();
+    s.entries = [
+      { _id: 'eA', eventId: 'ev1', playerIds: ['u1'], status: 'confirmed' },
+      { _id: 'eB', eventId: 'ev1', playerIds: ['u2'], status: 'confirmed' },
+    ];
     s.matches = [
-      { _id: 'm1', eventId: 'ev1', status: 'pending_confirm', scorerId: 'u1', winnerEntryId: 'eA', version: 1 },
+      { _id: 'm1', eventId: 'ev1', status: 'pending_confirm', scorerId: 'u1',
+        entryAId: 'eA', entryBId: 'eB', winnerEntryId: 'eA', version: 1 },
       { _id: 'm9', eventId: 'ev1', status: 'pending', sourceMatchAId: 'm1', entryAId: null, entryBId: 'eZ' },
     ];
     const db = memdb(s), M = makeMatch(db);
@@ -137,6 +142,42 @@ async function main() {
     eq([r.ok, r.data.advancedTo], [true, 'm9'], '对方确认 → 推进下游');
     eq((await db.get('matches', 'm9')).entryAId, 'eA', '胜者填入下游空位');
     eq((await M.confirm({ matchId: 'm1' }, { userId: 'u2' })).code, 'BAD_STATE', '重复确认 → BAD_STATE');
+  }
+
+  console.log('\n[7b] 记分 / 确认 / 异议只对场上的人开放');
+  {
+    // gate.js 只拦「未注册」，所以在补这一层之前，下面这些全是通的：
+    // 任何注册用户都能给任意一场报比分、替别人确认、冻结任意一场比赛。
+    const s = seed();
+    s.users.push({ _id: 'u4', openid: 'o4', nickname: '王五', gender: 'M' });
+    s.entries = [
+      { _id: 'eA', eventId: 'ev1', playerIds: ['u1', 'u2'], status: 'confirmed' },
+      { _id: 'eB', eventId: 'ev1', playerIds: ['u3', 'u4'], status: 'confirmed' },
+    ];
+    s.matches = [{ _id: 'm1', eventId: 'ev1', status: 'live', version: 1, scorerId: 'u1',
+                   entryAId: 'eA', entryBId: 'eB', score: { sets: [], serveOrder: [] } }];
+    const db = memdb(s), M = makeMatch(db);
+    const sc = (uid, over) => M.score(Object.assign({ matchId: 'm1', version: 1,
+      score: { sets: [], serveOrder: [] } }, over || {}), { userId: uid });
+
+    eq((await sc('uX')).code, 'FORBIDDEN', '局外人不能给别人的场次报比分');
+    eq((await M.dispute({ matchId: 'm1' }, { userId: 'uX' })).code,
+       'FORBIDDEN', '局外人不能冻结别人的场次');
+    eq((await M.start({ matchId: 'm1' }, { userId: 'uX' })).code,
+       'FORBIDDEN', '局外人不能开始别人的场次');
+    eq((await sc('u2')).code, 'FORBIDDEN', '同队队友也不能抢着记分 —— 两人同时记会互相覆盖');
+
+    await sc('u1', { finished: true, winnerEntryId: 'eA',
+                      score: { sets: [{ a: 6, b: 3 }, { a: 6, b: 4 }] } });
+    eq((await M.confirm({ matchId: 'm1' }, { userId: 'uX' })).code, 'FORBIDDEN', '局外人不能确认');
+    eq((await M.confirm({ matchId: 'm1' }, { userId: 'u2' })).code,
+       'FORBIDDEN', '记分方的队友也不能确认 —— 那等于没有确认这一步');
+    eq((await M.confirm({ matchId: 'm1' }, { userId: 'u3' })).ok, true, '对方任一人确认 → 生效');
+
+    // 异议是确认之前的岔路（PRD §6）。已确认还能冻结的话，胜者早填进下游了，
+    // 签表上就会出现「从一场有争议的比赛里晋级」，而没人会把下游退回去。
+    eq((await M.dispute({ matchId: 'm1' }, { userId: 'u3' })).code,
+       'BAD_STATE', '已确认的场次不能再提异议');
   }
 
   console.log('\n[8] 性别用户改不了，一次报名都没有也改不了');
