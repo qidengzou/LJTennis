@@ -69,7 +69,7 @@ module.exports = function (db, openapi) {
       gender: ev.gender,
       // ⚠️ 名不副实：这里存的是**明文**。字段名比明文本身更危险 ——
       // 看到 Encrypted 会以为已经安全了。加密方案见 SPEC.md §4，
-      // 但它必须和 admin.* 鉴权一起做（SPEC.md §5.1），单独加密没有意义。
+      // 但它必须和 admin.* 鉴权一起做（SPEC.md §5.2），单独加密没有意义。
       phoneEncrypted: phone,
       province: ev.province || null,        // 和 city 成对，注册时不收，资料页补
       city: ev.city || null,
