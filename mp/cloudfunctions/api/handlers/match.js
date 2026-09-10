@@ -152,6 +152,17 @@ module.exports = function (db) {
       return fail('CONFLICT', '这场比分已被更新，请先同步', { current: m });
     }
 
+    // 结束一场**必须指明谁赢**（`PRD.md` §6：任何时候都能结束，只要给出获胜方）。
+    // 原来这里 winnerEntryId 缺了就写 null —— 场次变成 pending_confirm，
+    // 确认之后 advance 看到没有 winner 直接返回 null，**签表就静默卡在这儿**，
+    // 而界面上一切正常，没人查得出来。
+    if (ev.finished) {
+      const w = ev.winnerEntryId;
+      if (w !== m.entryAId && w !== m.entryBId) {
+        return fail('BAD_ARGS', '结束比赛要指明谁赢');
+      }
+    }
+
     const next = cur + 1;
     await db.update(C.MATCHES, ev.matchId, {
       score: ev.score,

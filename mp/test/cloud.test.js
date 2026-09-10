@@ -107,8 +107,15 @@ async function main() {
   console.log('\n[6] 记分幂等与乐观锁');
   {
     const s = seed();
-    s.matches = [{ _id: 'm1', eventId: 'ev1', status: 'live', version: 3,
-                   score: { sets: [{ a: 6, b: 4 }], serveOrder: [] }, scorerId: 'u1' }];
+    // 这场原来没有 entryAId/entryBId —— 因为从来没人查过。
+    // 「结束必须指明谁赢」那道守卫一上，它立刻就不成立了
+    s.entries = [
+      { _id: 'eA', eventId: 'ev1', playerIds: ['u1'], status: 'confirmed' },
+      { _id: 'eB', eventId: 'ev1', playerIds: ['u2'], status: 'confirmed' },
+    ];
+    s.matches = [{ _id: 'm1', eventId: 'ev1', status: 'live', version: 3, scorerId: 'u1',
+                   entryAId: 'eA', entryBId: 'eB',
+                   score: { sets: [{ a: 6, b: 4 }], serveOrder: [] } }];
     const db = memdb(s), M = makeMatch(db);
     const same = { sets: [{ a: 6, b: 4 }], serveOrder: [] };
 
@@ -229,6 +236,40 @@ async function main() {
 
     eq((await M.start({ matchId: 'm1' }, { userId: 'u3' })).ok, true, '别人现在能接手了');
     eq((await db.get('matches', 'm1')).score.sets, [{ a: 6, b: 4 }], '接手的人拿到的是接着往下记的那份');
+  }
+
+  console.log('\n[7e] 任何时候都能结束，但必须指明谁赢');
+  {
+    const s = seed();
+    s.entries = [
+      { _id: 'eA', eventId: 'ev1', playerIds: ['u1'], status: 'confirmed' },
+      { _id: 'eB', eventId: 'ev1', playerIds: ['u2'], status: 'confirmed' },
+    ];
+    s.matches = [{ _id: 'm1', eventId: 'ev1', status: 'live', version: 1, scorerId: 'u1',
+                   entryAId: 'eA', entryBId: 'eB', score: { sets: [], serveOrder: [] } }];
+    const db = memdb(s), M = makeMatch(db);
+    const fin = (over) => M.score(Object.assign(
+      { matchId: 'm1', version: 1, finished: true, score: { sets: [], serveOrder: [] } }, over),
+      { userId: 'u1' });
+
+    // 一分没记也能结束 —— 对手没来、天黑了、伤退，都是真实情形
+    eq((await fin({ winnerEntryId: 'eA' })).ok, true, '一分没记，只给获胜方也能结束');
+    eq((await db.get('matches', 'm1')).status, 'pending_confirm', '进入待确认');
+
+    // 这一条是重点：缺获胜方不能放过去。
+    // 放过去的话场次照样变待确认，确认之后 advance 找不到 winner 就返回 null，
+    // 签表静默卡住 —— 界面上一切正常，没人查得出来。
+    await db.update('matches', 'm1', { status: 'live', winnerEntryId: null, version: 2 });
+    eq((await M.score({ matchId: 'm1', version: 2, finished: true, score: { sets: [], serveOrder: [] } },
+                      { userId: 'u1' })).code, 'BAD_ARGS', '结束但没给获胜方 → BAD_ARGS');
+    eq((await M.score({ matchId: 'm1', version: 2, finished: true, winnerEntryId: 'eZ',
+                        score: { sets: [], serveOrder: [] } }, { userId: 'u1' })).code,
+       'BAD_ARGS', '获胜方不是这场的两边 → BAD_ARGS');
+    eq((await db.get('matches', 'm1')).status, 'live', '被拒之后场次没被改成待确认');
+
+    // 没结束就不查 —— 中途同步比分时本来就还不知道谁赢
+    eq((await M.score({ matchId: 'm1', version: 2, score: { sets: [{ a: 6, b: 4 }], serveOrder: [] } },
+                      { userId: 'u1' })).ok, true, '中途同步不要求获胜方');
   }
 
   console.log('\n[8] 性别用户改不了，一次报名都没有也改不了');
