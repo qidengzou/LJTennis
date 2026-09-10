@@ -14,8 +14,10 @@
  ├─ 会员 Membership        （申请中 / 已入会 / 已拒绝 / 已移除）
  └─ 赛事 Tournament        （带 A/B/C 等级）
      └─ 比赛 Event          （男双 MD / 女双 WD / 混双 XD / 男单 MS / 女单 WS）
-         └─ 参赛主体 Entry  = 1~2 名选手
-             └─ 场次 Match
+         ├─ 参赛主体 Entry  = 1~2 名选手
+         ├─ 签表 Draw       （一个比赛一张。签位数组，长度是 2 的幂）
+         ├─ 小组 Group      （只有小组循环才有）
+         └─ 场次 Match      （对阵双方是 Entry，不是人）
 ```
 
 > `Membership` 是**旁挂**的，不在报名那条链上 —— 这是故意的，见下面
@@ -230,6 +232,16 @@ Entry 上，单双打共用一套结构。
 
 **记分全程离线可用**，签表进主包 —— 球场信号差。
 
+签表存成**一个数组**（`Draw.slots`），长度是 2 的幂，下标就是签位号；
+第一轮第 k 场打的是 `slots[2k]` vs `slots[2k+1]`。相邻两个就是一场，
+所以**没有单独的「签位」表**。
+
+**`slots` 是签表的真相，`Match` 是它的产物** —— 拖签位改数组，定稿那一下
+才生成场次。反过来改 `Match` 的对阵不算改签表，两处会对不上。
+
+`null` 的含义看 `Event.status`：`drawn` 之前是「还没排到那儿」，之后就是
+**轮空**。字段级的理由写在 `api/types.ts` 的 `Draw` 上。
+
 ---
 
 ## 4 · 实现约束
@@ -286,6 +298,7 @@ Entry 上，单双打共用一套结构。
 | `Tournament.tier` / `clubId` / `coverUrl` | 没有 |
 | `Entry.invitedBy` / `referredBy` / `addedByOrganizer` | 没有 |
 | `Entry.partnerDeadlineAt` / `paymentDeadlineAt` | **契约里已删，代码还在读写** |
+| `Draw` / `DrawSize` | 整个实体没有 —— `utils/draw.js` 只从 `Match[]` 反推着渲染，签位、轮空、「生成过没有」「拖过没有」全都没处存，所以第 7 屏的拖拽做不了 |
 | `Club` / `Membership` | 整个实体没有 —— `admin.*` 鉴权就卡在这：模型里没有可以用来判「他是不是这个俱乐部的管理员」的东西 |
 | `User.platformRole` | 没有。建俱乐部要靠它判权限；第一个平台管理员**没有自助入口**，得人工改库引导 |
 | `GroupStanding.setsWon` / `setDiff` | 没有 —— 判定顺序里净胜盘排在净胜局之前，缺了排不出名次 |
