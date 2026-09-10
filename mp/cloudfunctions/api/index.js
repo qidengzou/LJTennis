@@ -39,6 +39,7 @@ const ROUTES = {
   'match.today':        H.match.today,
   'match.draw':         H.match.draw,
   'match.start':        H.match.start,
+  'match.release':      H.match.release,
   'match.score':        H.match.score,
   'match.confirm':      H.match.confirm,
   'match.dispute':      H.match.dispute,

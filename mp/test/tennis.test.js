@@ -190,6 +190,39 @@ m = T.createMatch({ serveOrder: ORDER });
 for (let g = 0; g < 6; g++) m = game(m, 0);
 eq(Object.keys(T.toMatchScore(m)).sort(), ['serveOrder', 'sets'], '不含逐分数据');
 
+console.log('\n[11b] 只填大分：这串盘分打不打得出来');
+{
+  const R = (sets, fmt) => T.resultFromSets(sets, fmt || T.PRESETS.sets2_st10_gp);
+
+  eq([R([{ a: 6, b: 4 }, { a: 6, b: 3 }]).legal, R([{ a: 6, b: 4 }, { a: 6, b: 3 }]).winner],
+     [true, 0], '6-4 6-3 → 合法，A 胜');
+  eq(R([{ a: 6, b: 4 }]).finished, false, '只填一盘 → 合法但没打完');
+  eq(R([{ a: 7, b: 6, tiebreak: { a: 7, b: 5 } }]).legal, true, '7-6(7-5) 合法');
+  eq(R([{ a: 6, b: 4 }, { a: 3, b: 6 }, { a: 1, b: 0, tiebreak: { a: 10, b: 8 } }]).winner,
+     0, '决胜抢十记成 1-0 + 抢分');
+
+  // 打不出来的比分。没有这道判据，签表会被一个假比分推进
+  eq(R([{ a: 6, b: 5 }]).legal, false, '6-5 收不了盘');
+  eq(R([{ a: 8, b: 6 }]).legal, false, '6 局制里 8-6 到不了');
+  eq(R([{ a: 7, b: 6 }]).legal, false, '7-6 缺抢七比分');
+  eq(R([{ a: 7, b: 6, tiebreak: { a: 5, b: 7 } }]).legal, false, '抢七赢家和这一盘赢家对不上');
+  eq(R([{ a: 6, b: 4 }, { a: 6, b: 3 }, { a: 6, b: 0 }]).legal, false, '已经 2-0 了不该还有第三盘');
+  eq(R([{ a: 1, b: 0, tiebreak: { a: 10, b: 8 } }]).legal, false, '第一盘不是决胜盘，不能记成 1-0');
+
+  // 八局制：8-6 在这里反而是合法的 —— 判据跟着赛制走，不是写死 6
+  eq(R([{ a: 8, b: 6 }], T.PRESETS.proset8_gp).finished, true, '八局制 8-6 合法且结束');
+  eq(R([{ a: 6, b: 4 }], T.PRESETS.proset8_gp).legal, false, '八局制里 6-4 还没打完一盘');
+
+  // 最强的一条：逐分记出来的结果，喂回判据必须说「合法且已结束」。
+  // 两条路算出来的胜负如果会不一致，那就是有一条错了。
+  let x = T.createMatch({ serveOrder: ORDER });
+  for (let g = 0; g < 6; g++) x = game(x, 0);
+  for (let g = 0; g < 6; g++) x = game(x, 0);
+  const back = R(T.toMatchScore(x).sets);
+  eq([x.finished, back.legal, back.finished, back.winner], [true, true, true, 0],
+     '逐分记出来的比分，喂回判据必须一致');
+}
+
 console.log('\n[12] 非法入参');
 try { T.createMatch({ serveOrder: ['a', 'b', 'c'] }); eq('无异常', '应抛错', '发球顺序长度 3 应报错'); }
 catch (e) { eq(true, true, '发球顺序长度 3 抛错'); }

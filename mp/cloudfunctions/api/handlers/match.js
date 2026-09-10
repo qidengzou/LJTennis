@@ -109,6 +109,25 @@ module.exports = function (db) {
   }
 
   /**
+   * 交出记分权，让别人能接手（`PRD.md` §6）。
+   *
+   * **交出去的是记分权，不是这场比赛** —— 比分、状态原样留着，
+   * 下一个人接着往下记。这是「不给自助抢占」那条的配套出口：
+   * 不给退出，记分方临时有事就把整场卡死了。
+   *
+   * ⚠️ 客户端**必须先把本地未同步的分推上去再调这里**。先交权后同步，
+   * 接手的人会从服务端拿到一份旧比分，中间那几分谁也找不回来。
+   */
+  async function release(ev, ctx) {
+    const m = await db.get(C.MATCHES, ev.matchId);
+    if (!m) return fail('NOT_FOUND', '场次不存在');
+    if (m.status === 'confirmed') return fail('BAD_STATE', '这场已经确认过了');
+    if (m.scorerId !== ctx.userId) return fail('FORBIDDEN', '只有当前记分方能退出记分');
+    await db.update(C.MATCHES, ev.matchId, { scorerId: null, version: (m.version || 0) + 1 });
+    return ok();
+  }
+
+  /**
    * POST /matches/:id/score —— 幂等 + 乐观锁。
    * 球场信号差，客户端会离线累积后重传。
    */
@@ -182,7 +201,7 @@ module.exports = function (db) {
     return ok();
   }
 
-  return { today, draw, start, score, confirm, dispute };
+  return { today, draw, start, release, score, confirm, dispute };
 };
 
 /** 把胜者写进下游场次的空位 */

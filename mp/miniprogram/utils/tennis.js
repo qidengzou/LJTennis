@@ -261,6 +261,70 @@ function setsForDisplay(m) {
   });
 }
 
+/**
+ * 只填大分时用：一串盘分能不能构成一场打得出来的比赛。
+ *
+ * 业余赛常态是**没人愿意每分点一次** —— 打完回来填 6-4 6-3 就想收工
+ * （`PRD.md` §6「不记小分也能结束比赛」）。但填出来的分必须是这个赛制下
+ * 真打得出来的：6-5 收不了盘，8-6 在 6 局制里到不了，决胜抢十不该有局分。
+ * 没有这道判据，签表就会被一个打不出来的比分推进。
+ *
+ * 判据只看**这一盘合不合法**和**赢够盘没有**，不还原逐分 ——
+ * 逐分本来就没记，硬编一份假的比真话还糟。
+ *
+ * @returns {{legal:boolean, finished:boolean, winner:0|1|-1, reason:string}}
+ */
+function resultFromSets(sets, format) {
+  const cfg = resolveFormat(format);
+  const T = cfg.tiebreakAt;                 // 几平进抢七
+  const wins = [0, 0];
+  const bad = function (reason) { return { legal: false, finished: false, winner: -1, reason: reason }; };
+
+  for (let i = 0; i < (sets || []).length; i++) {
+    if (wins[0] >= cfg.setsToWin || wins[1] >= cfg.setsToWin) return bad('已经分出胜负，后面不该还有盘');
+    const st = sets[i] || {};
+    const a = st.a, b = st.b;
+    if (typeof a !== 'number' || typeof b !== 'number' || a < 0 || b < 0) return bad('第 ' + (i + 1) + ' 盘局分不完整');
+    if (a === b) return bad('第 ' + (i + 1) + ' 盘打平了，收不了盘');
+    const w = a > b ? 0 : 1;                // 这一盘谁赢
+    const hi = Math.max(a, b), lo = Math.min(a, b);
+    const tb = st.tiebreak;
+
+    // 决胜盘抢十 / 整场一个抢十：没有局分，记成 1-0 + 抢分
+    const deciding = cfg.decidingTiebreakTo > 0 && T > 0 &&
+                     wins[0] === cfg.setsToWin - 1 && wins[1] === cfg.setsToWin - 1;
+    if (deciding || T === 0) {
+      const to = deciding ? cfg.decidingTiebreakTo : cfg.tiebreakTo;
+      if (hi !== 1 || lo !== 0) return bad('第 ' + (i + 1) + ' 盘是抢' + to + '，只记 1-0 不记局分');
+      if (!tb) return bad('第 ' + (i + 1) + ' 盘缺抢' + to + '的比分');
+      if (!tbOk(tb, w, to)) return bad('第 ' + (i + 1) + ' 盘的抢' + to + '比分打不出来');
+    } else if (hi === T + 1 && lo === T) {
+      // 抢七盘：局分只可能是 (T+1)-T，且抢七的赢家必须是这一盘的赢家
+      if (!tb) return bad('第 ' + (i + 1) + ' 盘缺抢' + cfg.tiebreakTo + '的比分');
+      if (!tbOk(tb, w, cfg.tiebreakTo)) return bad('第 ' + (i + 1) + ' 盘的抢' + cfg.tiebreakTo + '比分打不出来');
+    } else {
+      if (tb) return bad('第 ' + (i + 1) + ' 盘不该有抢七比分');
+      if (hi < cfg.gamesToWin) return bad('第 ' + (i + 1) + ' 盘不够 ' + cfg.gamesToWin + ' 局，收不了盘');
+      if (hi - lo < 2) return bad('第 ' + (i + 1) + ' 盘只领先 1 局，收不了盘');
+      if (hi > T + 1 || lo >= T) return bad('第 ' + (i + 1) + ' 盘 ' + hi + '-' + lo + ' 在这个赛制下打不出来');
+    }
+    wins[w] += 1;
+  }
+
+  const winner = wins[0] >= cfg.setsToWin ? 0 : (wins[1] >= cfg.setsToWin ? 1 : -1);
+  return { legal: true, finished: winner >= 0, winner: winner, reason: '' };
+}
+
+/** 抢七/抢十本身合不合法：赢家到分、净胜 2 分，且赢家就是这一盘的赢家 */
+function tbOk(tb, setWinner, to) {
+  if (!tb || typeof tb.a !== 'number' || typeof tb.b !== 'number') return false;
+  if (tb.a === tb.b) return false;
+  const w = tb.a > tb.b ? 0 : 1;
+  if (w !== setWinner) return false;
+  const hi = Math.max(tb.a, tb.b), lo = Math.min(tb.a, tb.b);
+  return hi >= to && hi - lo >= 2;
+}
+
 /** 上传给后端的 MatchScore（见 api/types.ts）。第一版不上传逐分数据 */
 function toMatchScore(m) {
   return {
@@ -283,5 +347,6 @@ module.exports = {
   pointLabel,
   isGoldenPoint,
   setsForDisplay,
+  resultFromSets,
   toMatchScore,
 };

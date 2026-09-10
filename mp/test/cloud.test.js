@@ -208,6 +208,29 @@ async function main() {
     eq((await db.get('matches', 'm1')).score.sets, [{ a: 6, b: 4 }], '重进不清掉已经记的分');
   }
 
+  console.log('\n[7d] 退出记分：交出记分权，比分留着');
+  {
+    const s = seed();
+    s.users.push({ _id: 'u4', openid: 'o4', nickname: '王五', gender: 'M' });
+    s.entries = [
+      { _id: 'eA', eventId: 'ev1', playerIds: ['u1', 'u2'], status: 'confirmed' },
+      { _id: 'eB', eventId: 'ev1', playerIds: ['u3', 'u4'], status: 'confirmed' },
+    ];
+    s.matches = [{ _id: 'm1', eventId: 'ev1', status: 'live', version: 2, scorerId: 'u1',
+                   entryAId: 'eA', entryBId: 'eB', score: { sets: [{ a: 6, b: 4 }], serveOrder: ['u1'] } }];
+    const db = memdb(s), M = makeMatch(db);
+
+    eq((await M.release({ matchId: 'm1' }, { userId: 'u3' })).code, 'FORBIDDEN', '别人替不了他退出');
+    eq((await M.release({ matchId: 'm1' }, { userId: 'u1' })).ok, true, '记分方自己退出');
+
+    const after = await db.get('matches', 'm1');
+    eq([after.scorerId, after.status], [null, 'live'], '记分权交出去了，比赛还在进行');
+    eq(after.score.sets, [{ a: 6, b: 4 }], '交出去的是记分权，不是比分');
+
+    eq((await M.start({ matchId: 'm1' }, { userId: 'u3' })).ok, true, '别人现在能接手了');
+    eq((await db.get('matches', 'm1')).score.sets, [{ a: 6, b: 4 }], '接手的人拿到的是接着往下记的那份');
+  }
+
   console.log('\n[8] 性别用户改不了，一次报名都没有也改不了');
   {
     // 从「有进行中报名才锁」改成「一律锁」：性别是 MD/WD/XD 的资格判据，
