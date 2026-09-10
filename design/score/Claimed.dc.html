@@ -72,17 +72,45 @@
     .sdot{width:9px;height:9px;border-radius:999px;background:transparent;flex:none}
     .sdot.on{background:var(--c-serve)}
     .tz-p{font-size:var(--t-score);line-height:.86;flex:none;font-variant-numeric:tabular-nums}
-    .scrbar{display:flex;align-items:center;justify-content:space-between;background:var(--c-surface);
-      border-radius:var(--r-m);padding:10px 13px;box-shadow:var(--e-1)}
-    .sets{display:flex;align-items:baseline;gap:13px;font-size:var(--t-caption);color:var(--c-ink-3)}
-    .sets .v{font-size:var(--t-set);color:var(--c-ink);font-weight:600;margin-left:4px;font-variant-numeric:tabular-nums}
-    .done{display:flex;align-items:baseline;gap:2px;color:var(--c-ink-3);font-size:var(--t-caption)}
-    .done .sep{margin-right:6px}
-    .sup{font-size:9px;vertical-align:super;margin-left:1px}
+
+    /* —— 比分板：一行一队、一列一盘。电视记分条那种形式 —— */
+    .board{background:var(--c-surface);border-radius:var(--r-m);box-shadow:var(--e-1);
+      padding:8px 6px;display:flex;flex-direction:column;gap:2px}
+    .brow{display:flex;align-items:center;gap:2px;padding:6px 8px;border-radius:var(--r-s)}
+    /* 赢的那一行带一条底色，从左往右淡出 —— 一眼看出谁赢了这场 */
+    .brow.win{background:linear-gradient(90deg,rgba(14,159,110,.16) 0%,rgba(14,159,110,.04) 100%)}
+    .bn{flex:1;min-width:0;font-size:15px;color:var(--c-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .bc{width:30px;flex:none;text-align:center;font-size:19px;font-variant-numeric:tabular-nums;
+      color:var(--c-ink-3);position:relative}
+    /* 赢下那一盘的数字加粗转深 —— 输的那个压灰，不用颜色区分 */
+    .bc.w{color:var(--c-ink);font-weight:700}
+    .bc i{font-style:normal;font-size:10px;vertical-align:super;margin-left:1px;font-weight:400}
+    .bc.now{color:var(--c-brand);font-weight:700}
+    .bc.empty{color:var(--c-line)}
+    /* 填比分时格子变输入框 */
+    .bc.box{width:38px;height:38px;border:1px solid var(--c-line);border-radius:var(--r-s);
+      display:grid;place-items:center;color:var(--c-ink);font-weight:600;font-size:18px}
+    .bc.box.blank{border-style:dashed;color:var(--c-line)}
+    .bc.box.bad{border-color:var(--c-loss);color:var(--c-loss)}
+    .bhead{display:flex;align-items:center;gap:2px;padding:0 8px 2px}
+    .bhead .bn{font-size:var(--t-micro);color:var(--c-ink-3)}
+    .bhead .bc{font-size:var(--t-micro);color:var(--c-ink-3);font-weight:400}
+    .bhead .bc.box{border:0;height:auto;display:block;line-height:1.2}
+
+    .barrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 4px}
     .undo{border:1px solid var(--c-line);color:var(--c-ink-2);border-radius:var(--r-full);
       padding:5px 13px;font-size:var(--t-caption)}
     .sync{text-align:center;font-size:var(--t-caption);color:var(--c-live)}
+    .switch{text-align:center;font-size:var(--t-caption);color:var(--c-ink-3)}
+    .switch b{color:var(--c-brand);font-weight:600}
     .foot{margin-top:auto}
+    .quit{margin-top:10px;text-align:center;font-size:var(--t-caption);color:var(--c-ink-3);padding:6px 0}
+    .verdict{display:flex;align-items:flex-start;gap:8px;border-radius:var(--r-m);padding:10px 12px;
+      font-size:var(--t-caption);line-height:1.5}
+    .verdict.ok{background:#E4F6EE;color:var(--c-win)}
+    .verdict.no{background:#FCE8EC;color:var(--c-loss)}
+    .verdict b{font-weight:600}
+    .costnote{font-size:var(--t-caption);color:var(--c-ink-3);line-height:1.6;text-align:center}
     /* —— 开赛设置 —— */
     .pg{flex:1;min-height:0;padding:12px;display:flex;flex-direction:column;gap:12px}
     .fmt{display:block;margin-top:6px;font-size:var(--t-h3);color:var(--c-ink)}
@@ -92,13 +120,11 @@
     .on-name{font-size:14px;color:var(--c-ink)}
     .arrow{font-size:13px;color:var(--c-ink-3)}
     .odot{width:8px;height:8px;border-radius:999px;background:var(--c-serve)}
-    /* —— 别人在记时的只读态 —— */
     .claimed{display:flex;align-items:center;gap:8px;background:var(--c-brand-weak);color:var(--c-brand);
       border-radius:var(--r-m);padding:9px 12px;font-size:var(--t-caption);font-weight:600}
     .claimed .who{font-size:var(--t-body)}
     .claimed .sp{flex:1}
     .claimed .pulse{width:7px;height:7px;border-radius:999px;background:var(--c-brand);flex:none}
-    /* 只读：去掉阴影和按压态，卡看起来是「贴在那儿」而不是「能按」 */
     .tapz.ro{box-shadow:none;border:1px solid var(--c-line)}
     .handoff{text-align:center;font-size:var(--t-caption);color:var(--c-ink-3);line-height:1.6}
   </style>
@@ -106,7 +132,7 @@
 <div class="stage">
   <div>
     <p class="cap">已经有人在记时，第二个人看到的</p>
-    <div class="phone" style="height:760px">
+    <div class="phone" style="height:700px">
       <div class="nav"><svg class="bk" viewBox="0 0 10 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 1.5 1.5 10l7 8.5"/></svg>比分<div class="capsule"><span>&#8226;&#8226;&#8226;</span><i></i><span>&#9678;</span></div></div>
       <div class="scr">
         <div class="scr-head"><span>春季双打赛 · 3 号场</span><span>6局金球 · 抢七 · 两盘+决胜抢十</span></div>
@@ -133,12 +159,10 @@
           <div class="tz-p">40</div>
         </div>
 
-        <div class="scrbar">
-          <div class="sets">
-            <span>盘<span class="v">1 : 0</span></span>
-            <span>局<span class="v">3 : 2</span></span>
-            <div class="done"><span>7</span><span class="sep">6<span class="sup">5</span></span></div>
-          </div>
+        <div class="board">
+          <div class="bhead"><span class="bn"></span><span class="bc">1</span><span class="bc">2</span><span class="bc">3</span></div>
+          <div class="brow"><span class="bn">张伟 / 李强</span><span class="bc w">7<i>7</i></span><span class="bc now">3</span><span class="bc empty">&#8212;</span></div>
+          <div class="brow"><span class="bn">陈明 / 刘洋</span><span class="bc">6<i>5</i></span><span class="bc now">2</span><span class="bc empty">&#8212;</span></div>
         </div>
 
         <div class="foot">
@@ -151,10 +175,10 @@
 <ul class="anns">
   <li><b>1</b><span><b>一场同时只有一个记分方。</b>进记分器那一下就向服务端<b>认领</b>（<code>match.start</code>），第二个人拿到 <code>SCORER_TAKEN</code>，落到这一屏。</span></li>
   <li><b>2</b><span><b>认领必须落到服务端，不能只在本地开。</b>两个人各在本地记，冲突要到<b>提交那一刻</b>才暴露 —— 而记分是离线优先的，那可能是一小时之后：一个人记了整场，最后被告知「你不是记分方」。这条规则就是把冲突提前到开赛前那一下。</span></li>
-  <li><b>3</b><span><b>不给选手自助抢占</b>，所以这一屏没有「接管」按钮，只有一行说明。给了按钮就等于给了抢占，而抢占正是要禁的事 —— 手机没电这类真实情况走<b>管理员接管</b>（<code>PRD.md</code> §6：管理员随时也能记）。</span></li>
+  <li><b>3</b><span><b>不给选手自助抢占</b>，所以这一屏没有「接管」按钮，只有一行说明。给了按钮就等于给了抢占 —— 手机没电这类真实情况走<b>管理员接管</b>（<code>PRD.md</code> §6：管理员随时也能记）。<b>记分方自己主动退出</b>是另一条路，在他那一屏上。</span></li>
   <li><b>4</b><span><b>是谁在记，写在最上面。</b>只说「已有人在记分」不说是谁，第二个人只会反复退出去重进 —— 他没法判断那是队友、对手，还是自己在另一台设备上。</span></li>
   <li><b>5</b><span>只读态<b>去掉阴影、加一圈描边</b>：卡看起来是「贴在那儿」而不是「能按」。不用置灰 —— 他来这儿就是要看清比分的，灰掉等于把内容也一起废了。</span></li>
-  <li><b>6</b><span>撤销和「结束比赛」整个不出现，不做置灰版。<b>一个点不动的按钮比没有按钮更让人费解</b>（和签表那屏「进入记分」同一条）。</span></li>
+  <li><b>6</b><span>比分板<b>和记分方看到的是同一块</b>，只是没有撤销、没有结束比赛，也没有可填的格子。同一个东西在两种身份下长得一样，人才不会怀疑自己看到的是不是实时的。</span></li>
   <li><b>7</b><span><b>认领失败不阻止记分。</b>开赛前那一下没网，照样进得去记分器，界面挂一条「未认领」，联网后补认领 —— 离线优先是地基，不能被一次认领请求卡住。补认领撞车时才提示，<b>本地那份记录不丢</b>。</span></li>
 </ul>
 </x-dc>
