@@ -180,6 +180,34 @@ async function main() {
        'BAD_STATE', '已确认的场次不能再提异议');
   }
 
+  console.log('\n[7c] 一场同时只有一个记分方');
+  {
+    const s = seed();
+    s.users.push({ _id: 'u4', openid: 'o4', nickname: '王五', gender: 'M' });
+    s.entries = [
+      { _id: 'eA', eventId: 'ev1', playerIds: ['u1', 'u2'], status: 'confirmed' },
+      { _id: 'eB', eventId: 'ev1', playerIds: ['u3', 'u4'], status: 'confirmed' },
+    ];
+    s.matches = [{ _id: 'm1', eventId: 'ev1', status: 'pending', version: 0,
+                   entryAId: 'eA', entryBId: 'eB' }];
+    const db = memdb(s), M = makeMatch(db);
+    const start = (uid) => M.start({ matchId: 'm1', serveOrder: ['u1', 'u3', 'u2', 'u4'] }, { userId: uid });
+
+    eq((await start('u1')).ok, true, '第一个认领的人拿到记分权');
+
+    // 这一条是这段的重点：抢占必须被拒。
+    // 允许抢的后果是前一个人离线记了一小时，提交时才被告知「你不是记分方」。
+    const grab = await start('u3');
+    eq([grab.ok, grab.code, grab.scorerId], [false, 'SCORER_TAKEN', 'u1'], '别人再进 → SCORER_TAKEN，并告诉他是谁在记');
+    eq((await db.get('matches', 'm1')).scorerId, 'u1', '被拒之后记分权没被改走');
+
+    // 记了两局之后杀进程重进
+    await M.score({ matchId: 'm1', version: 1, score: { sets: [{ a: 6, b: 4 }], serveOrder: ['u1'] } },
+                  { userId: 'u1' });
+    eq((await start('u1')).ok, true, '同一个人重进放行');
+    eq((await db.get('matches', 'm1')).score.sets, [{ a: 6, b: 4 }], '重进不清掉已经记的分');
+  }
+
   console.log('\n[8] 性别用户改不了，一次报名都没有也改不了');
   {
     // 从「有进行中报名才锁」改成「一律锁」：性别是 MD/WD/XD 的资格判据，

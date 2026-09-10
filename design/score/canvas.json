@@ -1,7 +1,29 @@
 {
   "artboards": [
-    { "file": "Setup.dc.html", "x": 0, "y": 0, "w": 420, "h": 1030, "title": "1 · 开赛前定发球顺序" },
-    { "file": "Main.dc.html", "x": 540, "y": 0, "w": 420, "h": 1120, "title": "2 · 记分中" }
+    {
+      "file": "Setup.dc.html",
+      "x": 0,
+      "y": 0,
+      "w": 420,
+      "h": 1030,
+      "title": "1 · 开赛前定发球顺序"
+    },
+    {
+      "file": "Main.dc.html",
+      "x": 540,
+      "y": 0,
+      "w": 420,
+      "h": 1180,
+      "title": "2 · 记分中"
+    },
+    {
+      "file": "Claimed.dc.html",
+      "x": 1080,
+      "y": 0,
+      "w": 420,
+      "h": 1130,
+      "title": "3 · 已经有人在记时"
+    }
   ],
   "annotations": [
     {
@@ -13,11 +35,13 @@
     },
     {
       "id": "note-missing",
-      "x": 1060,
+      "x": 1620,
       "y": 0,
       "w": 300,
       "text": "还缺一屏「确认比分」。\n\nSPEC §2 的主包 17 页里列着 score/confirm，\n但 mp 里没有这个目录，app.json 也没注册它。\n\n流程上它接在「提交比分」之后：对方组合任一人\n1 tap 确认 → 比分生效并推进签表；有异议 →\n冻结上报管理员（PRD §6）。\n\n没画是因为没有可参考的实现。"
     }
   ],
-  "launch": { "view": "canvas" }
+  "launch": {
+    "view": "canvas"
+  }
 }

@@ -49,7 +49,7 @@ OBS 的 browser source 没法登录，所以按**场次编号**读比分这一�
 
 | 接口 | 除了登录还要满足 |
 |---|---|
-| `match.start` | 是这场的选手 |
+| `match.start` | 是这场的选手，**且这场还没被别人认领** —— 否则 `SCORER_TAKEN`，随错误带回 `scorerId`，界面据此显示「XX 正在记分」 |
 | `match.score` | **是这场的记分方**（记分方已定时队友也不行 —— 两人同时记会互相覆盖） |
 | `match.confirm` | 是**对方**那一边的人（见 `types.ts` 的 `confirmedById`）。记分方和他队友都不行 |
 | `match.dispute` | 是这场的选手，**且这场还没确认** —— 异议是确认之前的岔路（`PRD.md` §6） |

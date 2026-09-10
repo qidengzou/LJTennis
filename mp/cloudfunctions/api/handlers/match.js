@@ -75,18 +75,37 @@ module.exports = function (db) {
     return -1;
   }
 
+  /**
+   * 认领记分权。**一场同时只有一个记分方**（`PRD.md` §6）。
+   *
+   * 认领必须落到服务端。两个人各自在本地开记，冲突要到提交那一刻才暴露 ——
+   * 而记分是离线优先的，那可能是一小时之后：一个人记了整场，最后被告知
+   * 「你不是记分方」。这一条就是为了把冲突提前到开赛前那一下。
+   */
   async function start(ev, ctx) {
     const m = await db.get(C.MATCHES, ev.matchId);
     if (!m) return fail('NOT_FOUND', '场次不存在');
     if (m.status === 'confirmed') return fail('BAD_STATE', '这场已经确认过了');
     if ((await sideOf(m, ctx.userId)) < 0) return fail('FORBIDDEN', '只有这场的选手能开始记分');
-    await db.update(C.MATCHES, ev.matchId, {
+
+    // 已经被别人认领就拒，**不静默抢过来**。抢占正是这条规则要禁的事。
+    // 手机没电这类真实情况走管理员接管，不给选手自助抢的口子。
+    if (m.scorerId && m.scorerId !== ctx.userId) {
+      return fail('SCORER_TAKEN', '这场已经有人在记分', { scorerId: m.scorerId });
+    }
+
+    const patch = {
       status: 'live',
       scorerId: ctx.userId,
-      score: { sets: [], serveOrder: ev.serveOrder || [] },
       version: (m.version || 0) + 1,
-    });
-    return ok();
+    };
+    // 同一个人重进（杀进程、退出去看了眼签表）不能把已经记的分清掉。
+    // 原来这里无条件重置 score —— 恢复一次就丢一次。
+    if (!m.score) patch.score = { sets: [], serveOrder: ev.serveOrder || [] };
+    else if (ev.serveOrder) patch.score = Object.assign({}, m.score, { serveOrder: ev.serveOrder });
+
+    await db.update(C.MATCHES, ev.matchId, patch);
+    return ok({ scorerId: ctx.userId });
   }
 
   /**

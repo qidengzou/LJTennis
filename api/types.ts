@@ -698,7 +698,16 @@ export interface Match {
 
   status: MatchStatus;
 
-  /** 记分方。每场指定一人，另一方确认 */
+  /**
+   * 记分方。**一场同时只有一个**（`PRD.md` §6）—— 进记分器那一下向服务端
+   * 认领（`match.start`），已经有人在记时第二个人拿到 `SCORER_TAKEN`。
+   *
+   * **不给选手自助抢占。** 抢了的后果是前一个人离线记了半场，提交时才发现
+   * 自己已经不是记分方；手机没电这类情况走管理员接管。
+   *
+   * 比分只认他提交（`match.score` 校验这个字段），而确认必须由**对方**来
+   * —— 见 `confirmedById`。
+   */
   scorerId?: string;
 
   score?: MatchScore;
