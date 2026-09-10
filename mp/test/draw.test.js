@@ -47,6 +47,17 @@ console.log('\n[4] 同分看净胜局');
   eq(s.map(r => r.gameDiff), [0, 0], '对手不在组内时不计局数');
 }
 {
+  // 三档全比平时兜底是**报名先后**，不是抽签 —— 抽签事后没法复算。
+  // 这一段守的是「排序里不许有随机数」，所以要 6 支队：
+  // 队少了，随机洗牌有不小的概率正好洗回原序，守卫就成了偶尔才红的哑弹。
+  const ids = ['a', 'b', 'c', 'd', 'e', 'f'];
+  const run = (list) => D.standings({ id: 'A', entryIds: list, qualifyCount: 2 }, []).map(r => r.entryId);
+  eq(run(ids), ids, '全平 → 按报名先后，不抽签');
+  eq(run(ids.slice().reverse()), ids.slice().reverse(),
+     '报名顺序反过来，名次跟着反 —— 名次由输入决定，不由随机决定');
+  eq(run(ids), run(ids), '同样的输入调两次，结果必须一模一样');
+}
+{
   const g = { id: 'A', entryIds: ['p', 'q', 'r'], qualifyCount: 2 };
   const ms = [
     M({ entryAId: 'p', entryBId: 'r', winnerEntryId: 'p', score: { sets: [set(6, 0), set(6, 0)] } }),

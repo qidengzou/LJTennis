@@ -24,8 +24,14 @@ function gamesFor(match, side) {
 }
 
 /**
- * 小组积分表。排序：胜场降序 → 净胜局降序 → 保持原报名顺序。
- * 同分看净胜局 —— 这条规则要显示在表下面，不能藏进规则页。
+ * 小组积分表。判定顺序：胜场 → 净胜盘 → 净胜局 → 报名先后（`PRD.md` §5）。
+ * 这条规则要显示在表下面，不能藏进规则页。
+ *
+ * ⚠️ **净胜盘这一档还没做**（缺 setsWon/setDiff，见 SPEC.md §5.1），
+ * 现在是胜场 → 净胜局 → 报名先后，中间少比一档。
+ *
+ * **兜底是 seq（报名先后），不是抽签。** 别在这里补随机数 ——
+ * 抽签事后没法复算，谁也说不清那次抽的是什么；seq 是死的，谁都能自己数一遍。
  */
 function standings(group, matches) {
   const rows = group.entryIds.map(function (id, i) {
