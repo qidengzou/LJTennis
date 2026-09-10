@@ -10,13 +10,13 @@
   <view class="fld">
     <text class="k">谁先发球</text>
     <view class="seg">
-      <view class="seg-i {{firstSide === 0 ? 'on' : ''}}" data-v="0" bindtap="onSide">我方</view>
+      <view class="seg-i {{firstSide === 0 ? 'on' : ''}}" data-v="0" bindtap="onSide">{{m.a[0]}} / {{m.a[1]}}</view>
       <view class="seg-i {{firstSide === 1 ? 'on' : ''}}" data-v="1" bindtap="onSide">{{m.b[0]}} / {{m.b[1]}}</view>
     </view>
   </view>
 
   <view class="fld">
-    <text class="k">我方谁先发</text>
+    <text class="k">{{m.a[0]}} / {{m.a[1]}} 谁先发</text>
     <view class="seg">
       <view class="seg-i {{aFirst === 0 ? 'on' : ''}}" data-v="0" bindtap="onAFirst">{{m.a[0]}}</view>
       <view class="seg-i {{aFirst === 1 ? 'on' : ''}}" data-v="1" bindtap="onAFirst">{{m.a[1]}}</view>
@@ -24,7 +24,7 @@
   </view>
 
   <view class="fld">
-    <text class="k">对方谁先发</text>
+    <text class="k">{{m.b[0]}} / {{m.b[1]}} 谁先发</text>
     <view class="seg">
       <view class="seg-i {{bFirst === 0 ? 'on' : ''}}" data-v="0" bindtap="onBFirst">{{m.b[0]}}</view>
       <view class="seg-i {{bFirst === 1 ? 'on' : ''}}" data-v="1" bindtap="onBFirst">{{m.b[1]}}</view>
